@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { User, Phone, Mail, Lock, Home, Grid, Flag, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 import Navbar from '../Components/Navbar';
 
 const Signup = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
+    fullName: '',
+    phoneNumber: '',
     email: '',
     password: '',
+    role: 'resident',
     houseNumber: '',
     block: '',
     nationality: 'Indian'
@@ -19,16 +23,40 @@ const Signup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Signup attempt:', formData);
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:5001/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(data.message || 'Registration successful!');
+        setTimeout(() => navigate('/login'), 2000);
+      } else {
+        toast.error(data.message || 'Registration failed. Please try again.');
+      }
+    } catch (error) {
+      toast.error('Network Error. Please check if the server is running.');
+      console.error('Signup error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#FDFDFF] dark:bg-slate-950 selection:bg-blue-100 dark:selection:bg-blue-900 transition-colors duration-300 overflow-hidden relative">
+      <Toaster position="top-center" reverseOrder={false} />
       <Navbar />
       
-      {/* Decorative Background for dark mode */}
+      {/* Decorative Background */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/10 blur-[100px] rounded-full -z-10 animate-pulse"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/10 blur-[100px] rounded-full -z-10 animate-pulse transition-all"></div>
 
@@ -46,6 +74,7 @@ const Signup = () => {
 
           <form onSubmit={handleSubmit} className="space-y-8 relative">
             <div className="grid md:grid-cols-2 gap-6">
+
               {/* Full Name */}
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Full Name</label>
@@ -54,9 +83,9 @@ const Signup = () => {
                     <User className="w-5 h-5" />
                   </div>
                   <input 
-                    name="name"
+                    name="fullName"
                     type="text" 
-                    value={formData.name}
+                    value={formData.fullName}
                     onChange={handleChange}
                     className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white font-medium focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
                     placeholder="John Doe"
@@ -65,7 +94,7 @@ const Signup = () => {
                 </div>
               </div>
 
-              {/* Phone Number */}
+              {/* Phone */}
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Phone Number</label>
                 <div className="relative group">
@@ -73,9 +102,9 @@ const Signup = () => {
                     <Phone className="w-5 h-5" />
                   </div>
                   <input 
-                    name="phone"
+                    name="phoneNumber"
                     type="tel" 
-                    value={formData.phone}
+                    value={formData.phoneNumber}
                     onChange={handleChange}
                     className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white font-medium focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
                     placeholder="+91 98765 43210"
@@ -84,7 +113,7 @@ const Signup = () => {
                 </div>
               </div>
 
-              {/* Email Address */}
+              {/* Email */}
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Email Address</label>
                 <div className="relative group">
@@ -122,7 +151,7 @@ const Signup = () => {
                 </div>
               </div>
 
-              {/* House Number */}
+              {/* House */}
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">House Number</label>
                 <div className="relative group">
@@ -185,15 +214,40 @@ const Signup = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Role */}
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Role</label>
+                <div className="relative group">
+                  <select 
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="block w-full pl-4 pr-10 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white font-medium focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none appearance-none transition-all"
+                    required
+                  >
+                    <option value="resident">Resident</option>
+                    <option value="admin">Admin</option>
+                  </select>
+
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
             <motion.button 
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/20 dark:shadow-blue-900/30 hover:shadow-blue-500/40 transition-all flex items-center justify-center gap-3 group mt-4"
+              disabled={loading}
+              className={`w-full py-5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/20 dark:shadow-blue-900/30 hover:shadow-blue-500/40 transition-all flex items-center justify-center gap-3 group mt-4 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
               type="submit"
             >
-              Create Account <ArrowRight className="w-6 h-6 group-hover:translate-x-1.5 transition-transform" />
+              {loading ? 'Creating Account...' : 'Create Account'} <ArrowRight className="w-6 h-6 group-hover:translate-x-1.5 transition-transform" />
             </motion.button>
           </form>
 
