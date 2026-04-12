@@ -20,7 +20,8 @@ import {
   BookOpen,
   Phone,
   MapPinIcon,
-  Briefcase
+  Briefcase,
+  Send
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Typewriter } from '../components/ui/typewriter';
@@ -39,12 +40,13 @@ const UserDashboard = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
+    // console.log("Dashboard loaded user data:", storedUser);
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser({
         fullName: parsedUser.fullName || 'User',
         block: parsedUser.block || 'N/A',
-        avatar: parsedUser.avatar || '👨‍💼',
+        avatar: parsedUser.avatar || '👤',
         unreadNotifications: parsedUser.unreadNotifications || 0
       });
     } else {
@@ -257,17 +259,17 @@ const UserDashboard = () => {
               AI Chat
             </button>
             
-            <div className="flex items-center gap-3 pl-4 border-l border-white/20">
+            <div onClick={() => navigate("/profile")} className="flex items-center gap-3 pl-4 border-l border-white/20 cursor-pointer hover:bg-white/5 p-1 rounded-xl transition">
               <div className="text-right">
                 <p className="text-white font-semibold text-sm">{user.fullName}</p>
                 <p className="text-white/60 text-xs">{user.block}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-xl cursor-pointer group relative">
-                {user.avatar}
-                {/* Logout Tooltip */}
-                <div onClick={handleLogout} className="absolute top-12 right-0 hidden group-hover:block bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-4 rounded-xl shadow-xl whitespace-nowrap z-50 transition-colors">
-                  Sign Out
-                </div>
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-xl overflow-hidden shadow-lg border-2 border-white/20">
+                {user.avatar && user.avatar.length > 5 ? (
+                  <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  user.avatar || '👤'
+                )}
               </div>
             </div>
           </div>
