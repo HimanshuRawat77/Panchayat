@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import Navbar from '../Components/Navbar';
 import { SparklesCore } from '@/components/ui/sparkles';
+import PricingSection from '@/components/ui/pricing-section';
 import { useTheme } from '../context/ThemeContext';
 
 const features = [
@@ -163,17 +164,25 @@ const Home = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-40px' }}
                   transition={{ duration: 0.45, delay: index * 0.06 }}
-                  whileHover={{ y: -4 }}
-                  className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/75 p-7 shadow-card backdrop-blur-md transition-shadow duration-300 hover:border-indigo-200/60 hover:shadow-glow-sm dark:border-slate-800 dark:bg-slate-900/45 dark:shadow-card-dark dark:hover:border-indigo-500/25"
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="group relative z-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/75 p-7 shadow-card backdrop-blur-md transition-[box-shadow,border-color,transform,z-index] duration-300 ease-out hover:z-10 hover:border-violet-400/70 hover:shadow-xl hover:shadow-violet-500/20 dark:border-slate-800 dark:bg-slate-900/45 dark:shadow-card-dark dark:hover:border-violet-500/50 dark:hover:shadow-violet-600/15"
                 >
-                  <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-indigo-500/10 to-violet-500/5 blur-2xl transition-opacity group-hover:opacity-100 dark:from-indigo-400/15" />
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/25">
+                  <div
+                    className="pointer-events-none absolute inset-0 z-[1] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    aria-hidden="true"
+                    style={{
+                      background:
+                        'radial-gradient(100% 70% at 50% -10%, rgb(167 139 250 / 0.2), transparent 60%)',
+                    }}
+                  />
+                  <div className="absolute -right-8 -top-8 z-[1] h-32 w-32 rounded-full bg-gradient-to-br from-indigo-500/10 to-violet-500/5 blur-2xl transition-opacity group-hover:opacity-100 dark:from-indigo-400/15" />
+                  <div className="relative z-[2] flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/25 transition-shadow duration-300 group-hover:shadow-violet-500/35">
                     <feature.Icon className="h-6 w-6" strokeWidth={1.75} />
                   </div>
-                  <h3 className="relative mt-5 text-lg font-semibold text-slate-900 dark:text-white">
+                  <h3 className="relative z-[2] mt-5 text-lg font-semibold text-slate-900 dark:text-white">
                     {feature.title}
                   </h3>
-                  <p className="relative mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  <p className="relative z-[2] mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                     {feature.description}
                   </p>
                 </Motion.div>
@@ -216,6 +225,8 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+        <PricingSection />
 
         <section className="px-4 py-24 md:py-28">
           <div className="mx-auto max-w-4xl">
