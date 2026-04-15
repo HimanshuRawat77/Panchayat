@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Typewriter } from '../components/ui/typewriter';
+import { getMyComplaints } from '../services/complaintService';
 
 function readUserFromStorage() {
   try {
@@ -48,11 +49,27 @@ const UserDashboard = () => {
   const navigate = useNavigate();
   const [user] = useState(readUserFromStorage);
   const [showAIChat, setShowAIChat] = useState(false);
+  const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
       navigate('/login');
+      return;
     }
+
+    const fetchDashboardData = async () => {
+      try {
+        const data = await getMyComplaints();
+        if (data) setComplaints(data);
+      } catch (error) {
+        console.error('Error fetching complaints:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
   }, [user, navigate]);
 
   const handleLogout = () => {
@@ -118,44 +135,32 @@ const UserDashboard = () => {
     },
   ];
 
-  const complaintStats = {
-    total: 12,
-    pending: 2,
-    inProgress: 3,
-    resolved: 7,
-  };
+  const complaintStats = useMemo(() => {
+    return {
+      total: complaints.length,
+      pending: complaints.filter(c => c.status === 'Pending').length,
+      inProgress: complaints.filter(c => c.status === 'In progress').length,
+      resolved: complaints.filter(c => c.status === 'Resolved').length,
+    };
+  }, [complaints]);
 
-  const recentComplaints = [
-    {
-      id: 'C001',
-      title: 'Water leakage in kitchen',
-      status: 'In progress',
-      category: 'Plumber',
-      date: '2026-04-10',
-      priority: 'high',
+  const recentComplaints = useMemo(() => {
+    return complaints.slice(0, 3).map(c => ({
+      id: c._id,
+      title: c.description,
+      status: c.status,
+      category: c.category.charAt(0).toUpperCase() + c.category.slice(1),
+      date: new Date(c.createdAt).toLocaleDateString(),
+      priority: c.priority,
+      image: c.image,
       statusStyle:
-        'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/20 dark:text-indigo-200',
-    },
-    {
-      id: 'C002',
-      title: 'Electrical fault at main gate',
-      status: 'Pending',
-      category: 'Electrician',
-      date: '2026-04-11',
-      priority: 'critical',
-      statusStyle: 'bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-200',
-    },
-    {
-      id: 'C003',
-      title: 'Broken door lock',
-      status: 'Resolved',
-      category: 'Carpenter',
-      date: '2026-04-05',
-      priority: 'low',
-      statusStyle:
-        'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-200',
-    },
-  ];
+        c.status === 'Resolved' 
+          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-200'
+          : c.status === 'In progress'
+          ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/20 dark:text-indigo-200'
+          : 'bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-200'
+    }));
+  }, [complaints]);
 
   const quickServices = [
     { id: 1, name: 'Plumber', Icon: Wrench, from: 'from-sky-500', to: 'to-blue-600' },
@@ -430,6 +435,7 @@ const UserDashboard = () => {
           <div className="grid gap-4 md:grid-cols-2 md:gap-6">
             <button
               type="button"
+              onClick={() => navigate('/complaints')}
               className="group flex flex-col items-start rounded-2xl border border-slate-200/80 bg-white p-8 text-left shadow-sm transition hover:border-indigo-200 hover:shadow-glow-sm dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-indigo-500/30"
             >
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25">
@@ -446,6 +452,7 @@ const UserDashboard = () => {
             </button>
             <button
               type="button"
+              onClick={() => navigate('/complaints')}
               className="group flex flex-col items-start rounded-2xl border border-slate-200/80 bg-white p-8 text-left shadow-sm transition hover:border-emerald-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-emerald-500/25"
             >
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20">
@@ -490,35 +497,52 @@ const UserDashboard = () => {
         <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/50 dark:shadow-card-dark md:p-8">
           <h2 className="mb-6 text-xl font-bold tracking-tight md:text-2xl">Recent complaints</h2>
           <div className="space-y-3">
-            {recentComplaints.map((complaint) => (
-              <div
-                key={complaint.id}
-                className="group cursor-pointer rounded-2xl border border-slate-200/80 bg-slate-50/80 p-5 transition hover:border-indigo-200/80 hover:bg-white dark:border-slate-700/80 dark:bg-slate-800/40 dark:hover:border-indigo-500/30 dark:hover:bg-slate-800/60 md:p-6"
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        className={`rounded-lg px-3 py-1 text-xs font-semibold ${complaint.statusStyle}`}
-                      >
-                        {complaint.status}
-                      </span>
-                      <span className="font-semibold text-slate-900 dark:text-white">
-                        {complaint.title}
-                      </span>
+            {recentComplaints.length === 0 ? (
+              <p className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                No complaints submitted recently.
+              </p>
+            ) : (
+              recentComplaints.map((complaint) => (
+                <div
+                  key={complaint.id}
+                  className="group cursor-pointer rounded-2xl border border-slate-200/80 bg-slate-50/80 p-5 transition hover:border-indigo-200/80 hover:bg-white dark:border-slate-700/80 dark:bg-slate-800/40 dark:hover:border-indigo-500/30 dark:hover:bg-slate-800/60 md:p-6"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex min-w-0 flex-1 items-center gap-4">
+                      {complaint.image && (
+                        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
+                          <img src={complaint.image} alt="" className="h-full w-full object-cover" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            className={`rounded-lg px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${complaint.statusStyle}`}
+                          >
+                            {complaint.status}
+                          </span>
+                          <span className="font-semibold text-slate-900 dark:text-white">
+                            {complaint.title}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500 dark:text-slate-400">
+                          <span>{complaint.category}</span>
+                          <span>{complaint.date}</span>
+                          <span className={`font-semibold ${
+                            complaint.priority === 'High' ? 'text-rose-600 dark:text-rose-400' : 
+                            complaint.priority === 'Medium' ? 'text-amber-600 dark:text-amber-400' : 
+                            'text-emerald-600 dark:text-emerald-400'
+                          }`}>
+                            {complaint.priority} priority
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
-                      <span>{complaint.category}</span>
-                      <span>{complaint.date}</span>
-                      <span className="capitalize text-rose-600 dark:text-rose-400">
-                        {complaint.priority} priority
-                      </span>
-                    </div>
+                    <ChevronRight className="h-5 w-5 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-slate-600" />
                   </div>
-                  <ChevronRight className="h-5 w-5 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-slate-600" />
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </section>
 

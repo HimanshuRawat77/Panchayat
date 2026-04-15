@@ -1,12 +1,10 @@
+import 'dotenv/config';
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
-
-// Load environment variables
-dotenv.config();
+import complaintRoutes from "./routes/complaintRoutes.js";
 
 // Connect to Database
 connectDB();
@@ -25,6 +23,7 @@ app.use(morgan("dev"));
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/complaints", complaintRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Running 🚀");
