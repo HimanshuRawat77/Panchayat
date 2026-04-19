@@ -5,6 +5,9 @@ import morgan from "morgan";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
+import ruleRoutes from "./routes/ruleRoutes.js";
+import workerRoutes from "./routes/workerRoutes.js";
+
 
 // Connect to Database
 connectDB();
@@ -24,6 +27,9 @@ app.use(morgan("dev"));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/complaints", complaintRoutes);
+app.use("/api/rules", ruleRoutes);
+app.use("/api/workers", workerRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("API Running 🚀");

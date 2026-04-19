@@ -10,6 +10,8 @@ import {
   LogOut,
   UserRound,
 } from 'lucide-react';
+import API_BASE_URL from '../config';
+
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ const Profile = () => {
           return;
         }
 
-        const res = await fetch('http://localhost:5001/api/auth/me', {
+        const res = await fetch(`${API_BASE_URL}/auth/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -73,7 +75,7 @@ const Profile = () => {
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5001/api/auth/update', {
+      const res = await fetch(`${API_BASE_URL}/auth/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

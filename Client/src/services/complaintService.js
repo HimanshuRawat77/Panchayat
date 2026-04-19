@@ -1,4 +1,7 @@
-const API_BASE = 'http://localhost:5001/api/complaints';
+import API_BASE_URL from '../config';
+
+const API_BASE = `${API_BASE_URL}/complaints`;
+
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');

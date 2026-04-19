@@ -4,6 +4,8 @@ import { User, Phone, Mail, Lock, Home, Grid, Flag, ArrowRight } from 'lucide-re
 import { Link, useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import Navbar from '../Components/Navbar';
+import API_BASE_URL from '../config';
+
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/api/auth/signup', {
+      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
