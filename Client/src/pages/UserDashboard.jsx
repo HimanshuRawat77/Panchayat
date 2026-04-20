@@ -432,42 +432,26 @@ const UserDashboard = () => {
               Voice or text — same streamlined flow
             </p>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+          <div className="flex justify-center">
             <button
               type="button"
               onClick={() => navigate('/complaints')}
-              className="group flex flex-col items-start rounded-2xl border border-slate-200/80 bg-white p-8 text-left shadow-sm transition hover:border-indigo-200 hover:shadow-glow-sm dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-indigo-500/30"
+              className="group flex flex-col items-start w-full max-w-md rounded-2xl border border-slate-200/80 bg-white p-8 text-left shadow-sm transition hover:border-indigo-200 hover:shadow-glow-sm dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-indigo-500/30"
             >
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25">
                 <Mic className="h-7 w-7" strokeWidth={1.75} />
               </div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Voice</h3>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Smart Voice Complaint</h3>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                Describe the issue by speaking — we capture the details.
+                Speak your issue and let our AI summarize it for the society admins.
               </p>
               <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400">
                 Start recording
                 <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
               </span>
             </button>
-            <button
-              type="button"
-              onClick={() => navigate('/complaints')}
-              className="group flex flex-col items-start rounded-2xl border border-slate-200/80 bg-white p-8 text-left shadow-sm transition hover:border-emerald-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-emerald-500/25"
-            >
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20">
-                <Type className="h-7 w-7" strokeWidth={1.75} />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Text</h3>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                Type what happened — attach context and photos when ready.
-              </p>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-                Open form
-                <PenLine className="h-4 w-4 transition group-hover:translate-x-0.5" />
-              </span>
-            </button>
           </div>
+
         </section>
 
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
