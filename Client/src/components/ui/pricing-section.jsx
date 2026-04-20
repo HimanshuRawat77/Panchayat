@@ -127,7 +127,7 @@ const item = {
 
 export default function PricingSection() {
   return (
-    <section className="relative overflow-hidden px-4 py-24 md:py-32">
+    <section id="pricing" className="relative overflow-hidden px-4 py-24 md:py-32">
       <div
         className="pointer-events-none absolute inset-0 opacity-40 dark:opacity-25"
         aria-hidden="true"

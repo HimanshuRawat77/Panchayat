@@ -2,7 +2,7 @@ import React from 'react';
 import { motion as Motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import { Building2, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
@@ -19,9 +19,7 @@ const Navbar = () => {
             to="/"
             className="group flex items-center gap-2.5 text-slate-900 transition dark:text-white"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-500/25 transition group-hover:shadow-lg group-hover:shadow-indigo-500/30">
-              <Building2 className="h-[1.15rem] w-[1.15rem]" strokeWidth={2} />
-            </span>
+            <img src="/Panchayat.png" alt="Panchayat Logo" className="h-9 w-9 rounded-xl" />
             <span className="text-lg font-bold tracking-tight">Panchayat</span>
           </Link>
         </Motion.div>
@@ -33,12 +31,19 @@ const Navbar = () => {
           >
             About
           </Link>
-          <Link
-            to="/dashboard"
+          <a
+            href="/#flow"
             className="hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:inline dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-white"
           >
-            Dashboard
-          </Link>
+            Flow
+          </a>
+          <a
+            href="/#pricing"
+            className="hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:inline dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-white"
+          >
+            Prices
+          </a>
+
 
           <button
             type="button"

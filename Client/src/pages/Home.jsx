@@ -191,7 +191,7 @@ const Home = () => {
           </div>
         </section>
 
-        <section className="relative border-y border-slate-200/70 bg-slate-50/80 px-4 py-24 dark:border-slate-800/80 dark:bg-slate-950/40 md:py-32">
+        <section id="flow" className="relative border-y border-slate-200/70 bg-slate-50/80 px-4 py-24 dark:border-slate-800/80 dark:bg-slate-950/40 md:py-32">
           <div className="mx-auto max-w-6xl">
             <div className="mx-auto mb-16 max-w-2xl text-center md:mb-20">
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-indigo-600 dark:text-indigo-400">
