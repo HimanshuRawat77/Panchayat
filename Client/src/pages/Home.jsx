@@ -254,25 +254,12 @@ const Home = () => {
           </div>
         </section>
 
-<<<<<<< HEAD
         {/* ════════════════════════════════════════════════════════ */}
         {/*  FEATURES SECTION                                        */}
         {/* ════════════════════════════════════════════════════════ */}
         <section id="features" className="relative px-4 py-20 md:px-12 md:py-28">
           {/* Section divider line */}
           <div className="pointer-events-none absolute left-1/2 top-0 h-px w-[min(90%,600px)] -translate-x-1/2 bg-gradient-to-r from-transparent via-slate-200 to-transparent dark:via-[#6B4F3A]/20" />
-=======
-        <section id="flow" className="relative border-y border-slate-200/70 bg-slate-50/80 px-4 py-24 dark:border-slate-800/80 dark:bg-slate-950/40 md:py-32">
-          <div className="mx-auto max-w-6xl">
-            <div className="mx-auto mb-16 max-w-2xl text-center md:mb-20">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-indigo-600 dark:text-indigo-400">
-                Flow
-              </p>
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl">
-                From first login to closed ticket
-              </h2>
-            </div>
->>>>>>> 7733c2ee97001110028121bf1f50363d3b5ef7bc
 
           <div className="mx-auto max-w-[1440px]">
             {/* Section Header */}
@@ -441,7 +428,7 @@ const Home = () => {
             {/* Bottom bar */}
             <div className="mt-16 border-t border-slate-200 pt-6 dark:border-[#6B4F3A]/15">
               <p className="text-xs text-slate-400 dark:text-[#B8AEA3]">
-                © 2024 Panchayat. All Reserved for IYS & their partners.
+                © 2026 Panchayat. All Reserved for IYS & their partners.
               </p>
             </div>
           </div>
