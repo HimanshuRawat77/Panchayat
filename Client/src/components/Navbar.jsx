@@ -21,6 +21,7 @@ const Navbar = () => {
           <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-[#F5F1EA]">Panchayat</span>
         </Link>
 
+<<<<<<< HEAD
         {/* Center Nav */}
         <div className="hidden items-center gap-8 md:flex">
           <a href="/#features" className="text-sm font-medium text-slate-600 transition-colors duration-200 hover:text-slate-900 dark:text-[#B8AEA3] dark:hover:text-[#F5F1EA]">Solutions</a>
@@ -28,6 +29,28 @@ const Navbar = () => {
           <a href="/#pricing" className="text-sm font-medium text-slate-600 transition-colors duration-200 hover:text-slate-900 dark:text-[#B8AEA3] dark:hover:text-[#F5F1EA]">Pricing</a>
           <Link to="/about" className="text-sm font-medium text-slate-600 transition-colors duration-200 hover:text-slate-900 dark:text-[#B8AEA3] dark:hover:text-[#F5F1EA]">About</Link>
         </div>
+=======
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Link
+            to="/about"
+            className="hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:inline dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-white"
+          >
+            About
+          </Link>
+          <a
+            href="/#flow"
+            className="hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:inline dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-white"
+          >
+            Flow
+          </a>
+          <a
+            href="/#pricing"
+            className="hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:inline dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-white"
+          >
+            Prices
+          </a>
+
+>>>>>>> 7733c2ee97001110028121bf1f50363d3b5ef7bc
 
         {/* Right side */}
         <div className="flex items-center gap-3">

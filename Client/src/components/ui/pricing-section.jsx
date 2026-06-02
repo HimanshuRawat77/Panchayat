@@ -85,9 +85,23 @@ const item = {
 
 export default function PricingSection() {
   return (
+<<<<<<< HEAD
     <section id="pricing" className="relative px-4 py-24 md:py-32">
       <div className="mx-auto max-w-[1440px] px-0 md:px-12">
         {/* Header */}
+=======
+    <section id="pricing" className="relative overflow-hidden px-4 py-24 md:py-32">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-40 dark:opacity-25"
+        aria-hidden="true"
+        style={{
+          backgroundImage:
+            'radial-gradient(ellipse 80% 50% at 50% -20%, rgb(99 102 241 / 0.25), transparent 55%)',
+        }}
+      />
+
+      <div className="relative mx-auto max-w-7xl">
+>>>>>>> 7733c2ee97001110028121bf1f50363d3b5ef7bc
         <Motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
