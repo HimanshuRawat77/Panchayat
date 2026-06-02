@@ -118,24 +118,24 @@ const Profile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] font-sans text-slate-900 dark:bg-[#070a12] dark:text-white">
+    <div className="min-h-screen bg-[#f8fafc] font-sans text-slate-900 dark:bg-[#151210] dark:text-[#F5F1EA]">
       <Toaster
         position="top-center"
         toastOptions={{
-          className: 'dark:bg-slate-800 dark:text-white',
+          className: 'dark:bg-[#221C18] dark:text-[#F5F1EA]',
         }}
       />
 
       <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -left-24 top-20 h-80 w-80 rounded-full bg-indigo-400/10 blur-[100px] dark:bg-indigo-600/12" />
-        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-violet-400/10 blur-[110px] dark:bg-violet-600/10" />
+        <div className="absolute -left-24 top-20 h-80 w-80 rounded-full bg-indigo-400/10 blur-[100px] dark:bg-[#C8A45D]/12" />
+        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-violet-400/10 blur-[110px] dark:bg-[#6B4F3A]/10" />
       </div>
 
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/80">
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-[#6B4F3A]/80 dark:bg-[#151210]/80">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3.5">
           <Link
             to="/dashboard"
-            className="inline-flex items-center gap-2 rounded-xl px-2 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+            className="inline-flex items-center gap-2 rounded-xl px-2 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-[#B8AEA3] dark:hover:bg-[#221C18] dark:hover:text-[#F5F1EA]"
           >
             <ChevronLeft className="h-4 w-4" strokeWidth={2} />
             <LayoutDashboard className="h-4 w-4 sm:hidden" strokeWidth={2} />
@@ -143,9 +143,9 @@ const Profile = () => {
           </Link>
           <Link
             to="/"
-            className="flex items-center gap-2 text-slate-900 dark:text-white"
+            className="flex items-center gap-2 text-slate-900 dark:text-[#F5F1EA]"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-500/25">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-500/25 dark:from-[#C8A45D] dark:to-[#6B4F3A] dark:text-[#151210] dark:shadow-[#C8A45D]/25">
               <Building2 className="h-[1.05rem] w-[1.05rem]" strokeWidth={2} />
             </span>
             <span className="hidden font-bold tracking-tight sm:inline">Panchayat</span>
@@ -156,22 +156,22 @@ const Profile = () => {
 
       <main className="relative z-10 mx-auto max-w-3xl px-4 py-10 md:py-14">
         <div className="mb-8 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-[#C8A45D]">
             Account
           </p>
           <h1 className="mt-2 flex items-center justify-center gap-2 text-2xl font-bold tracking-tight md:text-3xl">
-            <UserRound className="h-7 w-7 text-indigo-600 dark:text-indigo-400" strokeWidth={1.75} />
+            <UserRound className="h-7 w-7 text-indigo-600 dark:text-[#C8A45D]" strokeWidth={1.75} />
             Your profile
           </h1>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-2 text-sm text-slate-600 dark:text-[#B8AEA3]">
             Details stay in sync with your society dashboard.
           </p>
         </div>
 
-        <div className="rounded-3xl border border-slate-200/80 bg-white/90 p-8 shadow-card backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/60 dark:shadow-card-dark md:p-10">
+        <div className="rounded-3xl border border-slate-200/80 bg-white/90 p-8 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/90 dark:shadow-card-dark md:p-10">
           <div className="mb-10 flex flex-col items-center">
             <div className="relative">
-              <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-gradient-to-br from-slate-100 to-slate-200 shadow-xl ring-2 ring-indigo-500/20 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900 dark:ring-indigo-500/30">
+              <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-gradient-to-br from-slate-100 to-slate-200 shadow-xl ring-2 ring-indigo-500/20 dark:border-[#221C18] dark:from-[#221C18] dark:to-[#151210] dark:ring-[#C8A45D]/30">
                 {previewImage && (previewImage.startsWith('data') || previewImage.startsWith('http')) ? (
                   <img src={previewImage} alt="" className="h-full w-full object-cover" />
                 ) : (
@@ -179,13 +179,13 @@ const Profile = () => {
                 )}
               </div>
               {editMode && (
-                <label className="absolute bottom-1 right-1 flex cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 p-3 text-white shadow-lg shadow-indigo-500/30 transition hover:brightness-110">
+                <label className="absolute bottom-1 right-1 flex cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 p-3 text-white shadow-lg shadow-indigo-500/30 transition hover:brightness-110 dark:from-[#C8A45D] dark:to-[#6B4F3A] dark:text-[#151210] dark:shadow-[#C8A45D]/30">
                   <Camera className="h-5 w-5" strokeWidth={2} />
                   <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
                 </label>
               )}
             </div>
-            <p className="mt-4 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <p className="mt-4 text-xs font-medium text-slate-500 dark:text-[#B8AEA3]">
               {previewImage ? 'Photo active' : 'No photo set'}
             </p>
           </div>
@@ -195,7 +195,7 @@ const Profile = () => {
               <div key={field.name} className="space-y-2 md:col-span-1">
                 <label
                   htmlFor={field.name}
-                  className="ml-0.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+                  className="ml-0.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]"
                 >
                   {field.label}
                 </label>
@@ -208,8 +208,8 @@ const Profile = () => {
                   disabled={!editMode}
                   className={`w-full rounded-xl border px-4 py-3.5 text-sm font-medium outline-none transition ${
                     editMode
-                      ? 'border-indigo-200 bg-white text-slate-900 ring-indigo-500/0 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 dark:border-indigo-500/30 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-400'
-                      : 'cursor-not-allowed border-transparent bg-slate-50 text-slate-600 dark:bg-slate-950/80 dark:text-slate-500'
+                      ? 'border-indigo-200 bg-white text-slate-900 ring-indigo-500/0 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 dark:border-[#6B4F3A] dark:bg-[#151210] dark:text-[#F5F1EA] dark:focus:border-[#C8A45D] dark:focus:ring-[#C8A45D]/10'
+                      : 'cursor-not-allowed border-transparent bg-slate-50 text-slate-600 dark:bg-[#151210]/50 dark:text-[#B8AEA3]'
                   }`}
                 />
               </div>
@@ -222,7 +222,7 @@ const Profile = () => {
                 type="button"
                 onClick={handleUpdate}
                 disabled={loading}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-4 text-sm font-semibold text-white shadow-glow-sm transition hover:shadow-glow disabled:opacity-60 sm:min-w-[200px]"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-4 text-sm font-semibold text-white shadow-glow-sm transition hover:shadow-glow disabled:opacity-60 sm:min-w-[200px] dark:from-[#C8A45D] dark:to-[#6B4F3A] dark:text-[#151210]"
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} />}
                 {loading ? 'Saving…' : 'Save changes'}
@@ -231,7 +231,7 @@ const Profile = () => {
               <button
                 type="button"
                 onClick={() => setEditMode(true)}
-                className="flex-1 rounded-2xl border border-slate-200 bg-slate-900 px-6 py-4 text-sm font-semibold text-white transition hover:bg-slate-800 dark:border-slate-600 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 sm:min-w-[200px]"
+                className="flex-1 rounded-2xl border border-slate-200 bg-slate-900 px-6 py-4 text-sm font-semibold text-white transition hover:bg-slate-800 dark:border-[#C8A45D] dark:bg-[#C8A45D] dark:text-[#151210] dark:hover:bg-[#b39150] sm:min-w-[200px]"
               >
                 Edit profile
               </button>
@@ -240,7 +240,7 @@ const Profile = () => {
             <button
               type="button"
               onClick={() => navigate('/dashboard')}
-              className="flex-1 rounded-2xl border border-slate-200/90 bg-white px-6 py-4 text-sm font-semibold text-slate-800 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 sm:min-w-[160px]"
+              className="flex-1 rounded-2xl border border-slate-200/90 bg-white px-6 py-4 text-sm font-semibold text-slate-800 transition hover:border-slate-300 hover:bg-slate-50 dark:border-[#6B4F3A] dark:bg-[#221C18] dark:text-[#F5F1EA] dark:hover:bg-[#6B4F3A]/40 sm:min-w-[160px]"
             >
               Dashboard
             </button>

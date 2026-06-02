@@ -155,10 +155,10 @@ const UserDashboard = () => {
       image: c.image,
       statusStyle:
         c.status === 'Resolved' 
-          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-200'
+          ? 'bg-emerald-100 text-emerald-800 dark:bg-[#6B4F3A]/20 dark:text-[#C8A45D]'
           : c.status === 'In progress'
-          ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/20 dark:text-indigo-200'
-          : 'bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-200'
+          ? 'bg-indigo-100 text-indigo-800 dark:bg-[#C8A45D]/20 dark:text-[#C8A45D]'
+          : 'bg-rose-100 text-rose-800 dark:bg-[#6B4F3A]/20 dark:text-[#C8A45D]'
     }));
   }, [complaints]);
 
@@ -235,35 +235,35 @@ const UserDashboard = () => {
   const priorityBadge = (p) => {
     const map = {
       critical:
-        'bg-rose-500/15 text-rose-700 ring-rose-500/20 dark:text-rose-300 dark:ring-rose-500/30',
-      high: 'bg-amber-500/15 text-amber-800 ring-amber-500/20 dark:text-amber-200 dark:ring-amber-500/30',
+        'bg-rose-500/15 text-rose-700 ring-rose-500/20 dark:text-[#C8A45D] dark:ring-[#C8A45D]/30',
+      high: 'bg-amber-500/15 text-amber-800 ring-amber-500/20 dark:text-[#C8A45D] dark:ring-[#C8A45D]/30',
       medium:
-        'bg-sky-500/15 text-sky-800 ring-sky-500/20 dark:text-sky-200 dark:ring-sky-500/30',
+        'bg-sky-500/15 text-sky-800 ring-sky-500/20 dark:text-[#C8A45D] dark:ring-[#C8A45D]/30',
     };
     return map[p] || map.medium;
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] font-sans text-slate-900 transition-colors dark:bg-[#070a12] dark:text-white">
+    <div className="min-h-screen bg-[#f8fafc] font-sans text-slate-900 transition-colors dark:bg-[#151210] dark:text-[#F5F1EA]">
       <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-indigo-400/10 blur-[100px] dark:bg-indigo-600/15" />
-        <div className="absolute -right-20 bottom-20 h-[28rem] w-[28rem] rounded-full bg-violet-400/10 blur-[120px] dark:bg-violet-600/12" />
+        <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-indigo-400/10 blur-[100px] dark:bg-[#C8A45D]/15" />
+        <div className="absolute -right-20 bottom-20 h-[28rem] w-[28rem] rounded-full bg-violet-400/10 blur-[120px] dark:bg-[#6B4F3A]/12" />
       </div>
 
-      <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/80">
+      <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-[#6B4F3A]/80 dark:bg-[#151210]/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5">
           <div className="flex min-w-0 items-center gap-3">
             <Link
               to="/"
-              className="flex shrink-0 items-center gap-2 rounded-xl text-slate-900 transition hover:opacity-90 dark:text-white"
+              className="flex shrink-0 items-center gap-2 rounded-xl text-slate-900 transition hover:opacity-90 dark:text-[#F5F1EA]"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-500/25">
                 <Building2 className="h-[1.15rem] w-[1.15rem]" strokeWidth={2} />
               </span>
               <span className="hidden font-bold tracking-tight sm:inline">Panchayat</span>
             </Link>
-            <span className="hidden h-6 w-px bg-slate-200 dark:bg-slate-700 sm:block" />
-            <span className="hidden items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 sm:flex">
+            <span className="hidden h-6 w-px bg-slate-200 dark:bg-[#6B4F3A] sm:block" />
+            <span className="hidden items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3] sm:flex">
               <LayoutDashboard className="h-3.5 w-3.5" strokeWidth={2} />
               Dashboard
             </span>
@@ -272,12 +272,12 @@ const UserDashboard = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
-              className="relative rounded-xl border border-slate-200/90 bg-white/90 p-2.5 text-slate-600 transition hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300 dark:hover:border-slate-600"
+              className="relative rounded-xl border border-slate-200/90 bg-white/90 p-2.5 text-slate-600 transition hover:border-slate-300 hover:bg-white dark:border-[#6B4F3A] dark:bg-[#221C18]/90 dark:text-[#F5F1EA] dark:hover:border-[#C8A45D]"
               aria-label="Notifications"
             >
               <Bell className="h-5 w-5" strokeWidth={2} />
               {user.unreadNotifications > 0 && (
-                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-slate-950" />
+                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-[#151210]" />
               )}
             </button>
 
@@ -293,7 +293,7 @@ const UserDashboard = () => {
             <button
               type="button"
               onClick={() => navigate('/profile')}
-              className="flex items-center gap-2 rounded-xl border border-slate-200/90 bg-white/90 py-1.5 pl-1.5 pr-3 transition hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-900/90 dark:hover:border-slate-600"
+              className="flex items-center gap-2 rounded-xl border border-slate-200/90 bg-white/90 py-1.5 pl-1.5 pr-3 transition hover:border-slate-300 hover:bg-white dark:border-[#6B4F3A] dark:bg-[#221C18]/90 dark:hover:border-[#C8A45D]"
             >
               <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-sm font-bold text-white shadow-inner">
                 {user.avatar && user.avatar.length > 5 ? (
@@ -303,17 +303,17 @@ const UserDashboard = () => {
                 )}
               </div>
               <div className="hidden text-left sm:block">
-                <p className="max-w-[8rem] truncate text-sm font-semibold leading-tight text-slate-900 dark:text-white">
+                <p className="max-w-[8rem] truncate text-sm font-semibold leading-tight text-slate-900 dark:text-[#F5F1EA]">
                   {user.fullName}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{user.block}</p>
+                <p className="text-xs text-slate-500 dark:text-[#B8AEA3]">{user.block}</p>
               </div>
             </button>
 
             <button
               type="button"
               onClick={handleLogout}
-              className="rounded-xl border border-slate-200/90 p-2.5 text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-700 dark:text-slate-400 dark:hover:border-rose-900/50 dark:hover:bg-rose-950/40 dark:hover:text-rose-400"
+              className="rounded-xl border border-slate-200/90 p-2.5 text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:border-[#6B4F3A] dark:text-[#B8AEA3] dark:hover:border-[#6B4F3A]/50 dark:hover:bg-[#6B4F3A]/40 dark:hover:text-[#C8A45D]"
               aria-label="Log out"
             >
               <LogOut className="h-5 w-5" strokeWidth={2} />
@@ -324,7 +324,7 @@ const UserDashboard = () => {
 
       {showAIChat && (
         <div
-          className="fixed bottom-6 right-4 z-40 flex w-[min(100vw-2rem,24rem)] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/40 sm:right-6"
+          className="fixed bottom-6 right-4 z-40 flex w-[min(100vw-2rem,24rem)] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl shadow-slate-900/10 dark:border-[#6B4F3A] dark:bg-[#221C18] dark:shadow-black/40 sm:right-6"
           role="dialog"
           aria-label="AI assistant"
         >
@@ -343,15 +343,15 @@ const UserDashboard = () => {
             </button>
           </div>
           <div className="max-h-64 space-y-3 overflow-y-auto p-4">
-            <div className="max-w-[90%] rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-relaxed text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+            <div className="max-w-[90%] rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-relaxed text-slate-800 dark:bg-[#151210] dark:text-[#F5F1EA]">
               Hi — ask about society rules, complaint status, or facilities.
             </div>
           </div>
-          <div className="flex gap-2 border-t border-slate-200/80 p-3 dark:border-slate-700">
+          <div className="flex gap-2 border-t border-slate-200/80 p-3 dark:border-[#6B4F3A]">
             <input
               type="text"
               placeholder="Ask anything…"
-              className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none ring-indigo-500/0 transition placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+              className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none ring-indigo-500/0 transition placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-500/10 dark:border-[#6B4F3A] dark:bg-[#151210] dark:text-[#F5F1EA]"
             />
             <button
               type="button"
@@ -381,9 +381,9 @@ const UserDashboard = () => {
           </p>
         </section>
 
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/50 dark:shadow-card-dark md:p-8">
+        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
           <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 dark:text-[#C8A45D]">
               <Megaphone className="h-6 w-6" strokeWidth={2} />
             </div>
             <h2 className="text-xl font-bold tracking-tight md:text-2xl">Notice board</h2>
@@ -394,41 +394,41 @@ const UserDashboard = () => {
                 key={notice.id}
                 className={`group cursor-pointer rounded-2xl border p-5 transition hover:shadow-md md:p-6 ${
                   notice.isPinned
-                    ? 'border-amber-200/80 bg-amber-50/50 dark:border-amber-500/20 dark:bg-amber-500/5'
-                    : 'border-slate-200/80 bg-slate-50/50 dark:border-slate-700/80 dark:bg-slate-800/30'
+                    ? 'border-amber-200/80 bg-amber-50/50 dark:border-[#C8A45D]/20 dark:bg-[#C8A45D]/5'
+                    : 'border-slate-200/80 bg-slate-50/50 dark:border-[#6B4F3A]/80 dark:bg-[#221C18]/30'
                 }`}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="mb-2 flex flex-wrap items-center gap-2">
                       {notice.isPinned && (
-                        <Pin className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" strokeWidth={2} />
+                        <Pin className="h-4 w-4 shrink-0 text-amber-600 dark:text-[#C8A45D]" strokeWidth={2} />
                       )}
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{notice.title}</h3>
+                      <h3 className="font-semibold text-slate-900 dark:text-[#F5F1EA]">{notice.title}</h3>
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ring-1 ${priorityBadge(notice.priority)}`}
                       >
                         {notice.priority}
                       </span>
                     </div>
-                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                    <p className="text-sm leading-relaxed text-slate-600 dark:text-[#B8AEA3]">
                       {notice.content}
                     </p>
-                    <p className="mt-3 text-xs font-medium text-slate-500 dark:text-slate-500">
+                    <p className="mt-3 text-xs font-medium text-slate-500 dark:text-[#B8AEA3]">
                       Expires {notice.expiryDate}
                     </p>
                   </div>
-                  <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-slate-500" />
+                  <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-[#B8AEA3]" />
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="rounded-3xl border border-indigo-200/60 bg-gradient-to-br from-indigo-500/5 via-white/80 to-violet-500/5 p-6 dark:border-indigo-500/20 dark:from-indigo-500/10 dark:via-slate-900/50 dark:to-violet-500/10 md:p-8">
+        <section className="rounded-3xl border border-indigo-200/60 bg-gradient-to-br from-indigo-500/5 via-white/80 to-violet-500/5 p-6 dark:border-[#6B4F3A]/20 dark:from-[#C8A45D]/10 dark:via-[#221C18]/50 dark:to-[#6B4F3A]/10 md:p-8">
           <div className="mb-8 text-center">
             <h2 className="text-xl font-bold tracking-tight md:text-2xl">Raise a complaint</h2>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            <p className="mt-2 text-sm text-slate-600 dark:text-[#B8AEA3]">
               Voice or text — same streamlined flow
             </p>
           </div>
@@ -436,16 +436,16 @@ const UserDashboard = () => {
             <button
               type="button"
               onClick={() => navigate('/complaints')}
-              className="group flex flex-col items-start w-full max-w-md rounded-2xl border border-slate-200/80 bg-white p-8 text-left shadow-sm transition hover:border-indigo-200 hover:shadow-glow-sm dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-indigo-500/30"
+              className="group flex flex-col items-start w-full max-w-md rounded-2xl border border-slate-200/80 bg-white p-8 text-left shadow-sm transition hover:border-indigo-200 hover:shadow-glow-sm dark:border-[#6B4F3A] dark:bg-[#221C18]/80 dark:hover:border-[#C8A45D]/30"
             >
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25">
                 <Mic className="h-7 w-7" strokeWidth={1.75} />
               </div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Smart Voice Complaint</h3>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-[#F5F1EA]">Smart Voice Complaint</h3>
+              <p className="mt-2 text-sm text-slate-600 dark:text-[#B8AEA3]">
                 Speak your issue and let our AI summarize it for the society admins.
               </p>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-[#C8A45D]">
                 Start recording
                 <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
               </span>
@@ -463,14 +463,14 @@ const UserDashboard = () => {
           ].map((stat) => (
             <div
               key={stat.label}
-              className="rounded-2xl border border-slate-200/80 bg-white/90 p-6 shadow-card backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60 dark:shadow-card-dark"
+              className="rounded-2xl border border-slate-200/80 bg-white/90 p-6 shadow-card backdrop-blur-sm dark:border-[#6B4F3A] dark:bg-[#221C18]/60 dark:shadow-card-dark"
             >
               <div
                 className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${stat.accent} text-white shadow-md`}
               >
                 <stat.Icon className="h-5 w-5" strokeWidth={2} />
               </div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
                 {stat.label}
               </p>
               <p className="mt-1 text-3xl font-bold tabular-nums tracking-tight">{stat.count}</p>
@@ -478,23 +478,23 @@ const UserDashboard = () => {
           ))}
         </section>
 
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/50 dark:shadow-card-dark md:p-8">
+        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
           <h2 className="mb-6 text-xl font-bold tracking-tight md:text-2xl">Recent complaints</h2>
           <div className="space-y-3">
             {recentComplaints.length === 0 ? (
-              <p className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+              <p className="py-8 text-center text-sm text-slate-500 dark:text-[#B8AEA3]">
                 No complaints submitted recently.
               </p>
             ) : (
               recentComplaints.map((complaint) => (
                 <div
                   key={complaint.id}
-                  className="group cursor-pointer rounded-2xl border border-slate-200/80 bg-slate-50/80 p-5 transition hover:border-indigo-200/80 hover:bg-white dark:border-slate-700/80 dark:bg-slate-800/40 dark:hover:border-indigo-500/30 dark:hover:bg-slate-800/60 md:p-6"
+                  className="group cursor-pointer rounded-2xl border border-slate-200/80 bg-slate-50/80 p-5 transition hover:border-indigo-200/80 hover:bg-white dark:border-[#6B4F3A]/80 dark:bg-[#221C18]/40 dark:hover:border-[#C8A45D]/30 dark:hover:bg-[#221C18]/60 md:p-6"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex min-w-0 flex-1 items-center gap-4">
                       {complaint.image && (
-                        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
+                        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-[#6B4F3A]">
                           <img src={complaint.image} alt="" className="h-full w-full object-cover" />
                         </div>
                       )}
@@ -505,24 +505,24 @@ const UserDashboard = () => {
                           >
                             {complaint.status}
                           </span>
-                          <span className="font-semibold text-slate-900 dark:text-white">
+                          <span className="font-semibold text-slate-900 dark:text-[#F5F1EA]">
                             {complaint.title}
                           </span>
                         </div>
-                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500 dark:text-slate-400">
+                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500 dark:text-[#B8AEA3]">
                           <span>{complaint.category}</span>
                           <span>{complaint.date}</span>
                           <span className={`font-semibold ${
-                            complaint.priority === 'High' ? 'text-rose-600 dark:text-rose-400' : 
-                            complaint.priority === 'Medium' ? 'text-amber-600 dark:text-amber-400' : 
-                            'text-emerald-600 dark:text-emerald-400'
+                            complaint.priority === 'High' ? 'text-rose-600 dark:text-[#C8A45D]' : 
+                            complaint.priority === 'Medium' ? 'text-amber-600 dark:text-[#C8A45D]' : 
+                            'text-emerald-600 dark:text-[#C8A45D]'
                           }`}>
                             {complaint.priority} priority
                           </span>
                         </div>
                       </div>
                     </div>
-                    <ChevronRight className="h-5 w-5 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-slate-600" />
+                    <ChevronRight className="h-5 w-5 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-[#B8AEA3]" />
                   </div>
                 </div>
               ))
@@ -530,7 +530,7 @@ const UserDashboard = () => {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/50 dark:shadow-card-dark md:p-8">
+        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
           <h2 className="mb-6 text-xl font-bold tracking-tight md:text-2xl">Quick services</h2>
           <div className="grid gap-4 md:grid-cols-3">
             {quickServices.map((service) => (
@@ -547,29 +547,29 @@ const UserDashboard = () => {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/50 dark:shadow-card-dark md:p-8">
+        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
           <h2 className="mb-6 text-xl font-bold tracking-tight md:text-2xl">To-let listings</h2>
           <div className="grid gap-6 md:grid-cols-2">
             {toLet.map((property) => (
               <div
                 key={property.id}
-                className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/50 transition hover:border-indigo-200/60 hover:shadow-md dark:border-slate-700 dark:bg-slate-800/30 dark:hover:border-indigo-500/25"
+                className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/50 transition hover:border-indigo-200/60 hover:shadow-md dark:border-[#6B4F3A] dark:bg-[#221C18]/30 dark:hover:border-[#C8A45D]/25"
               >
                 <div className="flex h-36 items-center justify-center bg-gradient-to-br from-sky-500 to-indigo-600 text-white">
                   <Home className="h-16 w-16 opacity-90 transition group-hover:scale-105" strokeWidth={1.25} />
                 </div>
                 <div className="p-6">
-                  <h3 className="font-semibold text-slate-900 dark:text-white">
+                  <h3 className="font-semibold text-slate-900 dark:text-[#F5F1EA]">
                     {property.bhk} · {property.block}
                   </h3>
-                  <p className="mt-2 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                  <p className="mt-2 text-2xl font-bold text-emerald-600 dark:text-[#C8A45D]">
                     {property.rent}
-                    <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/mo</span>
+                    <span className="text-sm font-semibold text-slate-500 dark:text-[#B8AEA3]">/mo</span>
                   </p>
-                  <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">Owner · {property.owner}</p>
+                  <p className="mt-3 text-sm text-slate-600 dark:text-[#B8AEA3]">Owner · {property.owner}</p>
                   <a
                     href={`tel:${property.contact}`}
-                    className="mt-1 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-indigo-400"
+                    className="mt-1 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-[#C8A45D]"
                   >
                     {property.contact}
                   </a>
@@ -585,27 +585,27 @@ const UserDashboard = () => {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/50 dark:shadow-card-dark md:p-8">
+        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
           <h2 className="mb-6 text-xl font-bold tracking-tight md:text-2xl">Properties for sale</h2>
           <div className="grid gap-6 md:grid-cols-2">
             {propertyForSale.map((property) => (
               <div
                 key={property.id}
-                className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/50 transition hover:border-amber-200/60 hover:shadow-md dark:border-slate-700 dark:bg-slate-800/30 dark:hover:border-amber-500/20"
+                className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/50 transition hover:border-amber-200/60 hover:shadow-md dark:border-[#6B4F3A] dark:bg-[#221C18]/30 dark:hover:border-[#C8A45D]/20"
               >
                 <div className="flex h-36 items-center justify-center bg-gradient-to-br from-amber-500 to-rose-600 text-white">
                   <Building2 className="h-16 w-16 opacity-90 transition group-hover:scale-105" strokeWidth={1.25} />
                 </div>
                 <div className="p-6">
-                  <h3 className="font-semibold text-slate-900 dark:text-white">
+                  <h3 className="font-semibold text-slate-900 dark:text-[#F5F1EA]">
                     {property.bhk} · {property.block}
                   </h3>
-                  <p className="mt-2 text-2xl font-bold text-amber-600 dark:text-amber-400">{property.price}</p>
-                  <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">{property.description}</p>
-                  <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">Owner · {property.owner}</p>
+                  <p className="mt-2 text-2xl font-bold text-amber-600 dark:text-[#C8A45D]">{property.price}</p>
+                  <p className="mt-3 text-sm text-slate-600 dark:text-[#B8AEA3]">{property.description}</p>
+                  <p className="mt-2 text-xs text-slate-500 dark:text-[#B8AEA3]">Owner · {property.owner}</p>
                   <button
                     type="button"
-                    className="mt-5 w-full rounded-xl border-2 border-amber-200 bg-amber-50 py-3 text-sm font-semibold text-amber-900 transition hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200 dark:hover:bg-amber-500/20"
+                    className="mt-5 w-full rounded-xl border-2 border-amber-200 bg-amber-50 py-3 text-sm font-semibold text-amber-900 transition hover:bg-amber-100 dark:border-[#C8A45D]/30 dark:bg-[#C8A45D]/10 dark:text-[#C8A45D] dark:hover:bg-[#C8A45D]/20"
                   >
                     I&apos;m interested
                   </button>
@@ -615,10 +615,10 @@ const UserDashboard = () => {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/50 dark:shadow-card-dark md:p-8">
+        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-[#C8A45D]">
                 <BookOpen className="h-6 w-6" strokeWidth={2} />
               </div>
               <h2 className="text-xl font-bold tracking-tight md:text-2xl">Society rules</h2>
@@ -634,7 +634,7 @@ const UserDashboard = () => {
             {societyRules.map((item, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl border border-slate-200/80 bg-slate-50/80 px-5 py-4 text-sm font-medium text-slate-800 transition hover:border-indigo-200/60 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-200 dark:hover:border-indigo-500/25"
+                className="rounded-2xl border border-slate-200/80 bg-slate-50/80 px-5 py-4 text-sm font-medium text-slate-800 transition hover:border-indigo-200/60 dark:border-[#6B4F3A] dark:bg-[#221C18]/40 dark:text-[#F5F1EA] dark:hover:border-[#C8A45D]/25"
               >
                 {item.rule}
               </div>
@@ -642,9 +642,9 @@ const UserDashboard = () => {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/50 dark:shadow-card-dark md:p-8">
+        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
           <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:text-[#C8A45D]">
               <Users className="h-6 w-6" strokeWidth={2} />
             </div>
             <h2 className="text-xl font-bold tracking-tight md:text-2xl">Community feed</h2>
@@ -653,7 +653,7 @@ const UserDashboard = () => {
             {communityPosts.map((post) => (
               <article
                 key={post.id}
-                className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-6 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/40 dark:hover:border-slate-600"
+                className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-6 transition hover:border-slate-300 dark:border-[#6B4F3A] dark:bg-[#221C18]/40 dark:hover:border-[#6B4F3A]"
               >
                 <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
@@ -661,35 +661,35 @@ const UserDashboard = () => {
                       {post.author.charAt(0)}
                     </div>
                     <div>
-                      <p className="font-semibold text-slate-900 dark:text-white">{post.author}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                      <p className="font-semibold text-slate-900 dark:text-[#F5F1EA]">{post.author}</p>
+                      <p className="text-xs text-slate-500 dark:text-[#B8AEA3]">
                         {post.block} · {post.timestamp}
                       </p>
                     </div>
                   </div>
-                  <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+                  <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-[#C8A45D]">
                     {post.type}
                   </span>
                 </div>
-                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">{post.content}</p>
-                <div className="mt-5 flex gap-6 border-t border-slate-200/80 pt-4 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                <p className="text-sm leading-relaxed text-slate-600 dark:text-[#F5F1EA]">{post.content}</p>
+                <div className="mt-5 flex gap-6 border-t border-slate-200/80 pt-4 text-sm text-slate-500 dark:border-[#6B4F3A] dark:text-[#B8AEA3]">
                   <button
                     type="button"
-                    className="inline-flex items-center gap-2 transition hover:text-rose-600 dark:hover:text-rose-400"
+                    className="inline-flex items-center gap-2 transition hover:text-rose-600 dark:hover:text-[#C8A45D]"
                   >
                     <Heart className="h-4 w-4" strokeWidth={2} />
                     {post.likes}
                   </button>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-2 transition hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="inline-flex items-center gap-2 transition hover:text-indigo-600 dark:hover:text-[#C8A45D]"
                   >
                     <MessageSquare className="h-4 w-4" strokeWidth={2} />
                     {post.comments}
                   </button>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-2 transition hover:text-emerald-600 dark:hover:text-emerald-400"
+                    className="inline-flex items-center gap-2 transition hover:text-emerald-600 dark:hover:text-[#C8A45D]"
                   >
                     <Share2 className="h-4 w-4" strokeWidth={2} />
                     Share
@@ -701,7 +701,7 @@ const UserDashboard = () => {
         </section>
       </main>
 
-      <footer className="relative z-10 border-t border-slate-200/80 bg-white/60 py-10 text-center text-sm text-slate-500 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-400">
+      <footer className="relative z-10 border-t border-slate-200/80 bg-white/60 py-10 text-center text-sm text-slate-500 backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#151210]/60 dark:text-[#B8AEA3]">
         <p className="font-medium">Panchayat · Smart society operations</p>
       </footer>
     </div>
