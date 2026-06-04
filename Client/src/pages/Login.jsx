@@ -34,7 +34,13 @@ const Login = () => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         
-        setTimeout(() => navigate('/dashboard'), 1500);
+        setTimeout(() => {
+          if (data.user.role === 'admin') {
+            navigate('/admin-dashboard');
+          } else {
+            navigate('/dashboard');
+          }
+        }, 1500);
       } else {
         toast.error(data.message || 'Login failed. Please check your credentials.');
       }

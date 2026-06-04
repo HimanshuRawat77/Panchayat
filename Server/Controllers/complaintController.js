@@ -41,6 +41,20 @@ export const getMyComplaints = async (req, res) => {
 };
 
 
+// 🏢 Get All Complaints (Admin)
+export const getAllComplaints = async (req, res) => {
+  try {
+    const complaints = await Complaint.find({})
+      .populate("userId", "fullName block houseNumber avatar")
+      .sort({ createdAt: -1 });
+
+    res.json(complaints);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // 🔄 Update Status (Admin)
 export const updateComplaintStatus = async (req, res) => {
   try {

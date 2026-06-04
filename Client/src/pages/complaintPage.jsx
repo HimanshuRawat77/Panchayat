@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import { createComplaint, getMyComplaints } from '../services/complaintService';
 import { getSummary } from '../services/aiService';
+import { useTheme } from '../context/ThemeContext';
+import { Moon, Sun } from 'lucide-react';
 
 
 const categoryMeta = {
@@ -46,6 +48,7 @@ const priorityMeta = {
 
 const ComplaintPage = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('other');
   const [priority, setPriority] = useState('Medium');
@@ -245,7 +248,16 @@ const ComplaintPage = () => {
             </span>
             <span className="hidden font-bold tracking-tight sm:inline">Panchayat</span>
           </Link>
-          <div className="w-20 sm:w-24" />
+          <div className="flex items-center justify-end w-20 sm:w-24">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="relative rounded-xl border border-slate-200/90 bg-white/90 p-2 text-slate-600 transition hover:border-slate-300 hover:bg-white dark:border-[#6B4F3A] dark:bg-[#221C18]/90 dark:text-[#F5F1EA] dark:hover:border-[#C8A45D]"
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? <Moon className="h-4 w-4" strokeWidth={2} /> : <Sun className="h-4 w-4" strokeWidth={2} />}
+            </button>
+          </div>
         </div>
       </header>
 

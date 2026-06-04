@@ -57,3 +57,38 @@ export const getMyComplaints = async () => {
 
   return data;
 };
+
+export const getAllComplaints = async () => {
+  const response = await fetch(`${API_BASE}/all`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+    return;
+  }
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to fetch all complaints');
+  }
+
+  return data;
+};
+
+export const updateComplaintStatus = async (id, status) => {
+  const response = await fetch(`${API_BASE}/update/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ status }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to update complaint status');
+  }
+
+  return data;
+};

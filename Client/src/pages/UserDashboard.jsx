@@ -1,33 +1,31 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  AlertCircle,
   Bell,
-  BookOpen,
-  Building2,
-  ChevronRight,
-  Hammer,
-  Heart,
-  Home,
+  Search,
   LayoutDashboard,
-  LogOut,
-  Megaphone,
-  MessageCircle,
-  MessageSquare,
-  Mic,
-  PenLine,
-  Pin,
-  Send,
-  Share2,
-  Sparkles,
-  Type,
+  BarChart3,
   Users,
+  MessageSquareWarning,
   Wrench,
-  X,
+  Settings,
+  HelpCircle,
+  LogOut,
+  Sparkles,
+  Menu,
+  ChevronLeft,
+  ChevronRight,
+  Sun,
+  Moon,
   Zap,
+  Home,
+  Megaphone,
+  Calendar,
+  MapPin,
+  Send
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Typewriter } from '../components/ui/typewriter';
 import { getMyComplaints } from '../services/complaintService';
+import { useTheme } from '../context/ThemeContext';
 
 function readUserFromStorage() {
   try {
@@ -47,17 +45,45 @@ function readUserFromStorage() {
 
 const UserDashboard = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [user] = useState(readUserFromStorage);
-  const [showAIChat, setShowAIChat] = useState(false);
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const motivationalQuotes = useMemo(() => [
+    { quote: 'सच्चा समाज वह है जहाँ हर व्यक्ति एक-दूसरे की मदद करता है।', author: 'महात्मा गांधी' },
+    { quote: 'एकता में शक्ति है, साथ मिलकर हम सब कुछ कर सकते हैं।', author: 'स्वामी विवेकानंद' },
+    { quote: 'अपने समाज की सेवा ही सबसे बड़ा धर्म है।', author: 'लोकमान्य तिलक' },
+    { quote: 'स्वच्छता और अनुशासन से ही समाज का विकास होता है।', author: 'महात्मा गांधी' }
+  ], []);
+
+  const suvichar = useMemo(() => {
+    const day = new Date().getDay();
+    return motivationalQuotes[day % motivationalQuotes.length];
+  }, [motivationalQuotes]);
+
+  const formattedDate = currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+  const getGreeting = () => {
+    const hour = currentTime.getHours();
+    if (hour >= 4 && hour < 12) return 'Good Morning';
+    if (hour >= 12 && hour <= 23) return 'Good Afternoon';
+    return 'Good Night';
+  };
 
   useEffect(() => {
     if (!user) {
       navigate('/login');
       return;
     }
-
     const fetchDashboardData = async () => {
       try {
         const data = await getMyComplaints();
@@ -68,7 +94,6 @@ const UserDashboard = () => {
         setLoading(false);
       }
     };
-
     fetchDashboardData();
   }, [user, navigate]);
 
@@ -78,632 +103,416 @@ const UserDashboard = () => {
     navigate('/login');
   };
 
-  const motivationalQuotes = useMemo(
-    () => [
-      {
-        quote: 'सच्चा समाज वह है जहाँ हर व्यक्ति एक-दूसरे की मदद करता है।',
-        author: 'महात्मा गांधी',
-      },
-      {
-        quote: 'एकता में शक्ति है, साथ मिलकर हम सब कुछ कर सकते हैं।',
-        author: 'स्वामी विवेकानंद',
-      },
-      {
-        quote: 'अपने समाज की सेवा ही सबसे बड़ा धर्म है।',
-        author: 'लोकमान्य तिलक',
-      },
-      {
-        quote: 'स्वच्छता और अनुशासन से ही समाज का विकास होता है।',
-        author: 'महात्मा गांधी',
-      },
-    ],
-    [],
-  );
-
-  const suvichar = useMemo(() => {
-    const day = new Date().getDay();
-    return motivationalQuotes[day % motivationalQuotes.length];
-  }, [motivationalQuotes]);
-
-  const notices = [
-    {
-      id: 1,
-      title: 'Annual Society Fest — 15 April',
-      category: 'event',
-      priority: 'high',
-      content: 'Join us for the annual society fest with games, food, and entertainment.',
-      expiryDate: '2026-04-15',
-      isPinned: true,
-    },
-    {
-      id: 2,
-      title: 'Power maintenance — 14 April (2–6 PM)',
-      category: 'urgent',
-      priority: 'critical',
-      content: 'Scheduled power maintenance. Please keep water tanks filled.',
-      expiryDate: '2026-04-14',
-      isPinned: true,
-    },
-    {
-      id: 3,
-      title: 'New parking guidelines',
-      category: 'info',
-      priority: 'medium',
-      content: 'Updated parking rules effective from 1 April.',
-      expiryDate: '2026-05-01',
-      isPinned: false,
-    },
+  const navItems = [
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', active: true },
+    { icon: BarChart3, label: 'Analytics', path: '/analytics' },
+    { icon: Users, label: 'Community', path: '/community' },
+    { icon: MessageSquareWarning, label: 'Complaints', path: '/complaints' },
+    { icon: Wrench, label: 'Maintenance', path: '#' },
+    { icon: Settings, label: 'Settings', path: '/profile' },
   ];
 
-  const complaintStats = useMemo(() => {
-    return {
-      total: complaints.length,
-      pending: complaints.filter(c => c.status === 'Pending').length,
-      inProgress: complaints.filter(c => c.status === 'In progress').length,
-      resolved: complaints.filter(c => c.status === 'Resolved').length,
-    };
-  }, [complaints]);
-
-  const recentComplaints = useMemo(() => {
-    return complaints.slice(0, 3).map(c => ({
-      id: c._id,
-      title: c.description,
-      status: c.status,
-      category: c.category.charAt(0).toUpperCase() + c.category.slice(1),
-      date: new Date(c.createdAt).toLocaleDateString(),
-      priority: c.priority,
-      image: c.image,
-      statusStyle:
-        c.status === 'Resolved' 
-          ? 'bg-emerald-100 text-emerald-800 dark:bg-[#6B4F3A]/20 dark:text-[#C8A45D]'
-          : c.status === 'In progress'
-          ? 'bg-indigo-100 text-indigo-800 dark:bg-[#C8A45D]/20 dark:text-[#C8A45D]'
-          : 'bg-rose-100 text-rose-800 dark:bg-[#6B4F3A]/20 dark:text-[#C8A45D]'
-    }));
-  }, [complaints]);
-
-  const quickServices = [
-    { id: 1, name: 'Plumber', Icon: Wrench, from: 'from-sky-500', to: 'to-blue-600' },
-    { id: 2, name: 'Electrician', Icon: Zap, from: 'from-amber-500', to: 'to-orange-600' },
-    { id: 3, name: 'Carpenter', Icon: Hammer, from: 'from-orange-500', to: 'to-red-600' },
+  const bottomNavItems = [
+    { icon: HelpCircle, label: 'Support', action: () => {} },
+    { icon: LogOut, label: 'Sign Out', action: handleLogout },
   ];
 
-  const toLet = [
-    {
-      id: 1,
-      block: 'Block B',
-      bhk: '2 BHK',
-      rent: '₹15,000',
-      owner: 'Amit Singh',
-      contact: '9876543210',
-    },
-    {
-      id: 2,
-      block: 'Block C',
-      bhk: '3 BHK',
-      rent: '₹22,000',
-      owner: 'Priya Sharma',
-      contact: '9876543211',
-    },
-  ];
-
-  const propertyForSale = [
-    {
-      id: 1,
-      block: 'Block A',
-      bhk: '3 BHK',
-      price: '₹45,00,000',
-      owner: 'Vikram Patel',
-      description: 'Corner plot',
-    },
-  ];
-
-  const communityPosts = [
-    {
-      id: 1,
-      author: 'Neha Gupta',
-      block: 'Block A',
-      type: 'Lost & found',
-      content: 'Lost: black cat near Block A gate. Please contact if seen.',
-      timestamp: '2 hours ago',
-      likes: 5,
-      comments: 2,
-    },
-    {
-      id: 2,
-      author: 'Raj Kumar',
-      block: 'Block D',
-      type: 'Event',
-      content: 'Cricket match tomorrow evening at 5 PM. All are welcome.',
-      timestamp: '4 hours ago',
-      likes: 12,
-      comments: 8,
-    },
-  ];
-
-  const societyRules = [
-    { rule: 'Gym timings: 6 AM – 9 PM' },
-    { rule: 'No parking in common areas' },
-    { rule: 'Quiet hours: 10 PM – 7 AM' },
-    { rule: 'Events only on weekends' },
-  ];
-
-  if (!user) {
-    return null;
-  }
-
-  const priorityBadge = (p) => {
-    const map = {
-      critical:
-        'bg-rose-500/15 text-rose-700 ring-rose-500/20 dark:text-[#C8A45D] dark:ring-[#C8A45D]/30',
-      high: 'bg-amber-500/15 text-amber-800 ring-amber-500/20 dark:text-[#C8A45D] dark:ring-[#C8A45D]/30',
-      medium:
-        'bg-sky-500/15 text-sky-800 ring-sky-500/20 dark:text-[#C8A45D] dark:ring-[#C8A45D]/30',
-    };
-    return map[p] || map.medium;
+  const getLastMonday = () => {
+    const d = new Date();
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(d.setDate(diff));
+    monday.setHours(0, 0, 0, 0);
+    return monday;
   };
 
+  const complaintStats = useMemo(() => {
+    const MAX_COMPLAINTS_PER_WEEK = 10;
+    
+    // Count complaints made this week
+    const lastMonday = getLastMonday();
+    const complaintsThisWeek = complaints.filter(c => new Date(c.createdAt || Date.now()) >= lastMonday).length;
+    const complaintsLeft = Math.max(MAX_COMPLAINTS_PER_WEEK - complaintsThisWeek, 0);
+
+    const open = complaints.filter(c => c.status === 'Pending').length;
+    const inProgress = complaints.filter(c => c.status === 'In progress').length;
+    const resolved = complaints.filter(c => c.status === 'Resolved').length;
+
+    return {
+      open,
+      inProgress,
+      resolved,
+      complaintsLeft,
+      openPercent: Math.min((open / MAX_COMPLAINTS_PER_WEEK) * 100, 100),
+      inProgressPercent: Math.min((inProgress / MAX_COMPLAINTS_PER_WEEK) * 100, 100),
+      resolvedPercent: Math.min((resolved / MAX_COMPLAINTS_PER_WEEK) * 100, 100),
+    };
+  }, [complaints]);
+
+  if (!user) return null;
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] font-sans text-slate-900 transition-colors dark:bg-[#151210] dark:text-[#F5F1EA]">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-indigo-400/10 blur-[100px] dark:bg-[#C8A45D]/15" />
-        <div className="absolute -right-20 bottom-20 h-[28rem] w-[28rem] rounded-full bg-violet-400/10 blur-[120px] dark:bg-[#6B4F3A]/12" />
-      </div>
-
-      <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-[#6B4F3A]/80 dark:bg-[#151210]/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5">
-          <div className="flex min-w-0 items-center gap-3">
-            <Link
-              to="/"
-              className="flex shrink-0 items-center gap-2 rounded-xl text-slate-900 transition hover:opacity-90 dark:text-[#F5F1EA]"
-            >
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-500/25">
-                <Building2 className="h-[1.15rem] w-[1.15rem]" strokeWidth={2} />
-              </span>
-              <span className="hidden font-bold tracking-tight sm:inline">Panchayat</span>
-            </Link>
-            <span className="hidden h-6 w-px bg-slate-200 dark:bg-[#6B4F3A] sm:block" />
-            <span className="hidden items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3] sm:flex">
-              <LayoutDashboard className="h-3.5 w-3.5" strokeWidth={2} />
-              Dashboard
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              type="button"
-              className="relative rounded-xl border border-slate-200/90 bg-white/90 p-2.5 text-slate-600 transition hover:border-slate-300 hover:bg-white dark:border-[#6B4F3A] dark:bg-[#221C18]/90 dark:text-[#F5F1EA] dark:hover:border-[#C8A45D]"
-              aria-label="Notifications"
-            >
-              <Bell className="h-5 w-5" strokeWidth={2} />
-              {user.unreadNotifications > 0 && (
-                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-[#151210]" />
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowAIChat((v) => !v)}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-500/25 transition hover:shadow-lg hover:shadow-indigo-500/30 sm:px-4"
-            >
-              <MessageCircle className="h-4 w-4 shrink-0" strokeWidth={2} />
-              <span className="hidden sm:inline">AI assistant</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate('/profile')}
-              className="flex items-center gap-2 rounded-xl border border-slate-200/90 bg-white/90 py-1.5 pl-1.5 pr-3 transition hover:border-slate-300 hover:bg-white dark:border-[#6B4F3A] dark:bg-[#221C18]/90 dark:hover:border-[#C8A45D]"
-            >
-              <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-sm font-bold text-white shadow-inner">
-                {user.avatar && user.avatar.length > 5 ? (
-                  <img src={user.avatar} alt="" className="h-full w-full object-cover" />
-                ) : (
-                  <span className="text-lg leading-none">{user.avatar || '👤'}</span>
-                )}
-              </div>
-              <div className="hidden text-left sm:block">
-                <p className="max-w-[8rem] truncate text-sm font-semibold leading-tight text-slate-900 dark:text-[#F5F1EA]">
-                  {user.fullName}
-                </p>
-                <p className="text-xs text-slate-500 dark:text-[#B8AEA3]">{user.block}</p>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="rounded-xl border border-slate-200/90 p-2.5 text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:border-[#6B4F3A] dark:text-[#B8AEA3] dark:hover:border-[#6B4F3A]/50 dark:hover:bg-[#6B4F3A]/40 dark:hover:text-[#C8A45D]"
-              aria-label="Log out"
-            >
-              <LogOut className="h-5 w-5" strokeWidth={2} />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {showAIChat && (
-        <div
-          className="fixed bottom-6 right-4 z-40 flex w-[min(100vw-2rem,24rem)] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl shadow-slate-900/10 dark:border-[#6B4F3A] dark:bg-[#221C18] dark:shadow-black/40 sm:right-6"
-          role="dialog"
-          aria-label="AI assistant"
-        >
-          <div className="flex items-center justify-between bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 text-white">
-            <div className="flex items-center gap-2 text-sm font-semibold">
-              <Sparkles className="h-4 w-4" strokeWidth={2} />
-              Panchayat AI
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowAIChat(false)}
-              className="rounded-lg p-1 transition hover:bg-white/15"
-              aria-label="Close"
-            >
-              <X className="h-5 w-5" strokeWidth={2} />
-            </button>
-          </div>
-          <div className="max-h-64 space-y-3 overflow-y-auto p-4">
-            <div className="max-w-[90%] rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-relaxed text-slate-800 dark:bg-[#151210] dark:text-[#F5F1EA]">
-              Hi — ask about society rules, complaint status, or facilities.
-            </div>
-          </div>
-          <div className="flex gap-2 border-t border-slate-200/80 p-3 dark:border-[#6B4F3A]">
-            <input
-              type="text"
-              placeholder="Ask anything…"
-              className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none ring-indigo-500/0 transition placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-500/10 dark:border-[#6B4F3A] dark:bg-[#151210] dark:text-[#F5F1EA]"
-            />
-            <button
-              type="button"
-              className="flex shrink-0 items-center justify-center rounded-xl bg-indigo-600 p-2.5 text-white transition hover:bg-indigo-500"
-              aria-label="Send"
-            >
-              <Send className="h-5 w-5" strokeWidth={2} />
-            </button>
-          </div>
-        </div>
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#151210] text-slate-900 dark:text-[#F5F1EA] font-sans selection:bg-[#C8A45D]/20">
+      
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/30 dark:bg-black/60 lg:hidden backdrop-blur-sm"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
 
-      <main className="relative z-10 mx-auto max-w-6xl space-y-8 px-4 py-8 md:space-y-10 md:py-10">
-        <section className="relative overflow-hidden rounded-3xl border border-amber-200/50 bg-gradient-to-br from-amber-500/90 via-orange-500/85 to-rose-600/90 p-8 text-white shadow-glow-sm md:p-10">
-          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/20 blur-3xl" />
-          <div className="relative mb-6 flex items-center gap-3">
-            <Sparkles className="h-8 w-8 opacity-90" strokeWidth={1.5} />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] opacity-95">
-              आज का सुविचार
-            </span>
-          </div>
-          <div className="relative text-2xl font-semibold leading-relaxed md:text-3xl">
-            <Typewriter words={[suvichar.quote]} speed={50} delayBetweenWords={5000} cursor />
-          </div>
-          <p className="relative mt-6 border-l-2 border-white/40 pl-4 text-base font-medium opacity-95">
-            — {suvichar.author}
-          </p>
-        </section>
+      {/* Sidebar */}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-slate-200 dark:border-[#221C18] bg-[#f8fafc] dark:bg-[#151210] flex flex-col transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-6 pb-8">
+          <Link to="/" className="inline-block">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-[#dae2fd]">
+              Panchayat AI
+            </h1>
+            <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-[#B8AEA3]">
+              Elite Society<br/>Management
+            </p>
+          </Link>
+        </div>
 
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 dark:text-[#C8A45D]">
-              <Megaphone className="h-6 w-6" strokeWidth={2} />
-            </div>
-            <h2 className="text-xl font-bold tracking-tight md:text-2xl">Notice board</h2>
-          </div>
-          <div className="grid gap-4">
-            {notices.map((notice) => (
-              <div
-                key={notice.id}
-                className={`group cursor-pointer rounded-2xl border p-5 transition hover:shadow-md md:p-6 ${
-                  notice.isPinned
-                    ? 'border-amber-200/80 bg-amber-50/50 dark:border-[#C8A45D]/20 dark:bg-[#C8A45D]/5'
-                    : 'border-slate-200/80 bg-slate-50/50 dark:border-[#6B4F3A]/80 dark:bg-[#221C18]/30'
+        <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto pb-4">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.label}
+                to={item.path}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                  item.active
+                    ? 'bg-white dark:bg-[#221C18] text-slate-900 dark:text-[#dae2fd] shadow-sm border border-slate-200 dark:border-[#221C18] shadow-slate-200 dark:shadow-black/20'
+                    : 'text-slate-500 dark:text-[#B8AEA3] hover:bg-slate-100 dark:hover:bg-[#221C18]/60 hover:text-slate-900 dark:hover:text-[#dae2fd]'
                 }`}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-2 flex flex-wrap items-center gap-2">
-                      {notice.isPinned && (
-                        <Pin className="h-4 w-4 shrink-0 text-amber-600 dark:text-[#C8A45D]" strokeWidth={2} />
-                      )}
-                      <h3 className="font-semibold text-slate-900 dark:text-[#F5F1EA]">{notice.title}</h3>
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ring-1 ${priorityBadge(notice.priority)}`}
-                      >
-                        {notice.priority}
-                      </span>
-                    </div>
-                    <p className="text-sm leading-relaxed text-slate-600 dark:text-[#B8AEA3]">
-                      {notice.content}
-                    </p>
-                    <p className="mt-3 text-xs font-medium text-slate-500 dark:text-[#B8AEA3]">
-                      Expires {notice.expiryDate}
-                    </p>
-                  </div>
-                  <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-[#B8AEA3]" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+                <Icon className="h-[1.15rem] w-[1.15rem]" strokeWidth={2} />
+                {item.label}
+              </Link>
+            )
+          })}
+        </nav>
 
-        <section className="rounded-3xl border border-indigo-200/60 bg-gradient-to-br from-indigo-500/5 via-white/80 to-violet-500/5 p-6 dark:border-[#6B4F3A]/20 dark:from-[#C8A45D]/10 dark:via-[#221C18]/50 dark:to-[#6B4F3A]/10 md:p-8">
-          <div className="mb-8 text-center">
-            <h2 className="text-xl font-bold tracking-tight md:text-2xl">Raise a complaint</h2>
-            <p className="mt-2 text-sm text-slate-600 dark:text-[#B8AEA3]">
-              Voice or text — same streamlined flow
-            </p>
-          </div>
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={() => navigate('/complaints')}
-              className="group flex flex-col items-start w-full max-w-md rounded-2xl border border-slate-200/80 bg-white p-8 text-left shadow-sm transition hover:border-indigo-200 hover:shadow-glow-sm dark:border-[#6B4F3A] dark:bg-[#221C18]/80 dark:hover:border-[#C8A45D]/30"
-            >
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25">
-                <Mic className="h-7 w-7" strokeWidth={1.75} />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-[#F5F1EA]">Smart Voice Complaint</h3>
-              <p className="mt-2 text-sm text-slate-600 dark:text-[#B8AEA3]">
-                Speak your issue and let our AI summarize it for the society admins.
-              </p>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-[#C8A45D]">
-                Start recording
-                <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-              </span>
-            </button>
-          </div>
-
-        </section>
-
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { label: 'Total', count: complaintStats.total, Icon: LayoutDashboard, accent: 'from-sky-500 to-blue-600' },
-            { label: 'Pending', count: complaintStats.pending, Icon: AlertCircle, accent: 'from-amber-500 to-orange-600' },
-            { label: 'In progress', count: complaintStats.inProgress, Icon: Zap, accent: 'from-violet-500 to-purple-600' },
-            { label: 'Resolved', count: complaintStats.resolved, Icon: Home, accent: 'from-emerald-500 to-teal-600' },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-2xl border border-slate-200/80 bg-white/90 p-6 shadow-card backdrop-blur-sm dark:border-[#6B4F3A] dark:bg-[#221C18]/60 dark:shadow-card-dark"
-            >
-              <div
-                className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${stat.accent} text-white shadow-md`}
-              >
-                <stat.Icon className="h-5 w-5" strokeWidth={2} />
-              </div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
-                {stat.label}
-              </p>
-              <p className="mt-1 text-3xl font-bold tabular-nums tracking-tight">{stat.count}</p>
-            </div>
-          ))}
-        </section>
-
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
-          <h2 className="mb-6 text-xl font-bold tracking-tight md:text-2xl">Recent complaints</h2>
-          <div className="space-y-3">
-            {recentComplaints.length === 0 ? (
-              <p className="py-8 text-center text-sm text-slate-500 dark:text-[#B8AEA3]">
-                No complaints submitted recently.
-              </p>
-            ) : (
-              recentComplaints.map((complaint) => (
-                <div
-                  key={complaint.id}
-                  className="group cursor-pointer rounded-2xl border border-slate-200/80 bg-slate-50/80 p-5 transition hover:border-indigo-200/80 hover:bg-white dark:border-[#6B4F3A]/80 dark:bg-[#221C18]/40 dark:hover:border-[#C8A45D]/30 dark:hover:bg-[#221C18]/60 md:p-6"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex min-w-0 flex-1 items-center gap-4">
-                      {complaint.image && (
-                        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-[#6B4F3A]">
-                          <img src={complaint.image} alt="" className="h-full w-full object-cover" />
-                        </div>
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span
-                            className={`rounded-lg px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${complaint.statusStyle}`}
-                          >
-                            {complaint.status}
-                          </span>
-                          <span className="font-semibold text-slate-900 dark:text-[#F5F1EA]">
-                            {complaint.title}
-                          </span>
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500 dark:text-[#B8AEA3]">
-                          <span>{complaint.category}</span>
-                          <span>{complaint.date}</span>
-                          <span className={`font-semibold ${
-                            complaint.priority === 'High' ? 'text-rose-600 dark:text-[#C8A45D]' : 
-                            complaint.priority === 'Medium' ? 'text-amber-600 dark:text-[#C8A45D]' : 
-                            'text-emerald-600 dark:text-[#C8A45D]'
-                          }`}>
-                            {complaint.priority} priority
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <ChevronRight className="h-5 w-5 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-indigo-500 dark:text-[#B8AEA3]" />
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </section>
-
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
-          <h2 className="mb-6 text-xl font-bold tracking-tight md:text-2xl">Quick services</h2>
-          <div className="grid gap-4 md:grid-cols-3">
-            {quickServices.map((service) => (
+        <div className="p-4 border-t border-slate-200 dark:border-[#221C18] space-y-1.5 pb-6">
+          {bottomNavItems.map((item) => {
+            const Icon = item.icon;
+            return (
               <button
-                key={service.id}
-                type="button"
-                className={`group flex flex-col items-center rounded-2xl bg-gradient-to-br ${service.from} ${service.to} p-8 text-center text-white shadow-lg transition hover:scale-[1.02] hover:shadow-xl`}
+                key={item.label}
+                onClick={item.action}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 dark:text-[#B8AEA3] hover:bg-slate-100 dark:hover:bg-[#221C18]/60 hover:text-slate-900 dark:hover:text-[#dae2fd] transition-all"
               >
-                <service.Icon className="mb-4 h-10 w-10 opacity-95" strokeWidth={1.75} />
-                <p className="text-lg font-semibold">{service.name}</p>
-                <p className="mt-2 text-sm font-medium text-white/85">Request now</p>
+                <Icon className="h-[1.15rem] w-[1.15rem]" strokeWidth={2} />
+                {item.label}
               </button>
-            ))}
-          </div>
-        </section>
+            )
+          })}
+        </div>
+      </aside>
 
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
-          <h2 className="mb-6 text-xl font-bold tracking-tight md:text-2xl">To-let listings</h2>
-          <div className="grid gap-6 md:grid-cols-2">
-            {toLet.map((property) => (
-              <div
-                key={property.id}
-                className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/50 transition hover:border-indigo-200/60 hover:shadow-md dark:border-[#6B4F3A] dark:bg-[#221C18]/30 dark:hover:border-[#C8A45D]/25"
-              >
-                <div className="flex h-36 items-center justify-center bg-gradient-to-br from-sky-500 to-indigo-600 text-white">
-                  <Home className="h-16 w-16 opacity-90 transition group-hover:scale-105" strokeWidth={1.25} />
-                </div>
-                <div className="p-6">
-                  <h3 className="font-semibold text-slate-900 dark:text-[#F5F1EA]">
-                    {property.bhk} · {property.block}
-                  </h3>
-                  <p className="mt-2 text-2xl font-bold text-emerald-600 dark:text-[#C8A45D]">
-                    {property.rent}
-                    <span className="text-sm font-semibold text-slate-500 dark:text-[#B8AEA3]">/mo</span>
-                  </p>
-                  <p className="mt-3 text-sm text-slate-600 dark:text-[#B8AEA3]">Owner · {property.owner}</p>
-                  <a
-                    href={`tel:${property.contact}`}
-                    className="mt-1 inline-block text-sm font-semibold text-indigo-600 hover:underline dark:text-[#C8A45D]"
-                  >
-                    {property.contact}
-                  </a>
-                  <button
-                    type="button"
-                    className="mt-5 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 py-3 text-sm font-semibold text-white shadow-md shadow-indigo-500/20 transition hover:shadow-lg"
-                  >
-                    View details
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
-          <h2 className="mb-6 text-xl font-bold tracking-tight md:text-2xl">Properties for sale</h2>
-          <div className="grid gap-6 md:grid-cols-2">
-            {propertyForSale.map((property) => (
-              <div
-                key={property.id}
-                className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/50 transition hover:border-amber-200/60 hover:shadow-md dark:border-[#6B4F3A] dark:bg-[#221C18]/30 dark:hover:border-[#C8A45D]/20"
-              >
-                <div className="flex h-36 items-center justify-center bg-gradient-to-br from-amber-500 to-rose-600 text-white">
-                  <Building2 className="h-16 w-16 opacity-90 transition group-hover:scale-105" strokeWidth={1.25} />
-                </div>
-                <div className="p-6">
-                  <h3 className="font-semibold text-slate-900 dark:text-[#F5F1EA]">
-                    {property.bhk} · {property.block}
-                  </h3>
-                  <p className="mt-2 text-2xl font-bold text-amber-600 dark:text-[#C8A45D]">{property.price}</p>
-                  <p className="mt-3 text-sm text-slate-600 dark:text-[#B8AEA3]">{property.description}</p>
-                  <p className="mt-2 text-xs text-slate-500 dark:text-[#B8AEA3]">Owner · {property.owner}</p>
-                  <button
-                    type="button"
-                    className="mt-5 w-full rounded-xl border-2 border-amber-200 bg-amber-50 py-3 text-sm font-semibold text-amber-900 transition hover:bg-amber-100 dark:border-[#C8A45D]/30 dark:bg-[#C8A45D]/10 dark:text-[#C8A45D] dark:hover:bg-[#C8A45D]/20"
-                  >
-                    I&apos;m interested
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-[#C8A45D]">
-                <BookOpen className="h-6 w-6" strokeWidth={2} />
-              </div>
-              <h2 className="text-xl font-bold tracking-tight md:text-2xl">Society rules</h2>
-            </div>
-            <button
-              type="button"
-              className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-500/20 transition hover:shadow-lg"
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto bg-slate-50 dark:bg-[#110e0c]/50">
+        
+        {/* Header */}
+        <header className="sticky top-0 z-30 flex items-center justify-between px-6 py-4 bg-white/80 dark:bg-[#151210]/80 backdrop-blur-xl border-b border-slate-200 dark:border-[#221C18]">
+          <div className="flex items-center gap-4 flex-1">
+            <button 
+              className="lg:hidden p-2 -ml-2 text-slate-500 dark:text-[#B8AEA3] hover:text-slate-900 dark:hover:text-[#dae2fd] rounded-lg hover:bg-white dark:hover:bg-[#221C18]"
+              onClick={() => setSidebarOpen(true)}
             >
-              View all
+              <Menu className="h-6 w-6" />
             </button>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            {societyRules.map((item, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl border border-slate-200/80 bg-slate-50/80 px-5 py-4 text-sm font-medium text-slate-800 transition hover:border-indigo-200/60 dark:border-[#6B4F3A] dark:bg-[#221C18]/40 dark:text-[#F5F1EA] dark:hover:border-[#C8A45D]/25"
-              >
-                {item.rule}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/50 dark:shadow-card-dark md:p-8">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:text-[#C8A45D]">
-              <Users className="h-6 w-6" strokeWidth={2} />
+            <h2 className="hidden lg:block text-xl font-bold tracking-tight text-slate-900 dark:text-[#dae2fd] mr-4 opacity-80">
+              Panchayat
+            </h2>
+            <div className="relative max-w-lg w-full hidden sm:block">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8B6B4A]" />
+              <input 
+                type="text" 
+                placeholder="Search society updates, neighbors, or services..." 
+                className="w-full bg-white dark:bg-[#1A1614] border border-slate-200 dark:border-[#221C18] text-sm text-slate-900 dark:text-[#dae2fd] placeholder:text-[#6B4F3A] rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#C8A45D]/50 focus:ring-1 focus:ring-[#C8A45D]/50 transition-colors shadow-inner shadow-slate-200 dark:shadow-black/10"
+              />
             </div>
-            <h2 className="text-xl font-bold tracking-tight md:text-2xl">Community feed</h2>
           </div>
-          <div className="space-y-4">
-            {communityPosts.map((post) => (
-              <article
-                key={post.id}
-                className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-6 transition hover:border-slate-300 dark:border-[#6B4F3A] dark:bg-[#221C18]/40 dark:hover:border-[#6B4F3A]"
-              >
-                <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-sm font-bold text-white">
-                      {post.author.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-900 dark:text-[#F5F1EA]">{post.author}</p>
-                      <p className="text-xs text-slate-500 dark:text-[#B8AEA3]">
-                        {post.block} · {post.timestamp}
-                      </p>
+
+          <div className="flex items-center gap-3 sm:gap-5 ml-4">
+            <button onClick={toggleTheme} className="text-[#8B6B4A] hover:text-[#C8A45D] transition bg-white dark:bg-[#1A1614] p-2 rounded-full border border-slate-200 dark:border-[#221C18]">
+              {theme === 'light' ? <Moon className="h-[1.15rem] w-[1.15rem]" /> : <Sun className="h-[1.15rem] w-[1.15rem]" />}
+            </button>
+            <button className="relative text-[#8B6B4A] hover:text-[#C8A45D] transition bg-white dark:bg-[#1A1614] p-2 rounded-full border border-slate-200 dark:border-[#221C18]">
+              <Bell className="h-[1.15rem] w-[1.15rem]" />
+              {user.unreadNotifications > 0 && (
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-[#1A1614]"></span>
+              )}
+            </button>
+            
+            <Link to="/profile" className="flex items-center gap-3 pl-3 sm:pl-5 border-l border-slate-200 dark:border-[#221C18]">
+              <div className="h-9 w-9 rounded-full overflow-hidden border border-[#C8A45D]/40 ring-2 ring-white dark:ring-[#151210]">
+                {user.avatar && user.avatar.length > 5 ? (
+                  <img src={user.avatar} alt="Profile" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full bg-white dark:bg-[#221C18] flex items-center justify-center text-[#C8A45D] font-bold">
+                    {user.fullName.charAt(0)}
+                  </div>
+                )}
+              </div>
+              <div className="hidden sm:block text-left">
+                <p className="text-sm font-semibold text-slate-900 dark:text-[#dae2fd] leading-none mb-1">{user.fullName}</p>
+                <p className="text-[9px] font-bold tracking-widest text-[#8B6B4A] uppercase leading-none">{user.block}</p>
+              </div>
+            </Link>
+          </div>
+        </header>
+
+        {/* Dashboard Content */}
+        <div className="p-6 lg:p-8 w-full max-w-[1600px] mx-auto space-y-6">
+          
+          {/* Main Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Hero Card */}
+            <div className="lg:col-span-2 rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-8 flex flex-col justify-between relative overflow-hidden shadow-sm">
+              <div className="absolute right-0 top-0 w-full h-full opacity-[0.03] pointer-events-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=')]"></div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4 text-[#8B6B4A] text-xs font-bold uppercase tracking-widest">
+                  <span>{formattedDate}</span>
+                  <span className="w-1 h-1 rounded-full bg-[#8B6B4A]"></span>
+                  <span>{formattedTime}</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-[#dae2fd] mb-3">{getGreeting()}, {user.fullName.split(' ')[0]}.</h2>
+                <p className="text-slate-500 dark:text-[#B8AEA3] text-sm max-w-lg leading-relaxed">
+                  Your society is safe and sound. 4 guards are currently patrolling and all systems are operational.
+                </p>
+              </div>
+              <div className="mt-8 rounded-2xl bg-slate-100 dark:bg-[#221C18]/60 border border-slate-200 dark:border-[#221C18] p-5 flex items-start gap-4 backdrop-blur-md w-fit relative z-10 shadow-inner">
+                <span className="text-4xl font-serif font-bold text-[#8B6B4A] opacity-50 leading-none mt-1">"</span>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#8B6B4A] mb-1.5">Daily Suvichar - {suvichar.author}</p>
+                  <p className="text-sm font-medium text-slate-900 dark:text-[#dae2fd] italic">"{suvichar.quote}"</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Panchayat AI Widget */}
+            <div className="rounded-[24px] border border-[#C8A45D]/30 bg-gradient-to-b from-slate-200 to-slate-100 dark:from-[#221C18] dark:to-[#151210] p-[1px] shadow-lg lg:col-span-1 lg:row-span-2 h-full min-h-[320px]">
+              <div className="h-full rounded-[23px] bg-slate-50 dark:bg-[#1A1614] p-5 flex flex-col relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#C8A45D]/5 blur-3xl rounded-full"></div>
+                <div className="flex items-center gap-3 mb-5 relative z-10">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <Sparkles className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900 dark:text-[#dae2fd] leading-tight text-base">Panchayat AI</h3>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest leading-none">Always Active</p>
                     </div>
                   </div>
-                  <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-[#C8A45D]">
-                    {post.type}
-                  </span>
                 </div>
-                <p className="text-sm leading-relaxed text-slate-600 dark:text-[#F5F1EA]">{post.content}</p>
-                <div className="mt-5 flex gap-6 border-t border-slate-200/80 pt-4 text-sm text-slate-500 dark:border-[#6B4F3A] dark:text-[#B8AEA3]">
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-2 transition hover:text-rose-600 dark:hover:text-[#C8A45D]"
-                  >
-                    <Heart className="h-4 w-4" strokeWidth={2} />
-                    {post.likes}
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-2 transition hover:text-indigo-600 dark:hover:text-[#C8A45D]"
-                  >
-                    <MessageSquare className="h-4 w-4" strokeWidth={2} />
-                    {post.comments}
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-2 transition hover:text-emerald-600 dark:hover:text-[#C8A45D]"
-                  >
-                    <Share2 className="h-4 w-4" strokeWidth={2} />
-                    Share
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-      </main>
 
-      <footer className="relative z-10 border-t border-slate-200/80 bg-white/60 py-10 text-center text-sm text-slate-500 backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#151210]/60 dark:text-[#B8AEA3]">
-        <p className="font-medium">Panchayat · Smart society operations</p>
-      </footer>
+                <div className="flex-1 rounded-2xl bg-white dark:bg-[#221C18]/80 p-4 border border-slate-200 dark:border-[#221C18] mb-4 relative z-10 shadow-inner">
+                  <p className="text-xs text-slate-900 dark:text-[#dae2fd]/90 leading-relaxed font-medium">
+                    Hello {user.fullName.split(' ')[0]}! I see there's an AGM this Sunday. Would you like me to add it to your calendar and check for any overlapping guest pre-registrations?
+                  </p>
+                </div>
+
+                <div className="relative mt-auto z-10">
+                  <input 
+                    type="text" 
+                    placeholder="How can I help you" 
+                    className="w-full bg-white dark:bg-[#151210] border border-slate-200 dark:border-[#221C18] text-xs text-slate-900 dark:text-[#dae2fd] placeholder:text-[#6B4F3A] rounded-[14px] pl-4 pr-10 py-3.5 focus:outline-none focus:border-[#C8A45D]/50 focus:ring-1 focus:ring-[#C8A45D]/50 transition-colors shadow-inner"
+                  />
+                  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8B6B4A] hover:text-[#C8A45D] transition-colors p-1 bg-white dark:bg-[#151210] rounded-md">
+                    <Send className="h-[1.15rem] w-[1.15rem]" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Notice Board */}
+            <div className="rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-6 flex flex-col shadow-sm h-full min-h-[320px]">
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2 text-slate-900 dark:text-[#dae2fd] font-semibold text-base">
+                  <Megaphone className="h-[1.15rem] w-[1.15rem] text-[#8B6B4A]" /> Notice Board
+                </div>
+                <button className="text-xs font-semibold text-[#C8A45D] hover:text-[#E0C27A] transition">View All</button>
+              </div>
+              <div className="flex-1 rounded-[16px] bg-gradient-to-br from-slate-100 to-slate-50 dark:from-[#221C18] dark:to-[#151210] border border-[#C8A45D]/20 p-5 relative overflow-hidden flex flex-col justify-center">
+                <div className="absolute left-0 top-0 h-full w-1 bg-[#C8A45D]"></div>
+                <p className="text-[10px] font-bold text-[#C8A45D] uppercase tracking-widest mb-2.5">Upcoming Event</p>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-[#dae2fd] mb-4 leading-tight">Annual General<br/>Meeting</h4>
+                <div className="flex items-center gap-5 text-xs font-medium text-slate-500 dark:text-[#B8AEA3]">
+                  <div className="flex items-center gap-2"><Calendar className="h-3.5 w-3.5 text-[#8B6B4A]"/> Sunday,<br/>10 AM</div>
+                  <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 text-[#8B6B4A]"/> Community<br/>Hall</div>
+                </div>
+              </div>
+              <div className="mt-4 border-t border-slate-200 dark:border-[#221C18] pt-4">
+                <h5 className="font-semibold text-slate-900 dark:text-[#dae2fd] text-sm mb-1 truncate">Elevator Maintenance: Block B</h5>
+                <p className="text-xs text-slate-500 dark:text-[#B8AEA3]">Scheduled for Friday, 2 PM - 4 PM.</p>
+              </div>
+            </div>
+
+            {/* Complaint Status */}
+            <div className="rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-6 flex flex-col justify-between shadow-sm h-full min-h-[320px]">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-baseline gap-3">
+                    <h3 className="font-semibold text-slate-900 dark:text-[#dae2fd] text-base">Complaint Status</h3>
+                    <Link to="/complaints" className="text-[10px] font-bold uppercase tracking-widest text-[#C8A45D] hover:text-[#E0C27A] transition">Show All</Link>
+                  </div>
+                  <div className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border ${
+                    complaintStats.complaintsLeft > 0 
+                      ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' 
+                      : 'text-rose-500 bg-rose-500/10 border-rose-500/20'
+                  }`}>
+                    {complaintStats.complaintsLeft} / 10 Left This Week
+                  </div>
+                </div>
+                
+                <div className="space-y-5">
+                  <div>
+                    <div className="flex justify-between text-xs font-semibold mb-2">
+                      <span className="text-slate-500 dark:text-[#B8AEA3]">Open</span>
+                      <span className="text-slate-900 dark:text-[#dae2fd]">{complaintStats.open}</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-[#f8fafc] dark:bg-[#151210] rounded-full overflow-hidden border border-slate-200 dark:border-[#221C18]">
+                      <div className="h-full bg-rose-400/90 rounded-full transition-all duration-1000" style={{ width: `${complaintStats.openPercent}%` }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs font-semibold mb-2">
+                      <span className="text-slate-500 dark:text-[#B8AEA3]">In Progress</span>
+                      <span className="text-slate-900 dark:text-[#dae2fd]">{complaintStats.inProgress}</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-[#f8fafc] dark:bg-[#151210] rounded-full overflow-hidden border border-slate-200 dark:border-[#221C18]">
+                      <div className="h-full bg-amber-500/90 rounded-full transition-all duration-1000" style={{ width: `${complaintStats.inProgressPercent}%` }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs font-semibold mb-2">
+                      <span className="text-slate-500 dark:text-[#B8AEA3]">Resolved</span>
+                      <span className="text-slate-900 dark:text-[#dae2fd]">{complaintStats.resolved}</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-[#f8fafc] dark:bg-[#151210] rounded-full overflow-hidden border border-slate-200 dark:border-[#221C18]">
+                      <div className="h-full bg-emerald-500/90 rounded-full transition-all duration-1000" style={{ width: `${complaintStats.resolvedPercent}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Real Estate Section */}
+          <div className="pt-6">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-4">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-[#dae2fd]">Exclusive Real Estate</h2>
+                <p className="text-sm text-slate-500 dark:text-[#B8AEA3]">Managed listings within the community</p>
+              </div>
+              <div className="flex gap-2">
+                <button className="h-9 w-9 flex items-center justify-center rounded-full border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] text-[#8B6B4A] hover:text-[#C8A45D] hover:border-[#6B4F3A] transition shadow-sm">
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button className="h-9 w-9 flex items-center justify-center rounded-full border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] text-[#8B6B4A] hover:text-[#C8A45D] hover:border-[#6B4F3A] transition shadow-sm">
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              
+              <div className="rounded-[20px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] overflow-hidden group shadow-sm flex flex-col">
+                <div className="h-[180px] relative overflow-hidden bg-[#f8fafc] dark:bg-[#151210] flex items-center justify-center group-hover:bg-white dark:group-hover:bg-[#1A1614] transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1A1614] via-transparent to-transparent z-10"></div>
+                  <Home className="h-16 w-16 text-[#221C18] group-hover:scale-110 group-hover:text-[#6B4F3A]/40 transition duration-500 relative z-10" />
+                  <div className="absolute top-3 left-3 z-20 rounded-full bg-[#dae2fd]/90 backdrop-blur text-[10px] font-bold px-3 py-1 text-indigo-950 shadow-sm uppercase tracking-wide">TO-LET</div>
+                </div>
+                <div className="p-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start mb-2 gap-2">
+                      <h3 className="font-bold text-slate-900 dark:text-[#dae2fd] text-sm leading-tight">Zenith Penthouse</h3>
+                      <span className="font-bold text-slate-900 dark:text-[#dae2fd] text-sm whitespace-nowrap">₹85,000<span className="text-[10px] text-slate-500 dark:text-[#B8AEA3] font-semibold">/mo</span></span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-[#B8AEA3] mb-4 flex items-center gap-1.5"><MapPin className="h-3 w-3"/> Block A, 14th Floor</p>
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-[#221C18] text-[11px]">
+                    <div className="flex gap-3 text-slate-500 dark:text-[#B8AEA3]">
+                      <span className="flex items-center gap-1 font-medium"><Home className="h-3 w-3"/> 3 BHK</span>
+                      <span className="flex items-center gap-1 font-medium"><Zap className="h-3 w-3"/> 2400 sq.ft</span>
+                    </div>
+                    <button className="font-bold text-slate-900 dark:text-[#dae2fd] hover:text-[#C8A45D] transition">Details</button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-[20px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] overflow-hidden group shadow-sm flex flex-col">
+                <div className="h-[180px] relative overflow-hidden bg-[#f8fafc] dark:bg-[#151210] flex items-center justify-center group-hover:bg-white dark:group-hover:bg-[#1A1614] transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1A1614] via-transparent to-transparent z-10"></div>
+                  <Home className="h-16 w-16 text-[#221C18] group-hover:scale-110 group-hover:text-[#6B4F3A]/40 transition duration-500 relative z-10" />
+                  <div className="absolute top-3 left-3 z-20 rounded-full bg-amber-500/90 backdrop-blur text-[10px] font-bold px-3 py-1 text-amber-950 shadow-sm uppercase tracking-wide">FOR SALE</div>
+                </div>
+                <div className="p-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start mb-2 gap-2">
+                      <h3 className="font-bold text-slate-900 dark:text-[#dae2fd] text-sm leading-tight">Elite Garden Villa</h3>
+                      <span className="font-bold text-amber-500 text-sm whitespace-nowrap">₹4.2 Cr</span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-[#B8AEA3] mb-4 flex items-center gap-1.5"><MapPin className="h-3 w-3"/> Green Belt, Plot 42</p>
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-[#221C18] text-[11px]">
+                    <div className="flex gap-3 text-slate-500 dark:text-[#B8AEA3]">
+                      <span className="flex items-center gap-1 font-medium"><Home className="h-3 w-3"/> 4 BHK</span>
+                      <span className="flex items-center gap-1 font-medium"><Zap className="h-3 w-3"/> 3500 sq.ft</span>
+                    </div>
+                    <button className="font-bold text-amber-500 hover:text-amber-400 transition">Enquire</button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-[20px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] overflow-hidden group hidden lg:flex flex-col shadow-sm">
+                <div className="h-[180px] relative overflow-hidden bg-[#f8fafc] dark:bg-[#151210] flex items-center justify-center group-hover:bg-white dark:group-hover:bg-[#1A1614] transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1A1614] via-transparent to-transparent z-10"></div>
+                  <Home className="h-16 w-16 text-[#221C18] group-hover:scale-110 group-hover:text-[#6B4F3A]/40 transition duration-500 relative z-10" />
+                  <div className="absolute top-3 left-3 z-20 rounded-full bg-[#dae2fd]/90 backdrop-blur text-[10px] font-bold px-3 py-1 text-indigo-950 shadow-sm uppercase tracking-wide">TO-LET</div>
+                </div>
+                <div className="p-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start mb-2 gap-2">
+                      <h3 className="font-bold text-slate-900 dark:text-[#dae2fd] text-sm leading-tight">Skyline Studio</h3>
+                      <span className="font-bold text-slate-900 dark:text-[#dae2fd] text-sm whitespace-nowrap">₹35,000<span className="text-[10px] text-slate-500 dark:text-[#B8AEA3] font-semibold">/mo</span></span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-[#B8AEA3] mb-4 flex items-center gap-1.5"><MapPin className="h-3 w-3"/> Block C, 8th Floor</p>
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-[#221C18] text-[11px]">
+                    <div className="flex gap-3 text-slate-500 dark:text-[#B8AEA3]">
+                      <span className="flex items-center gap-1 font-medium"><Home className="h-3 w-3"/> 1 BHK</span>
+                      <span className="flex items-center gap-1 font-medium"><Zap className="h-3 w-3"/> 900 sq.ft</span>
+                    </div>
+                    <button className="font-bold text-slate-900 dark:text-[#dae2fd] hover:text-[#C8A45D] transition">Details</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          
+          {/* Footer */}
+          <div className="pt-8 pb-4 mt-8 border-t border-slate-200 dark:border-[#221C18] flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-medium text-[#8B6B4A]">
+            <p>© 2026 Panchayat AI. Reserved for Elite Residences.</p>
+            <div className="flex gap-4">
+              <a href="#" className="hover:text-slate-900 dark:hover:text-[#dae2fd] transition">Privacy Policy</a>
+              <a href="#" className="hover:text-slate-900 dark:hover:text-[#dae2fd] transition">Terms of Service</a>
+              <a href="#" className="hover:text-slate-900 dark:hover:text-[#dae2fd] transition">Security</a>
+              <a href="#" className="hover:text-slate-900 dark:hover:text-[#dae2fd] transition">Contact</a>
+            </div>
+          </div>
+
+        </div>
+      </main>
     </div>
   );
 };
