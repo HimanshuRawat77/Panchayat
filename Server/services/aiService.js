@@ -1,10 +1,15 @@
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-});
+}) : null;
 
 export const getAISummary = async (text) => {
+  if (!openai) {
+    console.warn("OpenAI API key is missing. Skipping AI summary.");
+    return "AI Summary unavailable (Missing API Key)";
+  }
+
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
