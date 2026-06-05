@@ -1,31 +1,22 @@
 import mongoose from "mongoose";
 
-const ruleSchema = new mongoose.Schema(
+const noticeSchema = new mongoose.Schema(
   {
     title: {
       type: String,
       required: true,
       trim: true,
     },
-    description: {
+    content: {
       type: String,
       required: true,
       trim: true,
-    },
-    category: {
-      type: String,
-      trim: true,
-      default: "General",
     },
     keywords: [{
       type: String,
       trim: true
     }],
-    isPinned: {
-      type: Boolean,
-      default: false,
-    },
-    effectiveDate: {
+    date: {
       type: Date,
       default: Date.now,
     },
@@ -40,4 +31,4 @@ const ruleSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Rule", ruleSchema);
+export default mongoose.model("Notice", noticeSchema);
