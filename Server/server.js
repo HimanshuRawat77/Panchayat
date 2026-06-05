@@ -8,6 +8,7 @@ import complaintRoutes from "./routes/complaintRoutes.js";
 import ruleRoutes from "./routes/ruleRoutes.js";
 import workerRoutes from "./routes/workerRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 
 
@@ -33,8 +34,7 @@ app.use("/api/complaints", complaintRoutes);
 app.use("/api/rules", ruleRoutes);
 app.use("/api/workers", workerRoutes);
 app.use("/api/ai", aiRoutes);
-
-
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Running 🚀");
