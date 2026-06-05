@@ -232,11 +232,9 @@ const UserDashboard = () => {
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', active: true },
-    { icon: Sparkles, label: 'AI Assistant', path: '/assistant' },
     { icon: BarChart3, label: 'Analytics', path: '/analytics' },
     { icon: Users, label: 'Community', path: '/community' },
     { icon: MessageSquareWarning, label: 'Complaints', path: '/complaints' },
-    { icon: Wrench, label: 'Maintenance', path: '#' },
     { icon: Settings, label: 'Settings', path: '/profile' },
   ];
 
