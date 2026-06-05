@@ -73,7 +73,7 @@ const AdminDashboard = () => {
     { icon: BarChart3, label: 'Dashboard', path: '/admin-dashboard', active: true },
     { icon: MessageSquareWarning, label: 'Complaints', path: '#' },
     { icon: Users, label: 'Users', path: '/admin-users' },
-    { icon: ShieldCheck, label: 'Rules', path: '#' },
+    { icon: ShieldCheck, label: 'Rules', path: '/admin-rules' },
     { icon: TrendingUp, label: 'Analytics', path: '#' },
     { icon: Settings, label: 'Settings', path: '#' },
   ];
@@ -151,9 +151,9 @@ const AdminDashboard = () => {
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
-              <a
+              <Link
                 key={item.label}
-                href={item.path}
+                to={item.path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                   item.active
                     ? 'bg-slate-100 text-indigo-600 shadow-sm'
@@ -162,7 +162,7 @@ const AdminDashboard = () => {
               >
                 <Icon className="h-4 w-4" />
                 {item.label}
-              </a>
+              </Link>
             )
           })}
         </nav>

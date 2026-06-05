@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Bell,
   Search,
@@ -21,11 +21,17 @@ import {
   Megaphone,
   Calendar,
   MapPin,
-  Send
+  Send,
+  CheckCircle,
+  ShieldCheck,
+  Building2
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getMyComplaints } from '../services/complaintService';
+import { askAssistant } from '../services/aiService';
 import { useTheme } from '../context/ThemeContext';
+import RecentRulesWidget from '../components/RecentRulesWidget';
+import API_BASE_URL from '../config';
 
 function readUserFromStorage() {
   try {
@@ -51,6 +57,37 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationsList, setNotificationsList] = useState([]);
+  const [aiInput, setAiInput] = useState('');
+  
+  const defaultMessages = [
+    {
+      id: 'welcome',
+      role: 'assistant',
+      content: `Hello ${user ? user.fullName.split(' ')[0] : 'Resident'}! Ask me anything about the society rules, policies, or timings.`,
+      source: '🤖 AI Assistant',
+      timestamp: new Date().toISOString()
+    }
+  ];
+
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem('panchayatAiChat');
+      return saved ? JSON.parse(saved) : defaultMessages;
+    } catch {
+      return defaultMessages;
+    }
+  });
+  
+  const [aiLoading, setAiLoading] = useState(false);
+  const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    localStorage.setItem('panchayatAiChat', JSON.stringify(messages));
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -94,8 +131,42 @@ const UserDashboard = () => {
         setLoading(false);
       }
     };
+
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/notifications`, {
+          headers: { ...(token && { Authorization: `Bearer ${token}` }) }
+        });
+        if (response.ok) {
+          const notifs = await response.json();
+          // Filter to only show unread notifications
+          const unreadNotifs = notifs.filter(n => !n.readBy.includes(user._id));
+          setUnreadCount(unreadNotifs.length);
+          setNotificationsList(unreadNotifs.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        }
+      } catch (error) {
+        console.error('Failed to fetch notifications', error);
+      }
+    };
+
     fetchDashboardData();
+    fetchNotifications();
   }, [user, navigate]);
+
+  const markAsRead = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
+        method: 'PUT',
+        headers: { ...(token && { Authorization: `Bearer ${token}` }) }
+      });
+      setNotificationsList(prev => prev.filter(n => n._id !== id));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Failed to mark read', error);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -103,8 +174,65 @@ const UserDashboard = () => {
     navigate('/login');
   };
 
+  const handleAiSubmit = async () => {
+    if (!aiInput.trim()) return;
+    
+    const userMsg = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: aiInput.trim(),
+      timestamp: new Date().toISOString()
+    };
+
+    setMessages(prev => [...prev, userMsg]);
+    setAiInput('');
+    setAiLoading(true);
+
+    try {
+      const response = await askAssistant(userMsg.content);
+      
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: response.answer,
+        source: response.source,
+        title: response.title,
+        timestamp: new Date().toISOString()
+      }]);
+    } catch (error) {
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: 'Sorry, I am having trouble connecting to the network right now. Please try again later.',
+        source: '⚠️ System Error',
+        title: 'Network Error',
+        timestamp: new Date().toISOString(),
+        isError: true
+      }]);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const getSourceIcon = (source) => {
+    if (!source) return <Sparkles className="h-3 w-3" />;
+    if (source.includes('Rule')) return <ShieldCheck className="h-3 w-3" />;
+    if (source.includes('Notice')) return <Megaphone className="h-3 w-3" />;
+    if (source.includes('Information')) return <Building2 className="h-3 w-3" />;
+    return <Sparkles className="h-3 w-3" />;
+  };
+
+  const getSourceStyle = (source) => {
+    if (!source) return 'bg-[#C8A45D]/10 text-[#C8A45D] border-[#C8A45D]/20';
+    if (source.includes('Rule')) return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
+    if (source.includes('Notice')) return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+    if (source.includes('Information')) return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+    return 'bg-[#C8A45D]/10 text-[#C8A45D] border-[#C8A45D]/20';
+  };
+
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', active: true },
+    { icon: Sparkles, label: 'AI Assistant', path: '/assistant' },
     { icon: BarChart3, label: 'Analytics', path: '/analytics' },
     { icon: Users, label: 'Community', path: '/community' },
     { icon: MessageSquareWarning, label: 'Complaints', path: '/complaints' },
@@ -242,12 +370,55 @@ const UserDashboard = () => {
             <button onClick={toggleTheme} className="text-[#8B6B4A] hover:text-[#C8A45D] transition bg-white dark:bg-[#1A1614] p-2 rounded-full border border-slate-200 dark:border-[#221C18]">
               {theme === 'light' ? <Moon className="h-[1.15rem] w-[1.15rem]" /> : <Sun className="h-[1.15rem] w-[1.15rem]" />}
             </button>
-            <button className="relative text-[#8B6B4A] hover:text-[#C8A45D] transition bg-white dark:bg-[#1A1614] p-2 rounded-full border border-slate-200 dark:border-[#221C18]">
-              <Bell className="h-[1.15rem] w-[1.15rem]" />
-              {user.unreadNotifications > 0 && (
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-[#1A1614]"></span>
+            <div className="relative">
+              <button onClick={() => setShowNotifications(!showNotifications)} className="relative text-[#8B6B4A] hover:text-[#C8A45D] transition bg-white dark:bg-[#1A1614] p-2 rounded-full border border-slate-200 dark:border-[#221C18]">
+                <Bell className="h-[1.15rem] w-[1.15rem]" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white ring-2 ring-white dark:ring-[#1A1614]">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {showNotifications && (
+                <div className="absolute right-0 mt-3 w-80 rounded-2xl border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] shadow-xl shadow-slate-200/50 dark:shadow-black/50 overflow-hidden z-50">
+                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#221C18] px-4 py-3 bg-slate-50 dark:bg-[#151210]">
+                    <h3 className="font-bold text-sm text-slate-900 dark:text-[#dae2fd]">Notifications</h3>
+                    {unreadCount > 0 && (
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-md">
+                        {unreadCount} New
+                      </span>
+                    )}
+                  </div>
+                  <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+                    {notificationsList.length === 0 ? (
+                      <div className="p-6 text-center text-slate-500 dark:text-[#B8AEA3] text-xs">
+                        No new notifications.
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-slate-50 dark:divide-[#221C18]/50">
+                        {notificationsList.map(notif => (
+                          <div key={notif._id} className="p-4 hover:bg-slate-50 dark:hover:bg-[#221C18]/30 transition group flex gap-3 items-start">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-semibold text-slate-900 dark:text-[#dae2fd] mb-0.5">{notif.title}</p>
+                              <p className="text-[11px] text-slate-500 dark:text-[#B8AEA3] leading-relaxed line-clamp-2">{notif.message}</p>
+                              <p className="text-[9px] text-slate-400 mt-1">{new Date(notif.createdAt).toLocaleDateString()}</p>
+                            </div>
+                            <button 
+                              onClick={() => markAsRead(notif._id)}
+                              className="opacity-0 group-hover:opacity-100 p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-md transition"
+                              title="Mark as read"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
-            </button>
+            </div>
             
             <Link to="/profile" className="flex items-center gap-3 pl-3 sm:pl-5 border-l border-slate-200 dark:border-[#221C18]">
               <div className="h-9 w-9 rounded-full overflow-hidden border border-[#C8A45D]/40 ring-2 ring-white dark:ring-[#151210]">
@@ -313,46 +484,78 @@ const UserDashboard = () => {
                   </div>
                 </div>
 
-                <div className="flex-1 rounded-2xl bg-white dark:bg-[#221C18]/80 p-4 border border-slate-200 dark:border-[#221C18] mb-4 relative z-10 shadow-inner">
-                  <p className="text-xs text-slate-900 dark:text-[#dae2fd]/90 leading-relaxed font-medium">
-                    Hello {user.fullName.split(' ')[0]}! I see there's an AGM this Sunday. Would you like me to add it to your calendar and check for any overlapping guest pre-registrations?
-                  </p>
+                <div className="flex-1 rounded-2xl bg-white dark:bg-[#221C18]/80 p-4 border border-slate-200 dark:border-[#221C18] mb-4 relative z-10 shadow-inner overflow-y-auto custom-scrollbar flex flex-col gap-4">
+                  {messages.map((msg) => (
+                    <div 
+                      key={msg.id} 
+                      className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
+                        msg.role === 'user' 
+                          ? 'bg-gradient-to-br from-[#C8A45D] to-[#B38D46] text-[#151210] rounded-br-sm' 
+                          : msg.isError 
+                            ? 'bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-bl-sm'
+                            : 'bg-[#151210] border border-emerald-500 text-white rounded-bl-sm'
+                      }`}>
+                        {msg.role === 'assistant' && msg.source && !msg.isError && (
+                          <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded border text-[8px] font-bold uppercase tracking-wider mb-2 w-fit ${getSourceStyle(msg.source)}`}>
+                            {getSourceIcon(msg.source)}
+                            {msg.source}
+                          </div>
+                        )}
+                        
+                        {msg.title && (
+                          <h4 className="font-bold text-[11px] mb-1 text-white">{msg.title}</h4>
+                        )}
+                        
+                        <div className="text-[11px] leading-relaxed font-medium whitespace-pre-wrap text-white/90">
+                          {msg.content}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {aiLoading && (
+                    <div className="flex justify-start">
+                      <div className="bg-[#f8fafc] dark:bg-[#1A1614] border border-slate-200 dark:border-[#221C18] rounded-2xl rounded-bl-sm p-3 shadow-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="animate-pulse flex gap-1">
+                            <div className="w-1.5 h-1.5 bg-[#C8A45D] rounded-full"></div>
+                            <div className="w-1.5 h-1.5 bg-[#C8A45D] rounded-full animation-delay-200"></div>
+                            <div className="w-1.5 h-1.5 bg-[#C8A45D] rounded-full animation-delay-400"></div>
+                          </div>
+                          <span className="text-[10px] text-slate-500 dark:text-[#B8AEA3] font-medium">Thinking...</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={chatEndRef} />
                 </div>
 
                 <div className="relative mt-auto z-10">
                   <input 
                     type="text" 
-                    placeholder="How can I help you" 
-                    className="w-full bg-white dark:bg-[#151210] border border-slate-200 dark:border-[#221C18] text-xs text-slate-900 dark:text-[#dae2fd] placeholder:text-[#6B4F3A] rounded-[14px] pl-4 pr-10 py-3.5 focus:outline-none focus:border-[#C8A45D]/50 focus:ring-1 focus:ring-[#C8A45D]/50 transition-colors shadow-inner"
+                    value={aiInput}
+                    onChange={(e) => setAiInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAiSubmit()}
+                    placeholder="Ask about rules, timings..." 
+                    disabled={aiLoading}
+                    className="w-full bg-white dark:bg-[#151210] border border-slate-200 dark:border-[#221C18] text-xs text-slate-900 dark:text-[#dae2fd] placeholder:text-[#6B4F3A] rounded-[14px] pl-4 pr-10 py-3.5 focus:outline-none focus:border-[#C8A45D]/50 focus:ring-1 focus:ring-[#C8A45D]/50 transition-colors shadow-inner disabled:opacity-50"
                   />
-                  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8B6B4A] hover:text-[#C8A45D] transition-colors p-1 bg-white dark:bg-[#151210] rounded-md">
+                  <button 
+                    onClick={handleAiSubmit}
+                    disabled={aiLoading || !aiInput.trim()}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8B6B4A] hover:text-[#C8A45D] transition-colors p-1 bg-white dark:bg-[#151210] rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     <Send className="h-[1.15rem] w-[1.15rem]" />
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Notice Board */}
-            <div className="rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-6 flex flex-col shadow-sm h-full min-h-[320px]">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2 text-slate-900 dark:text-[#dae2fd] font-semibold text-base">
-                  <Megaphone className="h-[1.15rem] w-[1.15rem] text-[#8B6B4A]" /> Notice Board
-                </div>
-                <button className="text-xs font-semibold text-[#C8A45D] hover:text-[#E0C27A] transition">View All</button>
-              </div>
-              <div className="flex-1 rounded-[16px] bg-gradient-to-br from-slate-100 to-slate-50 dark:from-[#221C18] dark:to-[#151210] border border-[#C8A45D]/20 p-5 relative overflow-hidden flex flex-col justify-center">
-                <div className="absolute left-0 top-0 h-full w-1 bg-[#C8A45D]"></div>
-                <p className="text-[10px] font-bold text-[#C8A45D] uppercase tracking-widest mb-2.5">Upcoming Event</p>
-                <h4 className="text-xl font-bold text-slate-900 dark:text-[#dae2fd] mb-4 leading-tight">Annual General<br/>Meeting</h4>
-                <div className="flex items-center gap-5 text-xs font-medium text-slate-500 dark:text-[#B8AEA3]">
-                  <div className="flex items-center gap-2"><Calendar className="h-3.5 w-3.5 text-[#8B6B4A]"/> Sunday,<br/>10 AM</div>
-                  <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 text-[#8B6B4A]"/> Community<br/>Hall</div>
-                </div>
-              </div>
-              <div className="mt-4 border-t border-slate-200 dark:border-[#221C18] pt-4">
-                <h5 className="font-semibold text-slate-900 dark:text-[#dae2fd] text-sm mb-1 truncate">Elevator Maintenance: Block B</h5>
-                <p className="text-xs text-slate-500 dark:text-[#B8AEA3]">Scheduled for Friday, 2 PM - 4 PM.</p>
-              </div>
+            {/* Recent Rules Widget */}
+            <div className="lg:col-span-1">
+              <RecentRulesWidget />
             </div>
 
             {/* Complaint Status */}
