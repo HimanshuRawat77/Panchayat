@@ -41,7 +41,7 @@ export const askAssistant = async (question) => {
       throw new Error(data.message || 'Failed to get AI answer');
     }
 
-    return data.answer;
+    return data;
   } catch (error) {
     console.error('AI Service Error:', error);
     throw error;
