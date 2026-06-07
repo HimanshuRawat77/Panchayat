@@ -7,6 +7,14 @@ import { Moon, Sun } from 'lucide-react';
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
 
+  let user = null;
+  try {
+    const userStr = localStorage.getItem('user');
+    if (userStr) user = JSON.parse(userStr);
+  } catch (e) {
+    // Ignore error
+  }
+
   return (
     <Motion.nav
       initial={{ opacity: 0, y: -10 }}
@@ -40,12 +48,20 @@ const Navbar = () => {
             {theme === 'light' ? <Moon className="h-4 w-4" strokeWidth={2} /> : <Sun className="h-4 w-4" strokeWidth={2} />}
           </button>
 
-          <Link to="/login" className="hidden text-sm font-medium text-slate-600 transition-colors duration-200 hover:text-slate-900 dark:text-[#B8AEA3] dark:hover:text-[#F5F1EA] sm:inline">
-            Log in
-          </Link>
-          <Link to="/signup" className="rounded-lg bg-[#C8A45D] px-5 py-2.5 text-sm font-semibold text-[#151210] shadow-md shadow-[#C8A45D]/20 transition-all duration-200 hover:bg-[#E0C27A] hover:shadow-lg hover:shadow-[#C8A45D]/30">
-            Get Started
-          </Link>
+          {user ? (
+            <Link to="/dashboard" className="rounded-lg bg-[#C8A45D] px-5 py-2.5 text-sm font-semibold text-[#151210] shadow-md shadow-[#C8A45D]/20 transition-all duration-200 hover:bg-[#E0C27A] hover:shadow-lg hover:shadow-[#C8A45D]/30">
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="hidden text-sm font-medium text-slate-600 transition-colors duration-200 hover:text-slate-900 dark:text-[#B8AEA3] dark:hover:text-[#F5F1EA] sm:inline">
+                Log in
+              </Link>
+              <Link to="/signup" className="rounded-lg bg-[#C8A45D] px-5 py-2.5 text-sm font-semibold text-[#151210] shadow-md shadow-[#C8A45D]/20 transition-all duration-200 hover:bg-[#E0C27A] hover:shadow-lg hover:shadow-[#C8A45D]/30">
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </Motion.nav>

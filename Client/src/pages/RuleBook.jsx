@@ -76,7 +76,7 @@ const RuleBook = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#151210] font-sans text-[#F5F1EA]">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#151210] font-sans text-slate-900 dark:text-[#F5F1EA]">
       <Navbar />
       <div className="mx-auto max-w-7xl px-4 pb-14 pt-28 sm:px-6 lg:px-8">
         
@@ -86,12 +86,12 @@ const RuleBook = () => {
             <h1 className="text-4xl font-bold text-[#C8A45D] mb-2 flex items-center gap-3">
               Society Rule Book
             </h1>
-            <p className="text-[#B8AEA3] text-lg">Official guidelines and policies for residents.</p>
+            <p className="text-slate-500 dark:text-[#B8AEA3] text-lg">Official guidelines and policies for residents.</p>
           </div>
           <div className="flex gap-4 items-center">
             <Link
               to="/dashboard"
-              className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F3A] bg-[#221C18] px-4 py-3 text-sm font-semibold text-[#F5F1EA] transition hover:bg-[#6B4F3A]"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-[#6B4F3A] bg-white dark:bg-[#221C18] px-4 py-3 text-sm font-semibold text-slate-900 dark:text-[#F5F1EA] transition hover:bg-slate-100 dark:hover:bg-[#6B4F3A]"
             >
               <Building2 className="h-4 w-4" />
               Dashboard
@@ -109,21 +109,21 @@ const RuleBook = () => {
         {/* Filters and Search */}
         <div className="flex flex-col md:flex-row gap-4 mb-10">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B8AEA3]" size={20} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#B8AEA3]" size={20} />
             <input 
               type="text" 
               placeholder="Search rules..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#221C18] border border-[#6B4F3A]/50 rounded-xl pl-11 pr-4 py-3.5 text-[#F5F1EA] focus:outline-none focus:border-[#C8A45D] focus:ring-1 focus:ring-[#C8A45D] transition-colors"
+              className="w-full bg-white dark:bg-[#221C18] border border-slate-200 dark:border-[#6B4F3A]/50 rounded-xl pl-11 pr-4 py-3.5 text-slate-900 dark:text-[#F5F1EA] focus:outline-none focus:border-[#C8A45D] focus:ring-1 focus:ring-[#C8A45D] transition-colors shadow-sm"
             />
           </div>
           <div className="relative md:w-72">
-            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B8AEA3]" size={20} />
+            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#B8AEA3]" size={20} />
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full bg-[#221C18] border border-[#6B4F3A]/50 rounded-xl pl-11 pr-4 py-3.5 text-[#F5F1EA] focus:outline-none focus:border-[#C8A45D] focus:ring-1 focus:ring-[#C8A45D] transition-colors appearance-none"
+              className="w-full bg-white dark:bg-[#221C18] border border-slate-200 dark:border-[#6B4F3A]/50 rounded-xl pl-11 pr-4 py-3.5 text-slate-900 dark:text-[#F5F1EA] focus:outline-none focus:border-[#C8A45D] focus:ring-1 focus:ring-[#C8A45D] transition-colors appearance-none shadow-sm"
             >
               {categories.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -138,27 +138,27 @@ const RuleBook = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C8A45D]"></div>
           </div>
         ) : sortedRules.length === 0 ? (
-          <div className="bg-[#221C18] rounded-2xl p-16 text-center border border-[#6B4F3A]/30">
-            <AlertCircle className="mx-auto text-[#B8AEA3] mb-4 h-16 w-16" />
-            <h3 className="text-2xl font-semibold text-[#F5F1EA] mb-2">No Rules Found</h3>
-            <p className="text-[#B8AEA3]">Try adjusting your search or category filter.</p>
+          <div className="bg-white dark:bg-[#221C18] rounded-2xl p-16 text-center border border-slate-200 dark:border-[#6B4F3A]/30 shadow-sm">
+            <AlertCircle className="mx-auto text-slate-400 dark:text-[#B8AEA3] mb-4 h-16 w-16" />
+            <h3 className="text-2xl font-semibold text-slate-900 dark:text-[#F5F1EA] mb-2">No Rules Found</h3>
+            <p className="text-slate-500 dark:text-[#B8AEA3]">Try adjusting your search or category filter.</p>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {sortedRules.map((rule) => (
               <div 
                 key={rule._id} 
-                className={`bg-[#221C18] rounded-2xl p-7 border flex flex-col h-full hover:-translate-y-1 transition-transform duration-300 ${
-                  rule.isPinned ? 'border-[#C8A45D]/60 shadow-[0_4px_24px_rgba(200,164,93,0.15)]' : 'border-[#6B4F3A]/40'
+                className={`bg-white dark:bg-[#221C18] rounded-2xl p-7 border flex flex-col h-full hover:-translate-y-1 transition-transform duration-300 shadow-sm ${
+                  rule.isPinned ? 'border-[#C8A45D]/50 dark:border-[#C8A45D]/60 shadow-[0_4px_24px_rgba(200,164,93,0.15)]' : 'border-slate-200 dark:border-[#6B4F3A]/40'
                 }`}
               >
                 <div className="flex justify-between items-start mb-5 gap-4">
-                  <span className="inline-block px-3 py-1 bg-[#6B4F3A]/30 text-[#C8A45D] text-xs font-bold uppercase tracking-wider rounded-lg border border-[#6B4F3A]">
+                  <span className="inline-block px-3 py-1 bg-[#C8A45D]/10 dark:bg-[#6B4F3A]/30 text-[#C8A45D] text-xs font-bold uppercase tracking-wider rounded-lg border border-[#C8A45D]/20 dark:border-[#6B4F3A]">
                     {rule.category}
                   </span>
                   <div className="flex gap-2">
                     {isRecentlyAdded(rule.createdAt) && (
-                      <span className="inline-block px-3 py-1 bg-green-900/40 text-green-400 text-xs font-bold uppercase tracking-wider rounded-lg border border-green-800/50">
+                      <span className="inline-block px-3 py-1 bg-green-50 dark:bg-green-900/40 text-green-600 dark:text-green-400 text-xs font-bold uppercase tracking-wider rounded-lg border border-green-200 dark:border-green-800/50">
                         New
                       </span>
                     )}
@@ -166,10 +166,10 @@ const RuleBook = () => {
                   </div>
                 </div>
                 
-                <h3 className="text-xl font-bold text-[#F5F1EA] mb-3 leading-tight">{rule.title}</h3>
-                <p className="text-[#B8AEA3] flex-grow mb-6 leading-relaxed text-sm">{rule.description}</p>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-[#F5F1EA] mb-3 leading-tight">{rule.title}</h3>
+                <p className="text-slate-600 dark:text-[#B8AEA3] flex-grow mb-6 leading-relaxed text-sm">{rule.description}</p>
                 
-                <div className="mt-auto pt-4 border-t border-[#6B4F3A]/30 flex flex-col gap-2 text-xs text-[#B8AEA3]">
+                <div className="mt-auto pt-4 border-t border-slate-100 dark:border-[#6B4F3A]/30 flex flex-col gap-2 text-xs text-slate-500 dark:text-[#B8AEA3]">
                   <div className="flex items-center gap-2">
                     <Calendar size={14} className="text-[#C8A45D]" />
                     <span>Effective: {new Date(rule.effectiveDate || rule.createdAt).toLocaleDateString()}</span>
