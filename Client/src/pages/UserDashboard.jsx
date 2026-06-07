@@ -184,31 +184,40 @@ const UserDashboard = () => {
       timestamp: new Date().toISOString()
     };
 
-    setMessages(prev => [...prev, userMsg]);
+    setMessages(prev => {
+      const updated = [...prev, userMsg];
+      return updated.slice(-12); // Keep only the last 6 pairs (12 messages)
+    });
     setAiInput('');
     setAiLoading(true);
 
     try {
       const response = await askAssistant(userMsg.content);
       
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: response.answer,
-        source: response.source,
-        title: response.title,
-        timestamp: new Date().toISOString()
-      }]);
+      setMessages(prev => {
+        const updated = [...prev, {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: response.answer,
+          source: response.source,
+          title: response.title,
+          timestamp: new Date().toISOString()
+        }];
+        return updated.slice(-12);
+      });
     } catch (error) {
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'Sorry, I am having trouble connecting to the network right now. Please try again later.',
-        source: '⚠️ System Error',
-        title: 'Network Error',
-        timestamp: new Date().toISOString(),
-        isError: true
-      }]);
+      setMessages(prev => {
+        const updated = [...prev, {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: 'Sorry, I am having trouble connecting to the network right now. Please try again later.',
+          source: '⚠️ System Error',
+          title: 'Network Error',
+          timestamp: new Date().toISOString(),
+          isError: true
+        }];
+        return updated.slice(-12);
+      });
     } finally {
       setAiLoading(false);
     }
@@ -456,20 +465,20 @@ const UserDashboard = () => {
                   Your society is safe and sound. 4 guards are currently patrolling and all systems are operational.
                 </p>
               </div>
-              <div className="mt-8 rounded-2xl bg-slate-100 dark:bg-[#221C18]/60 border border-slate-200 dark:border-[#221C18] p-5 flex items-start gap-4 backdrop-blur-md w-fit relative z-10 shadow-inner">
-                <span className="text-4xl font-serif font-bold text-[#8B6B4A] opacity-50 leading-none mt-1">"</span>
+              <div className="mt-8 rounded-2xl bg-slate-100 dark:bg-[#221C18]/60 border border-slate-200 dark:border-[#221C18] py-8 px-6 min-h-[140px] flex items-center gap-5 backdrop-blur-md w-[85%] max-w-3xl relative z-10 shadow-inner">
+                <span className="text-6xl font-serif font-bold text-[#8B6B4A] opacity-50 leading-none mt-2">"</span>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#8B6B4A] mb-1.5">Daily Suvichar - {suvichar.author}</p>
-                  <p className="text-sm font-medium text-slate-900 dark:text-[#dae2fd] italic">"{suvichar.quote}"</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-[#8B6B4A] mb-2">Daily Suvichar - {suvichar.author}</p>
+                  <p className="text-lg font-medium text-slate-900 dark:text-[#dae2fd] italic leading-relaxed">"{suvichar.quote}"</p>
                 </div>
               </div>
             </div>
 
             {/* Panchayat AI Widget */}
-            <div className="rounded-[24px] border border-[#C8A45D]/30 bg-gradient-to-b from-slate-200 to-slate-100 dark:from-[#221C18] dark:to-[#151210] p-[1px] shadow-lg lg:col-span-1 lg:row-span-2 h-full min-h-[320px]">
-              <div className="h-full rounded-[23px] bg-slate-50 dark:bg-[#1A1614] p-5 flex flex-col relative overflow-hidden">
+            <div className="rounded-[24px] border border-[#C8A45D]/30 bg-gradient-to-b from-slate-200 to-slate-100 dark:from-[#221C18] dark:to-[#151210] p-[1px] shadow-lg lg:col-span-1 h-full min-h-[300px]">
+              <div className="h-full rounded-[23px] bg-slate-50 dark:bg-[#1A1614] p-4 flex flex-col relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#C8A45D]/5 blur-3xl rounded-full"></div>
-                <div className="flex items-center gap-3 mb-5 relative z-10">
+                <div className="flex items-center gap-3 mb-4 relative z-10">
                   <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                     <Sparkles className="h-5 w-5" />
                   </div>
@@ -482,7 +491,7 @@ const UserDashboard = () => {
                   </div>
                 </div>
 
-                <div className="flex-1 rounded-2xl bg-white dark:bg-[#221C18]/80 p-4 border border-slate-200 dark:border-[#221C18] mb-4 relative z-10 shadow-inner overflow-y-auto custom-scrollbar flex flex-col gap-4">
+                <div className="flex-1 max-h-[250px] rounded-2xl bg-white dark:bg-[#221C18]/80 p-3 border border-slate-200 dark:border-[#221C18] mb-3 relative z-10 shadow-inner overflow-y-auto custom-scrollbar flex flex-col gap-3">
                   {messages.map((msg) => (
                     <div 
                       key={msg.id} 
@@ -493,7 +502,7 @@ const UserDashboard = () => {
                           ? 'bg-gradient-to-br from-[#C8A45D] to-[#B38D46] text-[#151210] rounded-br-sm' 
                           : msg.isError 
                             ? 'bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-bl-sm'
-                            : 'bg-[#151210] border border-emerald-500 text-white rounded-bl-sm'
+                            : 'bg-emerald-50 dark:bg-[#151210] border border-emerald-500/30 dark:border-emerald-500 rounded-bl-sm'
                       }`}>
                         {msg.role === 'assistant' && msg.source && !msg.isError && (
                           <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded border text-[8px] font-bold uppercase tracking-wider mb-2 w-fit ${getSourceStyle(msg.source)}`}>
@@ -503,10 +512,10 @@ const UserDashboard = () => {
                         )}
                         
                         {msg.title && (
-                          <h4 className="font-bold text-[11px] mb-1 text-white">{msg.title}</h4>
+                          <h4 className="font-bold text-[11px] mb-1 text-slate-900 dark:text-white">{msg.title}</h4>
                         )}
                         
-                        <div className="text-[11px] leading-relaxed font-medium whitespace-pre-wrap text-white/90">
+                        <div className="text-[11px] leading-relaxed font-medium whitespace-pre-wrap text-slate-700 dark:text-white/90">
                           {msg.content}
                         </div>
                       </div>
@@ -538,7 +547,7 @@ const UserDashboard = () => {
                     onKeyDown={(e) => e.key === 'Enter' && handleAiSubmit()}
                     placeholder="Ask about rules, timings..." 
                     disabled={aiLoading}
-                    className="w-full bg-white dark:bg-[#151210] border border-slate-200 dark:border-[#221C18] text-xs text-slate-900 dark:text-[#dae2fd] placeholder:text-[#6B4F3A] rounded-[14px] pl-4 pr-10 py-3.5 focus:outline-none focus:border-[#C8A45D]/50 focus:ring-1 focus:ring-[#C8A45D]/50 transition-colors shadow-inner disabled:opacity-50"
+                    className="w-full bg-white dark:bg-[#151210] border border-slate-200 dark:border-[#221C18] text-xs text-slate-900 dark:text-[#dae2fd] placeholder:text-[#6B4F3A] rounded-[14px] pl-4 pr-10 py-3 focus:outline-none focus:border-[#C8A45D]/50 focus:ring-1 focus:ring-[#C8A45D]/50 transition-colors shadow-inner disabled:opacity-50"
                   />
                   <button 
                     onClick={handleAiSubmit}
@@ -552,7 +561,7 @@ const UserDashboard = () => {
             </div>
 
             {/* Recent Rules Widget */}
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-2">
               <RecentRulesWidget />
             </div>
 
