@@ -66,7 +66,7 @@ const UserDashboard = () => {
     {
       id: 'welcome',
       role: 'assistant',
-      content: `Hello ${user ? user.fullName.split(' ')[0] : 'Resident'}! Ask me anything about the society rules, policies, or timings.`,
+      content: `Hello ${user ? user.fullName.split(' ')[0] : 'Resident'}! Ask me about society rules, notices, timings, or office details and I’ll answer using Panchayat knowledge with RAG.`,
       source: '🤖 AI Assistant',
       timestamp: new Date().toISOString()
     }
@@ -201,6 +201,8 @@ const UserDashboard = () => {
           content: response.answer,
           source: response.source,
           title: response.title,
+          references: response.references || [],
+          retrievalMode: response.retrievalMode,
           timestamp: new Date().toISOString()
         }];
         return updated.slice(-12);
@@ -210,9 +212,9 @@ const UserDashboard = () => {
         const updated = [...prev, {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: 'Sorry, I am having trouble connecting to the network right now. Please try again later.',
+          content: error.message || 'Sorry, I am having trouble connecting right now. Please try again later.',
           source: '⚠️ System Error',
-          title: 'Network Error',
+          title: 'Assistant Error',
           timestamp: new Date().toISOString(),
           isError: true
         }];
@@ -238,6 +240,10 @@ const UserDashboard = () => {
     if (source.includes('Information')) return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
     return 'bg-[#C8A45D]/10 text-[#C8A45D] border-[#C8A45D]/20';
   };
+
+  const getReferenceLabel = (retrievalMode) => (
+    retrievalMode === 'keyword-fallback' ? 'Fallback Match' : 'RAG Sources'
+  );
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', active: true },
@@ -518,6 +524,19 @@ const UserDashboard = () => {
                         <div className="text-[11px] leading-relaxed font-medium whitespace-pre-wrap text-slate-700 dark:text-white/90">
                           {msg.content}
                         </div>
+
+                        {msg.references?.length > 0 && (
+                          <div className="mt-3 border-t border-slate-200/80 dark:border-white/10 pt-2">
+                            <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-[#8B6B4A]">
+                              {getReferenceLabel(msg.retrievalMode)}
+                            </p>
+                            <p className="mt-1 text-[10px] leading-relaxed text-slate-600 dark:text-white/70">
+                              {msg.references
+                                .map((reference) => `${reference.title}${reference.meta ? ` (${reference.meta})` : ''}`)
+                                .join(' • ')}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -531,7 +550,7 @@ const UserDashboard = () => {
                             <div className="w-1.5 h-1.5 bg-[#C8A45D] rounded-full animation-delay-200"></div>
                             <div className="w-1.5 h-1.5 bg-[#C8A45D] rounded-full animation-delay-400"></div>
                           </div>
-                          <span className="text-[10px] text-slate-500 dark:text-[#B8AEA3] font-medium">Thinking...</span>
+                          <span className="text-[10px] text-slate-500 dark:text-[#B8AEA3] font-medium">Retrieving society context...</span>
                         </div>
                       </div>
                     </div>
@@ -545,7 +564,7 @@ const UserDashboard = () => {
                     value={aiInput}
                     onChange={(e) => setAiInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAiSubmit()}
-                    placeholder="Ask about rules, timings..." 
+                    placeholder="Ask about rules, office timings, gym location..." 
                     disabled={aiLoading}
                     className="w-full bg-white dark:bg-[#151210] border border-slate-200 dark:border-[#221C18] text-xs text-slate-900 dark:text-[#dae2fd] placeholder:text-[#6B4F3A] rounded-[14px] pl-4 pr-10 py-3 focus:outline-none focus:border-[#C8A45D]/50 focus:ring-1 focus:ring-[#C8A45D]/50 transition-colors shadow-inner disabled:opacity-50"
                   />

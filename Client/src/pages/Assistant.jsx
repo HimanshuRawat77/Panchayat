@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Sparkles, LayoutDashboard, ChevronLeft, ShieldCheck, Megaphone, Building2, AlertCircle } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import API_BASE_URL from '../config';
+import { askAssistant } from '../services/aiService';
 
 const Assistant = () => {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const Assistant = () => {
     {
       id: 'welcome',
       role: 'assistant',
-      content: 'Welcome to Panchayat AI! How can I assist you with society rules, notices, or general information today?',
+      content: 'Welcome to Panchayat AI! Ask about society rules, notices, timings, or office details and I will answer using retrieved Panchayat knowledge.',
       source: '🤖 AI Assistant',
       timestamp: new Date()
     }
@@ -50,6 +50,10 @@ const Assistant = () => {
     return 'bg-[#C8A45D]/10 text-[#C8A45D] border-[#C8A45D]/20';
   };
 
+  const getReferenceLabel = (retrievalMode) => (
+    retrievalMode === 'keyword-fallback' ? 'Fallback Match' : 'RAG Sources'
+  );
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -66,21 +70,7 @@ const Assistant = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/ai/ask`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` })
-        },
-        body: JSON.stringify({ question: userMsg.content })
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to get answer');
-      }
+      const data = await askAssistant(userMsg.content);
 
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
@@ -88,6 +78,8 @@ const Assistant = () => {
         content: data.answer,
         source: data.source,
         title: data.title,
+        references: data.references || [],
+        retrievalMode: data.retrievalMode,
         timestamp: new Date()
       }]);
 
@@ -95,8 +87,9 @@ const Assistant = () => {
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'I apologize, but I am having trouble connecting right now. Please try again later.',
+        content: error.message || 'I apologize, but I am having trouble connecting right now. Please try again later.',
         source: '⚠️ System Error',
+        title: 'Assistant Error',
         timestamp: new Date(),
         isError: true
       }]);
@@ -163,6 +156,19 @@ const Assistant = () => {
                 <p className="text-sm leading-relaxed whitespace-pre-wrap font-medium">
                   {msg.content}
                 </p>
+
+                {msg.references?.length > 0 && (
+                  <div className="mt-3 border-t border-white/10 pt-2">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8B6B4A]">
+                      {getReferenceLabel(msg.retrievalMode)}
+                    </p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-[#B8AEA3]">
+                      {msg.references
+                        .map((reference) => `${reference.title}${reference.meta ? ` (${reference.meta})` : ''}`)
+                        .join(' • ')}
+                    </p>
+                  </div>
+                )}
                 
                 <div className={`text-[10px] mt-2 font-medium ${msg.role === 'user' ? 'text-[#151210]/60' : 'text-[#8B6B4A]'}`}>
                   {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -180,7 +186,7 @@ const Assistant = () => {
                     <div className="w-2 h-2 bg-[#C8A45D] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     <div className="w-2 h-2 bg-[#C8A45D] rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                   </div>
-                  <span className="text-xs text-[#8B6B4A] font-medium ml-2">Searching knowledge base...</span>
+                  <span className="text-xs text-[#8B6B4A] font-medium ml-2">Retrieving society context...</span>
                 </div>
               </div>
             </div>
@@ -197,7 +203,7 @@ const Assistant = () => {
               type="text" 
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about gym timings, recent notices, or society office..." 
+              placeholder="Ask about gym location, office timings, recent notices..." 
               disabled={loading}
               className="w-full bg-[#1A1614] border border-[#221C18] text-sm text-[#dae2fd] placeholder:text-[#6B4F3A] rounded-xl pl-5 pr-14 py-4 focus:outline-none focus:border-[#C8A45D]/50 focus:ring-1 focus:ring-[#C8A45D]/50 transition-colors shadow-inner disabled:opacity-50"
             />
@@ -211,7 +217,7 @@ const Assistant = () => {
           </form>
           <div className="text-center mt-3">
             <p className="text-[10px] text-[#8B6B4A] font-medium uppercase tracking-widest">
-              Panchayat AI searches internal rules & notices before consulting external knowledge.
+              Panchayat AI answers with Gemini-powered RAG over internal rules, notices, and society information.
             </p>
           </div>
         </div>

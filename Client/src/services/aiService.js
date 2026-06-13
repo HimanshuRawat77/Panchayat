@@ -36,7 +36,15 @@ export const askAssistant = async (question) => {
       body: JSON.stringify({ question }),
     });
 
-    const data = await response.json();
+    const raw = await response.text();
+    let data = {};
+
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch {
+      throw new Error('Assistant returned an invalid response');
+    }
+
     if (!response.ok) {
       throw new Error(data.message || 'Failed to get AI answer');
     }
@@ -44,6 +52,6 @@ export const askAssistant = async (question) => {
     return data;
   } catch (error) {
     console.error('AI Service Error:', error);
-    throw error;
+    throw new Error(error.message || 'Failed to get AI answer');
   }
 };

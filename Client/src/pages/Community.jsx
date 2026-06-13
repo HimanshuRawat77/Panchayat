@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Bell,
   Search,
@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { createCommunityPost, getCommunityPosts } from '../services/communityService';
 
 function readUserFromStorage() {
   try {
@@ -45,6 +46,8 @@ const Community = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [postContent, setPostContent] = useState('');
   const [postCategory, setPostCategory] = useState('Suggestion');
+  const [posts, setPosts] = useState([]);
+  const [postsLoading, setPostsLoading] = useState(true);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -66,61 +69,51 @@ const Community = () => {
     { icon: LogOut, label: 'Sign Out', action: handleLogout },
   ];
 
-  // Mockup Data
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      author: 'Vikram Patel',
-      block: 'Block A, 14th Floor',
-      avatar: null,
-      category: 'Lost & Found',
-      content: 'Has anyone seen a set of keys with a Honda keychain? I lost them somewhere near the walking track yesterday evening. Please let me know if found.',
-      timestamp: '2 hours ago',
-      likes: 4,
-      comments: 1
-    },
-    {
-      id: 2,
-      author: 'Priya Sharma',
-      block: 'Block C, 8th Floor',
-      avatar: null,
-      category: 'Community Event',
-      content: 'We are organizing a Yoga session this Sunday at 7 AM in the clubhouse. Everyone is welcome to join, just bring your own mat!',
-      timestamp: '5 hours ago',
-      likes: 24,
-      comments: 8
-    },
-    {
-      id: 3,
-      author: 'Amit Singh',
-      block: 'Block B, 2nd Floor',
-      avatar: null,
-      category: 'Suggestion',
-      content: 'Can we request the management to increase the lighting near the visitor parking? It gets quite dark there in the evenings.',
-      timestamp: '1 day ago',
-      likes: 45,
-      comments: 12
-    }
-  ]);
+  useEffect(() => {
+    if (!user) return;
 
-  const handlePost = (e) => {
-    e.preventDefault();
-    if (!postContent.trim()) return;
-    
-    const newPost = {
-      id: Date.now(),
-      author: user?.fullName || 'Resident',
-      block: user?.block || 'Block N/A',
-      avatar: user?.avatar,
-      category: postCategory,
-      content: postContent,
-      timestamp: 'Just now',
-      likes: 0,
-      comments: 0
+    const loadPosts = async () => {
+      try {
+        const data = await getCommunityPosts();
+        setPosts(data);
+      } catch (error) {
+        console.error('Failed to load community posts', error);
+      } finally {
+        setPostsLoading(false);
+      }
     };
 
-    setPosts([newPost, ...posts]);
-    setPostContent('');
+    loadPosts();
+  }, [user]);
+
+  const formatTimestamp = (value) => {
+    if (!value) return 'Just now';
+    const date = new Date(value);
+    const diffMs = Date.now() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffHours < 1) return 'Just now';
+    if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+    return date.toLocaleDateString();
+  };
+
+  const handlePost = async (e) => {
+    e.preventDefault();
+    if (!postContent.trim()) return;
+
+    try {
+      const newPost = await createCommunityPost({
+        category: postCategory,
+        content: postContent,
+      });
+
+      setPosts((prev) => [newPost, ...prev]);
+      setPostContent('');
+    } catch (error) {
+      console.error('Failed to create community post', error);
+    }
   };
 
   const getCategoryStyles = (cat) => {
@@ -309,8 +302,16 @@ const Community = () => {
 
           {/* Feed */}
           <div className="space-y-6">
-            {posts.map(post => (
-              <div key={post.id} className="rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-6 shadow-sm transition-all hover:border-[#6B4F3A]/50">
+            {postsLoading ? (
+              <div className="rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-6 shadow-sm">
+                <p className="text-sm text-slate-500 dark:text-[#B8AEA3]">Loading community posts...</p>
+              </div>
+            ) : posts.length === 0 ? (
+              <div className="rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-6 shadow-sm">
+                <p className="text-sm text-slate-500 dark:text-[#B8AEA3]">No community posts yet. Be the first to share an update.</p>
+              </div>
+            ) : posts.map(post => (
+              <div key={post._id || post.id} className="rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-6 shadow-sm transition-all hover:border-[#6B4F3A]/50">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full overflow-hidden border border-[#C8A45D]/40">
@@ -318,12 +319,12 @@ const Community = () => {
                         <img src={post.avatar} alt="Profile" className="h-full w-full object-cover" />
                       ) : (
                         <div className="h-full w-full bg-white dark:bg-[#221C18] flex items-center justify-center text-[#C8A45D] font-bold">
-                          {post.author.charAt(0)}
+                          {(post.authorName || post.author || 'R').charAt(0)}
                         </div>
                       )}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-slate-900 dark:text-[#dae2fd] text-sm">{post.author}</h4>
+                      <h4 className="font-semibold text-slate-900 dark:text-[#dae2fd] text-sm">{post.authorName || post.author}</h4>
                       <p className="text-[10px] text-[#8B6B4A] uppercase tracking-widest">{post.block}</p>
                     </div>
                   </div>
@@ -345,7 +346,7 @@ const Community = () => {
                       <MessageCircle className="h-4 w-4" /> {post.comments}
                     </button>
                   </div>
-                  <span className="text-[10px] font-medium text-[#6B4F3A]">{post.timestamp}</span>
+                  <span className="text-[10px] font-medium text-[#6B4F3A]">{formatTimestamp(post.createdAt || post.timestamp)}</span>
                 </div>
               </div>
             ))}

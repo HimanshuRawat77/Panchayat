@@ -8,7 +8,9 @@ const societyInfoSchema = new mongoose.Schema(
     officeTiming: { type: String, required: true },
     emergencyNumber: { type: String, required: true },
     gymLocation: { type: String },
+    gymTiming: { type: String },
     clubhouseLocation: { type: String },
+    clubhouseTiming: { type: String },
     securityDesk: { type: String },
   },
   { timestamps: true }

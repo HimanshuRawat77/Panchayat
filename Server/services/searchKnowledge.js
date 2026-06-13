@@ -8,17 +8,62 @@ export const searchKnowledgeBase = async (question) => {
   // 1. Search SocietyInfo First
   const societyInfos = await SocietyInfo.find();
   for (const info of societyInfos) {
-    if ((query.includes('gym') && info.gymLocation) || (query.includes('where') && query.includes('gym'))) {
-      if (info.gymLocation) return { source: '🏢 Society Information', title: 'Gym Location', answer: info.gymLocation };
+    if (query.includes('gym')) {
+      if (query.includes('timing') || query.includes('time') || query.includes('open')) {
+        if (info.gymTiming) {
+          return {
+            source: '🏢 Society Information',
+            title: 'Gym Timings',
+            answer: info.gymLocation
+              ? `Gym timings are ${info.gymTiming}. Location: ${info.gymLocation}.`
+              : `Gym timings are ${info.gymTiming}.`,
+          };
+        }
+
+        if (info.gymLocation) {
+          return {
+            source: '🏢 Society Information',
+            title: 'Gym Timing Not Configured',
+            answer: `I found the gym location at ${info.gymLocation}, but no gym timing is configured in society information yet.`,
+          };
+        }
+      }
+
+      if (info.gymLocation || (query.includes('where') && query.includes('gym'))) {
+        if (info.gymLocation) return { source: '🏢 Society Information', title: 'Gym Location', answer: info.gymLocation };
+      }
     }
+
     if ((query.includes('office') || query.includes('manager')) && info.officeLocation) {
       return { source: '🏢 Society Information', title: 'Office Location & Timing', answer: `Office is located at ${info.officeLocation}. Timings: ${info.officeTiming}` };
     }
     if ((query.includes('emergency') || query.includes('help') || query.includes('police') || query.includes('ambulance')) && info.emergencyNumber) {
       return { source: '🏢 Society Information', title: 'Emergency Contact', answer: `Emergency Number: ${info.emergencyNumber}` };
     }
-    if ((query.includes('clubhouse') || query.includes('club')) && info.clubhouseLocation) {
-      return { source: '🏢 Society Information', title: 'Clubhouse Location', answer: info.clubhouseLocation };
+    if (query.includes('clubhouse') || query.includes('club')) {
+      if (query.includes('timing') || query.includes('time') || query.includes('open')) {
+        if (info.clubhouseTiming) {
+          return {
+            source: '🏢 Society Information',
+            title: 'Clubhouse Timings',
+            answer: info.clubhouseLocation
+              ? `Clubhouse timings are ${info.clubhouseTiming}. Location: ${info.clubhouseLocation}.`
+              : `Clubhouse timings are ${info.clubhouseTiming}.`,
+          };
+        }
+
+        if (info.clubhouseLocation) {
+          return {
+            source: '🏢 Society Information',
+            title: 'Clubhouse Timing Not Configured',
+            answer: `I found the clubhouse location at ${info.clubhouseLocation}, but no clubhouse timing is configured in society information yet.`,
+          };
+        }
+      }
+
+      if (info.clubhouseLocation) {
+        return { source: '🏢 Society Information', title: 'Clubhouse Location', answer: info.clubhouseLocation };
+      }
     }
     if (query.includes('security') || query.includes('gate')) {
       if (info.securityDesk) return { source: '🏢 Society Information', title: 'Security Desk', answer: info.securityDesk };

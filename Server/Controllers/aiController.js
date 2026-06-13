@@ -26,6 +26,14 @@ export const askAssistant = async (req, res) => {
     const response = await askAIAssistant(question);
     res.status(200).json(response);
   } catch (error) {
-    res.status(500).json({ message: error.message || "Internal server error" });
+    console.error('Assistant route error:', error);
+    res.status(200).json({
+      source: '🤖 Panchayat AI',
+      title: 'Assistant Temporarily Limited',
+      answer: "I couldn't complete the full AI lookup right now, but you can try rephrasing the question or ask the society office for confirmation.",
+      references: [],
+      retrievalMode: 'controller-fallback',
+      message: error.message || 'Internal server error',
+    });
   }
 };
