@@ -39,6 +39,7 @@ function readUserFromStorage() {
     if (!storedUser) return null;
     const parsedUser = JSON.parse(storedUser);
     return {
+      _id: parsedUser.id || parsedUser._id,
       fullName: parsedUser.fullName || 'User',
       block: parsedUser.block || 'N/A',
       avatar: parsedUser.avatar || '👤',
@@ -369,14 +370,6 @@ const UserDashboard = () => {
             <h2 className="hidden lg:block text-xl font-bold tracking-tight text-slate-900 dark:text-[#dae2fd] mr-4 opacity-80">
               Panchayat
             </h2>
-            <div className="relative max-w-lg w-full hidden sm:block">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8B6B4A]" />
-              <input 
-                type="text" 
-                placeholder="Search society updates, neighbors, or services..." 
-                className="w-full bg-white dark:bg-[#1A1614] border border-slate-200 dark:border-[#221C18] text-sm text-slate-900 dark:text-[#dae2fd] placeholder:text-[#6B4F3A] rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#C8A45D]/50 focus:ring-1 focus:ring-[#C8A45D]/50 transition-colors shadow-inner shadow-slate-200 dark:shadow-black/10"
-              />
-            </div>
           </div>
 
           <div className="flex items-center gap-3 sm:gap-5 ml-4">
