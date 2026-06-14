@@ -61,8 +61,8 @@ const Profile = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 1024 * 1024) {
-        toast.error('Image must be under 1 MB');
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image must be under 5 MB');
         return;
       }
       const reader = new FileReader();
