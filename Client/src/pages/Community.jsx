@@ -60,7 +60,7 @@ const Community = () => {
     { icon: BarChart3, label: 'Analytics', path: '/analytics' },
     { icon: Users, label: 'Community', path: '/community', active: true },
     { icon: MessageSquareWarning, label: 'Complaints', path: '/complaints' },
-    { icon: Wrench, label: 'Maintenance', path: '#' },
+
     { icon: Settings, label: 'Settings', path: '/profile' },
   ];
 

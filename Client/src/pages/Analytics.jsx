@@ -102,7 +102,7 @@ const Analytics = () => {
     { icon: BarChart3, label: 'Analytics', path: '/analytics', active: true },
     { icon: Users, label: 'Community', path: '/community' },
     { icon: MessageSquareWarning, label: 'Complaints', path: '/complaints' },
-    { icon: Wrench, label: 'Maintenance', path: '#' },
+
     { icon: Settings, label: 'Settings', path: '/profile' },
   ];
 
