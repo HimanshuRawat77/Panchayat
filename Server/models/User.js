@@ -63,6 +63,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    subscriptionMode: {
+      type: String,
+      default: "free trial",
+    },
   },
   {
     timestamps: true,

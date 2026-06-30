@@ -35,7 +35,8 @@ export const signup = async (req, res) => {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
-        role: user.role
+        role: user.role,
+        subscriptionMode: user.subscriptionMode
       }
     });
 
@@ -77,7 +78,8 @@ export const login = async (req, res) => {
         role: user.role,
         block: user.block,
         houseNumber: user.houseNumber,
-        avatar: user.avatar
+        avatar: user.avatar,
+        subscriptionMode: user.subscriptionMode
       }
     });
 
@@ -117,7 +119,8 @@ export const updateProfile = async (req, res) => {
         role: user.role,
         block: user.block,
         houseNumber: user.houseNumber,
-        avatar: user.avatar
+        avatar: user.avatar,
+        subscriptionMode: user.subscriptionMode
       }
     });
   } catch (error) {

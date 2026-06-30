@@ -118,6 +118,7 @@ const Profile = () => {
     { label: 'Block', name: 'block' },
     { label: 'Nationality', name: 'nationality' },
     { label: 'Religion', name: 'religion' },
+    { label: 'Mode', name: 'subscriptionMode', disabled: true },
   ];
 
   return (
@@ -217,11 +218,11 @@ const Profile = () => {
                   name={field.name}
                   value={user[field.name] || ''}
                   onChange={handleChange}
-                  disabled={!editMode}
+                  disabled={!editMode || field.disabled}
                   className={`w-full rounded-xl border px-4 py-3.5 text-sm font-medium outline-none transition ${
-                    editMode
-                      ? 'border-indigo-200 bg-white text-slate-900 ring-indigo-500/0 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 dark:border-[#6B4F3A] dark:bg-[#151210] dark:text-[#F5F1EA] dark:focus:border-[#C8A45D] dark:focus:ring-[#C8A45D]/10'
-                      : 'cursor-not-allowed border-transparent bg-slate-50 text-slate-600 dark:bg-[#151210]/50 dark:text-[#B8AEA3]'
+                    (!editMode || field.disabled)
+                      ? 'cursor-not-allowed border-transparent bg-slate-50 text-slate-600 dark:bg-[#151210]/50 dark:text-[#B8AEA3]'
+                      : 'border-indigo-200 bg-white text-slate-900 ring-indigo-500/0 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 dark:border-[#6B4F3A] dark:bg-[#151210] dark:text-[#F5F1EA] dark:focus:border-[#C8A45D] dark:focus:ring-[#C8A45D]/10'
                   }`}
                 />
               </div>
