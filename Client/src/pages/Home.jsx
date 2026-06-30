@@ -3,9 +3,7 @@ import { motion as Motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
-  Mic,
   Bot,
-  Brain,
   BookOpen,
   Users,
   Megaphone,
@@ -24,22 +22,6 @@ const stats = [
 ];
 
 const features = [
-  {
-    Icon: Mic,
-    title: 'Voice Complaint System',
-    description:
-      'Residents can register complaints using voice memos. Our AI transcribes and categorizes them automatically for the maintenance team.',
-    accentBg: 'bg-amber-100 dark:bg-[#C8A45D]/10',
-    accentText: 'text-amber-700 dark:text-[#E0C27A]',
-  },
-  {
-    Icon: Brain,
-    title: 'AI Summarization',
-    description:
-      'Long community threads condensed into quick, actionable insights for the management committee.',
-    accentBg: 'bg-orange-100 dark:bg-[#8B6B4A]/15',
-    accentText: 'text-orange-700 dark:text-[#C8A45D]',
-  },
   {
     Icon: Bot,
     title: 'AI Assistant',

@@ -9,7 +9,6 @@ import {
   Globe,
   Lightbulb,
   Megaphone,
-  Mic,
   Sparkles,
   Target,
   TrendingUp,
@@ -33,7 +32,7 @@ const sections = [
     subtitle: 'One calm operating system',
     Icon: Lightbulb,
     accent: 'from-amber-500/15 to-yellow-500/10 text-amber-600 dark:text-[#C8A45D]',
-    body: 'Panchayat unifies voice and text complaints, AI summarization, and a management dashboard. Everyone sees status in one place—less back-and-forth, faster resolution, fewer dropped threads.',
+    body: 'Panchayat unifies complaints and a management dashboard. Everyone sees status in one place—less back-and-forth, faster resolution, fewer dropped threads.',
   },
   {
     id: 'vision',
@@ -54,8 +53,7 @@ const sections = [
 ];
 
 const highlights = [
-  { text: 'Voice complaints — speak, don’t scramble', Icon: Mic },
-  { text: 'AI summarization & assistant', Icon: Bot },
+  { text: 'AI assistant', Icon: Bot },
   { text: 'Live complaint tracking', Icon: TrendingUp },
   { text: 'Digital notice board', Icon: Megaphone },
   { text: 'Society rule book', Icon: BookOpen },

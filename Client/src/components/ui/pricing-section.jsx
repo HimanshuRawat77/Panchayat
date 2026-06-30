@@ -10,8 +10,7 @@ const plans = [
     price: '1 Month Free',
     description: 'Explore all features with no commitment.',
     features: [
-      'Voice complaints',
-      'AI summarization',
+
       'Basic tracking',
       'Limited AI queries',
       'Rule book access',
