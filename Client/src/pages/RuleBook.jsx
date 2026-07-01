@@ -81,7 +81,7 @@ const RuleBook = () => {
       <div className="mx-auto max-w-7xl px-4 pb-14 pt-28 sm:px-6 lg:px-8">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div data-tour="rulebook" className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1 className="text-4xl font-bold text-[#C8A45D] mb-2 flex items-center gap-3">
               Society Rule Book

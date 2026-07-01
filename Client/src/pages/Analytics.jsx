@@ -35,6 +35,7 @@ import {
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { getMyComplaints } from '../services/complaintService';
+import { useTourGuide } from '../components/TourGuide';
 import {
   LineChart,
   Line,
@@ -68,6 +69,7 @@ function readUserFromStorage() {
 const Analytics = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const { startTour } = useTourGuide();
   const [user] = useState(readUserFromStorage);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [complaints, setComplaints] = useState([]);
@@ -107,7 +109,7 @@ const Analytics = () => {
   ];
 
   const bottomNavItems = [
-    { icon: HelpCircle, label: 'Support', action: () => {} },
+    { icon: HelpCircle, label: 'Website Tour', action: () => startTour(0) },
     { icon: LogOut, label: 'Sign Out', action: handleLogout },
   ];
 
@@ -310,6 +312,7 @@ const Analytics = () => {
             return (
               <button
                 key={item.label}
+                data-tour={item.label === 'Website Tour' ? 'help' : undefined}
                 onClick={item.action}
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 dark:text-[#B8AEA3] hover:bg-slate-100 dark:hover:bg-[#221C18]/60 hover:text-slate-900 dark:hover:text-[#dae2fd] transition-all"
               >
@@ -382,7 +385,7 @@ const Analytics = () => {
             </div>
 
             {/* Section 1: Overview Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div data-tour="analytics" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-6 shadow-sm hover:border-[#6B4F3A]/50 transition-all duration-300 group cursor-default relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity"><MessageSquareWarning className="w-24 h-24" /></div>
                 <div className="flex items-center gap-3 mb-4">

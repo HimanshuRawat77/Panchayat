@@ -196,7 +196,7 @@ const Assistant = () => {
       </main>
 
       {/* Input Area */}
-      <footer className="bg-[#151210] border-t border-[#221C18] p-4 sm:p-6 z-20">
+      <footer data-tour="assistant" className="bg-[#151210] border-t border-[#221C18] p-4 sm:p-6 z-20">
         <div className="max-w-3xl mx-auto">
           <form onSubmit={handleSend} className="relative flex items-center">
             <input 

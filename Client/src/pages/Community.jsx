@@ -22,6 +22,7 @@ import {
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { createCommunityPost, getCommunityPosts } from '../services/communityService';
+import { useTourGuide } from '../components/TourGuide';
 
 function readUserFromStorage() {
   try {
@@ -42,6 +43,7 @@ function readUserFromStorage() {
 const Community = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const { startTour } = useTourGuide();
   const [user] = useState(readUserFromStorage);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [postContent, setPostContent] = useState('');
@@ -65,7 +67,7 @@ const Community = () => {
   ];
 
   const bottomNavItems = [
-    { icon: HelpCircle, label: 'Support', action: () => {} },
+    { icon: HelpCircle, label: 'Website Tour', action: () => startTour(0) },
     { icon: LogOut, label: 'Sign Out', action: handleLogout },
   ];
 
@@ -181,6 +183,7 @@ const Community = () => {
             return (
               <button
                 key={item.label}
+                data-tour={item.label === 'Website Tour' ? 'help' : undefined}
                 onClick={item.action}
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 dark:text-[#B8AEA3] hover:bg-slate-100 dark:hover:bg-[#221C18]/60 hover:text-slate-900 dark:hover:text-[#dae2fd] transition-all"
               >
@@ -250,7 +253,7 @@ const Community = () => {
         <div className="p-6 lg:p-8 w-full max-w-3xl mx-auto space-y-6">
           
           {/* Create Post Widget */}
-          <div className="rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-6 shadow-sm">
+          <div data-tour="community" className="rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-6 shadow-sm">
             <h3 className="font-semibold text-slate-900 dark:text-[#dae2fd] text-base mb-4 flex items-center gap-2">
               <MessageCircle className="h-4 w-4 text-[#C8A45D]" /> Connect with Neighbors
             </h3>

@@ -181,7 +181,7 @@ const Profile = () => {
           </p>
         </div>
 
-        <div className="rounded-3xl border border-slate-200/80 bg-white/90 p-8 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/90 dark:shadow-card-dark md:p-10">
+        <div data-tour="profile" className="rounded-3xl border border-slate-200/80 bg-white/90 p-8 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18]/90 dark:shadow-card-dark md:p-10">
           <div className="mb-10 flex flex-col items-center">
             <div className="relative">
               <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-gradient-to-br from-slate-100 to-slate-200 shadow-xl ring-2 ring-indigo-500/20 dark:border-[#221C18] dark:from-[#221C18] dark:to-[#151210] dark:ring-[#C8A45D]/30">

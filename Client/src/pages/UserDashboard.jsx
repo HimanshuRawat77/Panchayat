@@ -33,6 +33,7 @@ import { askAssistant } from "../services/aiService";
 import { useTheme } from "../context/ThemeContext";
 import RecentRulesWidget from "../components/RecentRulesWidget";
 import API_BASE_URL from "../config";
+import { useTourGuide } from "../components/TourGuide";
 
 function readUserFromStorage() {
   try {
@@ -55,6 +56,7 @@ function readUserFromStorage() {
 const UserDashboard = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const { startTour } = useTourGuide();
   const [user] = useState(readUserFromStorage);
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -314,7 +316,7 @@ const UserDashboard = () => {
   ];
 
   const bottomNavItems = [
-    { icon: HelpCircle, label: "Support", action: () => {} },
+    { icon: HelpCircle, label: "Website Tour", action: () => startTour(0) },
     { icon: LogOut, label: "Sign Out", action: handleLogout },
   ];
 
@@ -423,6 +425,7 @@ const UserDashboard = () => {
             return (
               <button
                 key={item.label}
+                data-tour={item.label === "Website Tour" ? "help" : undefined}
                 onClick={item.action}
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-500 dark:text-[#B8AEA3] hover:bg-slate-100 dark:hover:bg-[#221C18]/60 hover:text-slate-900 dark:hover:text-[#dae2fd] transition-all"
               >
@@ -462,10 +465,11 @@ const UserDashboard = () => {
               )}
             </button>
             <div className="relative">
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="relative text-[#8B6B4A] hover:text-[#C8A45D] transition bg-white dark:bg-[#1A1614] p-2 rounded-full border border-slate-200 dark:border-[#221C18]"
-              >
+            <button
+              data-tour="notifications"
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative text-[#8B6B4A] hover:text-[#C8A45D] transition bg-white dark:bg-[#1A1614] p-2 rounded-full border border-slate-200 dark:border-[#221C18]"
+            >
                 <Bell className="h-[1.15rem] w-[1.15rem]" />
                 {unreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white ring-2 ring-white dark:ring-[#1A1614]">
@@ -527,6 +531,7 @@ const UserDashboard = () => {
 
             <Link
               to="/profile"
+              data-tour="profile"
               className="flex items-center gap-3 pl-3 sm:pl-5 border-l border-slate-200 dark:border-[#221C18]"
             >
               <div className="h-9 w-9 rounded-full overflow-hidden border border-[#C8A45D]/40 ring-2 ring-white dark:ring-[#151210]">
@@ -559,7 +564,10 @@ const UserDashboard = () => {
           {/* Main Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Hero Card */}
-            <div className="lg:col-span-2 rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-8 flex flex-col justify-between relative overflow-hidden shadow-sm">
+            <div
+              data-tour="dashboard"
+              className="lg:col-span-2 rounded-[24px] border border-slate-200 dark:border-[#221C18] bg-white dark:bg-[#1A1614] p-8 flex flex-col justify-between relative overflow-hidden shadow-sm"
+            >
               <div className="absolute right-0 top-0 w-full h-full opacity-[0.03] pointer-events-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=')]"></div>
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4 text-[#8B6B4A] text-xs font-bold uppercase tracking-widest">
@@ -591,7 +599,10 @@ const UserDashboard = () => {
             </div>
 
             {/* Panchayat AI Widget */}
-            <div className="rounded-[24px] border border-[#C8A45D]/30 bg-gradient-to-b from-slate-200 to-slate-100 dark:from-[#221C18] dark:to-[#151210] p-[1px] shadow-lg lg:col-span-1 h-full min-h-[300px]">
+            <div
+              data-tour="assistant"
+              className="rounded-[24px] border border-[#C8A45D]/30 bg-gradient-to-b from-slate-200 to-slate-100 dark:from-[#221C18] dark:to-[#151210] p-[1px] shadow-lg lg:col-span-1 h-full min-h-[300px]"
+            >
               <div className="h-full rounded-[23px] bg-slate-50 dark:bg-[#1A1614] p-4 flex flex-col relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#C8A45D]/5 blur-3xl rounded-full"></div>
                 <div className="flex items-center gap-3 mb-4 relative z-10">
@@ -715,7 +726,7 @@ const UserDashboard = () => {
             </div>
 
             {/* Recent Rules Widget */}
-            <div className="lg:col-span-2">
+            <div data-tour="rulebook" className="lg:col-span-2">
               <RecentRulesWidget />
             </div>
 

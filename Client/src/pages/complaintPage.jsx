@@ -211,7 +211,7 @@ const ComplaintPage = () => {
 
         <section className="grid gap-6 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <div className="rounded-3xl border border-indigo-200/50 bg-white/90 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18] dark:shadow-none md:p-8">
+            <div data-tour="raise-complaint" className="rounded-3xl border border-indigo-200/50 bg-white/90 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18] dark:shadow-none md:p-8">
               <div className="mb-6 flex items-center gap-3">
                 <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-500/25">
                   <MessageSquarePlus className="h-5 w-5" strokeWidth={2} />
@@ -220,7 +220,7 @@ const ComplaintPage = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="space-y-2">
+                <div data-tour="maintenance" className="space-y-2">
                   <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
                     Category
                   </label>
@@ -318,7 +318,7 @@ const ComplaintPage = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-3">
+          <div data-tour="my-complaints" className="lg:col-span-3">
             <div className="rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-card backdrop-blur-md dark:border-[#6B4F3A] dark:bg-[#221C18] dark:shadow-none md:p-8">
               <div className="mb-6 flex items-center gap-3">
                 <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-[#C8A45D]">
