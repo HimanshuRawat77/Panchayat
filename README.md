@@ -1,6 +1,6 @@
 # 🏛️ Panchayat
 
-A full-stack web application built with modern technologies for efficient management and analytics. This project features a responsive React frontend with beautiful animations and a robust Node.js backend powered by Express and MongoDB.
+A full-stack web application built with modern technologies for efficient management and analytics. This project features a responsive React frontend with beautiful animations and a robust Node.js [...]
 
 **Live Demo:** [https://panchayat-5bv7iuuh0-himanshius-projects.vercel.app](https://panchayat-5bv7iuuh0-himanshius-projects.vercel.app)
 
@@ -20,12 +20,13 @@ A full-stack web application built with modern technologies for efficient manage
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
 - [License](#license)
+- [Razorpay Integration (Easy Guide)](#razorpay-integration-easy-guide)
 
 ---
 
 ## 🎯 About
 
-**Panchayat** is a full-stack application that combines a modern, interactive React frontend with a comprehensive backend API. The application provides user management, authentication, document generation, and analytics capabilities using AI-powered features.
+**Panchayat** is a full-stack application that combines a modern, interactive React frontend with a comprehensive backend API. The application provides user management, authentication, document ge[...]
 
 ---
 
@@ -303,7 +304,7 @@ If you encounter any issues or have questions, please:
 
 ## 🎨 Features Highlights
 
-- ✅ Modern React 19 with Vite for fast development
+- �� Modern React 19 with Vite for fast development
 - ✅ Beautiful UI with Tailwind CSS and Framer Motion animations
 - ✅ Secure authentication with JWT and Bcrypt
 - ✅ MongoDB integration for scalable data storage
@@ -313,6 +314,68 @@ If you encounter any issues or have questions, please:
 - ✅ Particle animation effects
 - ✅ Toast notifications for user feedback
 - ✅ Responsive design for all devices
+
+---
+
+## Razorpay Integration (Easy Guide)
+
+Here is a short, plain-language guide to adding Razorpay payments to Panchayat. It explains what to change, where to store secrets, and how the flow works — written for someone who wants to implement this next.
+
+What kind of integration
+- We'll use a server-verified flow (recommended). The steps are: backend creates an order -> frontend opens Razorpay Checkout -> backend verifies the payment signature -> then we activate the user's plan.
+- Sources: Razorpay Node.js Integration and Standard Checkout docs.
+
+Important security notes (do NOT commit secrets)
+- The test key ID is safe to include in frontend config: example test key id: `rzp_test_T9IUijB4dqodq3`.
+- The key secret MUST never be put in frontend code or committed. Keep it only in the Server/.env as `RAZORPAY_KEY_SECRET`.
+
+Environment variables
+- Server (.env):
+  - RAZORPAY_KEY_ID (your Razorpay key id)
+  - RAZORPAY_KEY_SECRET (your Razorpay key secret — keep private)
+  - CLIENT_URL (e.g. http://localhost:5173)
+- Client (Client/.env):
+  - VITE_RAZORPAY_KEY_ID=rzp_test_T9IUijB4dqodq3 (test key id is ok to expose)
+
+Backend changes (high level)
+1. Install SDK:
+   - `npm install razorpay` in Server/
+2. Update User model (Server/models/User.js) to store subscription fields:
+   - planName: Free | Quarterly | Half Yearly | Annual
+   - planStatus: active | expired
+   - planActivatedAt
+   - planExpiresAt
+   - razorpayOrderId
+   - razorpayPaymentId
+3. Add a plan configuration (Server/services/planService.js) listing durations and prices:
+   - Free: 30 days, ₹0
+   - Quarterly: 90 days, ₹15000
+   - Half Yearly: 180 days, ₹28000
+   - Annual: 365 days, ₹55000
+4. Add payment-related API routes and controllers (register them in Server/server.js):
+   - POST /api/payments/free-trial — activate 30-day free trial for the user
+   - POST /api/payments/create-order — create a Razorpay order (returns order id and amount)
+   - POST /api/payments/verify — verify Razorpay signature, save payment ids, activate plan
+   - GET /api/payments/subscription — return user's current plan details; also check for expiry and auto-mark expired plans
+
+Frontend changes (high level)
+1. Pricing UI (Client/src/components/ui/pricing-section.jsx):
+   - Free plan button calls POST /api/payments/free-trial
+   - Paid plan button calls POST /api/payments/create-order, then opens Razorpay Checkout with the returned order id
+   - On successful checkout, call POST /api/payments/verify with payment details
+2. Add a small payment service (Client/src/services/paymentService.js) to call the backend endpoints and load Razorpay Checkout script
+3. Add `VITE_RAZORPAY_KEY_ID` to Client/.env (test id OK for frontend)
+4. After successful verification redirect to `/dashboard?plan=activated`
+5. In Client/src/pages/UserDashboard.jsx show a success popup if the URL has `plan=activated`. Show trial-expiry popup when days remaining ≤ 2 and renewal popup if paid plan expired
+6. In Client/src/pages/Profile.jsx replace `subscriptionMode` field with clear plan details: current plan, status, activation date, expiry date, days remaining
+
+Expiry logic (simple and safe)
+- On each login, and on calls to `/auth/me` and `/payments/subscription`, backend checks `planExpiresAt`. If now > planExpiresAt, backend sets `planStatus = 'expired'`.
+- This keeps things correct without requiring a cron job immediately. You can add a daily cron later to clean up if you want.
+
+Notes and next steps
+- I did NOT add any secret values to the README. The README shows the test key id as an example and instructs to keep the secret in Server/.env.
+- If you want, I can now implement the backend routes and model updates, or create a PR with the code changes for review.
 
 ---
 
