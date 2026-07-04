@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { User, Phone, Mail, Lock, Home, Grid, Flag, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import Navbar from '../components/Navbar';
 import API_BASE_URL from '../config';
+import { useAuth } from '../context/AuthContext';
+import { getAssistantStorageKey } from '../utils/assistantStorage';
 
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { loginPersistently } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -40,8 +43,10 @@ const Signup = () => {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success(data.message || 'Registration successful!');
-        setTimeout(() => navigate('/login'), 2000);
+        loginPersistently({ token: data.token, user: data.user });
+        localStorage.removeItem(getAssistantStorageKey(data.user));
+        toast.success('🎉 Welcome to Panchayat! Your account has been created successfully.');
+        setTimeout(() => navigate('/dashboard'), 1200);
       } else {
         toast.error(data.message || 'Registration failed. Please try again.');
       }
@@ -63,7 +68,7 @@ const Signup = () => {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 dark:bg-[#C8A45D]/10 blur-[100px] rounded-full -z-10 animate-pulse transition-all"></div>
 
       <div className="pt-32 pb-20 px-4 flex items-center justify-center min-h-screen">
-        <motion.div 
+        <Motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -242,7 +247,7 @@ const Signup = () => {
 
             </div>
 
-            <motion.button 
+            <Motion.button 
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
               disabled={loading}
@@ -250,13 +255,13 @@ const Signup = () => {
               type="submit"
             >
               {loading ? 'Creating Account...' : 'Create Account'} <ArrowRight className="w-6 h-6 group-hover:translate-x-1.5 transition-transform" />
-            </motion.button>
+            </Motion.button>
           </form>
 
           <p className="mt-12 text-center text-slate-500 dark:text-[#B8AEA3] font-medium tracking-tight">
             Already have an account? <Link to="/login" className="text-blue-600 dark:text-[#C8A45D] font-black hover:text-blue-700 dark:hover:text-[#F5F1EA] hover:underline transition-all">Sign In</Link>
           </p>
-        </motion.div>
+        </Motion.div>
       </div>
     </div>
   );

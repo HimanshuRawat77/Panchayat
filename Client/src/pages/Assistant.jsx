@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Sparkles, LayoutDashboard, ChevronLeft, ShieldCheck, Megaphone, Building2, AlertCircle } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Send, Sparkles, ChevronLeft, ShieldCheck, Megaphone, Building2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { askAssistant } from '../services/aiService';
+import { getAuthUser } from '../utils/authStorage';
+import { loadAssistantMessages, saveAssistantMessages } from '../utils/assistantStorage';
 
 const Assistant = () => {
   const navigate = useNavigate();
@@ -12,7 +14,7 @@ const Assistant = () => {
       role: 'assistant',
       content: 'Welcome to Panchayat AI! Ask about society rules, notices, timings, or office details and I will answer using retrieved Panchayat knowledge.',
       source: '🤖 AI Assistant',
-      timestamp: new Date()
+      timestamp: new Date().toISOString()
     }
   ]);
   const [input, setInput] = useState('');
@@ -21,20 +23,34 @@ const Assistant = () => {
 
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem('user');
+      const storedUser = getAuthUser();
       if (!storedUser) {
         navigate('/login');
         return;
       }
-      setUser(JSON.parse(storedUser));
+      setUser(storedUser);
+      const firstName = storedUser.fullName?.split(' ')[0] || 'Resident';
+      const personalizedMessages = [
+        {
+          id: 'welcome',
+          role: 'assistant',
+          content: `Hello ${firstName}! Ask me about society rules, notices, timings, or office details and I will answer using retrieved Panchayat knowledge.`,
+          source: '🤖 AI Assistant',
+          timestamp: new Date().toISOString()
+        }
+      ];
+      setMessages(loadAssistantMessages(personalizedMessages, storedUser));
     } catch {
       navigate('/login');
     }
   }, [navigate]);
 
   useEffect(() => {
+    if (user) {
+      saveAssistantMessages(messages, user);
+    }
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, user]);
 
   const getSourceIcon = (source) => {
     if (source.includes('Rule')) return <ShieldCheck className="h-3 w-3" />;
@@ -62,7 +78,7 @@ const Assistant = () => {
       id: Date.now().toString(),
       role: 'user',
       content: input.trim(),
-      timestamp: new Date()
+      timestamp: new Date().toISOString()
     };
 
     setMessages(prev => [...prev, userMsg]);
@@ -80,7 +96,7 @@ const Assistant = () => {
         title: data.title,
         references: data.references || [],
         retrievalMode: data.retrievalMode,
-        timestamp: new Date()
+        timestamp: new Date().toISOString()
       }]);
 
     } catch (error) {
@@ -90,7 +106,7 @@ const Assistant = () => {
         content: error.message || 'I apologize, but I am having trouble connecting right now. Please try again later.',
         source: '⚠️ System Error',
         title: 'Assistant Error',
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
         isError: true
       }]);
     } finally {
@@ -171,7 +187,7 @@ const Assistant = () => {
                 )}
                 
                 <div className={`text-[10px] mt-2 font-medium ${msg.role === 'user' ? 'text-[#151210]/60' : 'text-[#8B6B4A]'}`}>
-                  {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
               </div>
             </div>

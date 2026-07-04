@@ -3,6 +3,7 @@ import { Search, Filter, Pin, Calendar, Download, AlertCircle, Building2 } from 
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import API_BASE_URL from '../config';
+import { getAuthToken } from '../utils/authStorage';
 
 const RuleBook = () => {
   const [rules, setRules] = useState([]);
@@ -12,15 +13,11 @@ const RuleBook = () => {
 
   const categories = ['All', 'Gym', 'Parking', 'Security', 'Maintenance', 'Visitors', 'Pets', 'Swimming Pool', 'Community Hall', 'General'];
 
-  useEffect(() => {
-    fetchRules();
-  }, []);
-
-  const fetchRules = async () => {
+  async function fetchRules() {
     try {
       // Assuming a token might be needed if it's protected, but rules are usually public or available to all residents.
       // If verifyUser is strict, we should pass token.
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       const response = await fetch(`${API_BASE_URL}/rules`, { headers });
@@ -33,7 +30,11 @@ const RuleBook = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    fetchRules();
+  }, []);
 
   const handleDownloadPDF = async () => {
     try {

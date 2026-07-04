@@ -1,18 +1,18 @@
 import API_BASE_URL from '../config';
+import { clearAuth, getAuthToken } from '../utils/authStorage';
 
 const API = API_BASE_URL;
 
 
 const authHeaders = () => ({
   'Content-Type': 'application/json',
-  Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+  Authorization: `Bearer ${getAuthToken() || ''}`,
 });
 
 const handle = async (response) => {
   const data = await response.json().catch(() => ({}));
   if (response.status === 401) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuth();
     window.location.href = '/login';
     return;
   }

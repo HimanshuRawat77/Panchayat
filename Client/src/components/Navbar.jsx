@@ -3,17 +3,12 @@ import { motion as Motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { Moon, Sun } from 'lucide-react';
+import { getAuthUser } from '../utils/authStorage';
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
 
-  let user = null;
-  try {
-    const userStr = localStorage.getItem('user');
-    if (userStr) user = JSON.parse(userStr);
-  } catch (e) {
-    // Ignore error
-  }
+  const user = getAuthUser();
 
   return (
     <Motion.nav

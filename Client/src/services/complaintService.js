@@ -1,13 +1,14 @@
 import API_BASE_URL from '../config';
+import { clearAuth, getAuthToken } from '../utils/authStorage';
 
 const API_BASE = `${API_BASE_URL}/complaints`;
 
 
 const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
+  const token = getAuthToken();
 
   if (!token) {
-    console.warn('No authentication token found in localStorage');
+    console.warn('No authentication token found in session or local storage');
   }
 
   return {
@@ -24,8 +25,7 @@ export const createComplaint = async (payload) => {
   });
 
   if (response.status === 401) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuth();
     window.location.href = '/login';
     return;
   }
@@ -44,8 +44,7 @@ export const getMyComplaints = async () => {
   });
 
   if (response.status === 401) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuth();
     window.location.href = '/login';
     return;
   }
@@ -64,8 +63,7 @@ export const getAllComplaints = async () => {
   });
 
   if (response.status === 401) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuth();
     window.location.href = '/login';
     return;
   }

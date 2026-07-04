@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import Navbar from '../components/Navbar';
 import API_BASE_URL from '../config';
+import { useAuth } from '../context/AuthContext';
 
 
 const Login = () => {
   const navigate = useNavigate();
+  const { loginPersistently } = useAuth();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,9 +32,7 @@ const Login = () => {
       if (response.ok) {
         toast.success('Login successful!');
         
-        // Store token and user data
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        loginPersistently({ token: data.token, user: data.user });
         
         setTimeout(() => {
           if (data.user.role === 'admin') {
@@ -62,7 +62,7 @@ const Login = () => {
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 dark:bg-[#8B6B4A]/10 blur-[100px] rounded-full -z-10 animate-pulse"></div>
 
       <div className="pt-32 pb-20 px-4 flex items-center justify-center min-h-[90vh]">
-        <motion.div 
+        <Motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -111,7 +111,7 @@ const Login = () => {
               </div>
             </div>
 
-            <motion.button 
+            <Motion.button 
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
               disabled={loading}
@@ -119,14 +119,14 @@ const Login = () => {
               type="submit"
             >
               {loading ? 'Signing In...' : 'Sign In'} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
+            </Motion.button>
 
           </form>
 
           <p className="mt-10 text-center text-slate-500 dark:text-[#B8AEA3] font-medium tracking-tight">
             Don't have an account? <Link to="/signup" className="text-blue-600 dark:text-[#C8A45D] font-black hover:text-blue-700 dark:hover:text-[#F5F1EA] hover:underline transition-all">Sign Up Free</Link>
           </p>
-        </motion.div>
+        </Motion.div>
       </div>
     </div>
   );

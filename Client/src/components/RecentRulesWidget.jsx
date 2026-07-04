@@ -2,18 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { BookOpen, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import API_BASE_URL from '../config';
+import { getAuthToken } from '../utils/authStorage';
 
 const RecentRulesWidget = () => {
   const [recentUpdates, setRecentUpdates] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchRecentUpdates();
-  }, []);
-
-  const fetchRecentUpdates = async () => {
+  async function fetchRecentUpdates() {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const response = await fetch(`${API_BASE_URL}/notifications`, {
         headers: { ...(token && { Authorization: `Bearer ${token}` }) }
       });
@@ -28,7 +25,11 @@ const RecentRulesWidget = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    fetchRecentUpdates();
+  }, []);
 
   if (loading) {
     return (

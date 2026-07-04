@@ -3,10 +3,11 @@ import { Search, Filter, Pin, Plus, Edit2, Trash2, X, AlertCircle, Users, Messag
 import { useNavigate, Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import API_BASE_URL from '../config';
+import { clearAuth, getAuthToken, getAuthUser } from '../utils/authStorage';
 
 const AdminRules = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [user] = useState(() => getAuthUser());
   const [rules, setRules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,30 +30,22 @@ const AdminRules = () => {
 
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem('user');
-      if (!storedUser) {
+      if (!user) {
         navigate('/login');
         return;
       }
-      const parsedUser = JSON.parse(storedUser);
-      if (parsedUser.role !== 'admin') {
+      if (user.role !== 'admin') {
         navigate('/dashboard'); // redirect non-admins
         return;
       }
-      setUser(parsedUser);
     } catch {
       navigate('/login');
     }
-  }, [navigate]);
+  }, [navigate, user]);
 
-  useEffect(() => {
-    if (!user) return;
-    fetchRules();
-  }, [user]);
-
-  const fetchRules = async () => {
+  async function fetchRules() {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const response = await fetch(`${API_BASE_URL}/rules`, {
         headers: { ...(token && { Authorization: `Bearer ${token}` }) }
       });
@@ -66,12 +59,17 @@ const AdminRules = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    if (!user) return;
+    void Promise.resolve().then(() => fetchRules());
+  }, [user]);
 
   const handleSaveRule = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const url = editingRule ? `${API_BASE_URL}/rules/${editingRule._id}` : `${API_BASE_URL}/rules/add`;
       const method = editingRule ? 'PUT' : 'POST';
 
@@ -108,7 +106,7 @@ const AdminRules = () => {
   const handleDeleteRule = async (id) => {
     if (!window.confirm('Are you sure you want to delete this rule?')) return;
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const response = await fetch(`${API_BASE_URL}/rules/${id}`, {
         method: 'DELETE',
         headers: { ...(token && { Authorization: `Bearer ${token}` }) }
@@ -139,8 +137,7 @@ const AdminRules = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuth();
     navigate('/login');
   };
 

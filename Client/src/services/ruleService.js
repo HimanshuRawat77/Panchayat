@@ -1,11 +1,12 @@
 import API_BASE_URL from "../config";
+import { getAuthToken } from "../utils/authStorage";
 
 const API = `${API_BASE_URL}/rules`;
 
 
 const authHeaders = () => ({
   "Content-Type": "application/json",
-  Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+  Authorization: `Bearer ${getAuthToken() || ""}`,
 });
 
 // get all rules

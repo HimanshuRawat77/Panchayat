@@ -13,6 +13,7 @@ import {
 import API_BASE_URL from '../config';
 import { useTheme } from '../context/ThemeContext';
 import { Moon, Sun } from 'lucide-react';
+import { clearAuth, getAuthToken, updateStoredUser } from '../utils/authStorage';
 
 
 const Profile = () => {
@@ -26,7 +27,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = getAuthToken();
         if (!token) {
           navigate('/login');
           return;
@@ -82,14 +83,14 @@ const Profile = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${getAuthToken()}`,
         },
         body: JSON.stringify(user),
       });
 
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem('user', JSON.stringify(data.user));
+        updateStoredUser(data.user);
         toast.success('Profile updated');
         setEditMode(false);
       } else {
@@ -105,8 +106,7 @@ const Profile = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuth();
     navigate('/login');
   };
 

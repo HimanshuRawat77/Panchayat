@@ -6,30 +6,28 @@ import {
 import { useNavigate, Link } from 'react-router-dom';
 import { getUsersAdmin } from '../services/adminService';
 import toast, { Toaster } from 'react-hot-toast';
+import { clearAuth, getAuthUser } from '../utils/authStorage';
 
 const AdminUsers = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [user] = useState(() => getAuthUser());
   const [usersList, setUsersList] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem('user');
-      if (!storedUser) {
+      if (!user) {
         navigate('/login');
         return;
       }
-      const parsedUser = JSON.parse(storedUser);
-      if (parsedUser.role !== 'admin') {
+      if (user.role !== 'admin') {
         navigate('/dashboard'); // redirect non-admins
         return;
       }
-      setUser(parsedUser);
     } catch {
       navigate('/login');
     }
-  }, [navigate]);
+  }, [navigate, user]);
 
   useEffect(() => {
     if (!user) return;
@@ -47,8 +45,7 @@ const AdminUsers = () => {
   }, [user]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuth();
     navigate('/login');
   };
 

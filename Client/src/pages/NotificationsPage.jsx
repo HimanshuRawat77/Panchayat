@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Check, CheckCircle, Info, Trash2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import API_BASE_URL from '../config';
+import { getAuthToken, getAuthUser } from '../utils/authStorage';
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
@@ -12,9 +12,9 @@ const NotificationsPage = () => {
     fetchNotifications();
   }, []);
 
-  const fetchNotifications = async () => {
+  async function fetchNotifications() {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const response = await fetch(`${API_BASE_URL}/notifications`, {
         headers: { ...(token && { Authorization: `Bearer ${token}` }) }
       });
@@ -27,11 +27,11 @@ const NotificationsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const markAsRead = async (id) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
         method: 'PUT',
         headers: { ...(token && { Authorization: `Bearer ${token}` }) }
@@ -44,7 +44,7 @@ const NotificationsPage = () => {
 
   const markAllAsRead = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       await fetch(`${API_BASE_URL}/notifications/read-all`, {
         method: 'PUT',
         headers: { ...(token && { Authorization: `Bearer ${token}` }) }
@@ -58,7 +58,7 @@ const NotificationsPage = () => {
   // Assume user ID is available or we just use a generic 'read' status if readBy includes the user.
   // For this mock, we will just consider them unread if the user ID is not in readBy.
   // We'll simulate getting userId from token or localStorage. Let's assume a generic unread state for now.
-  const userId = JSON.parse(localStorage.getItem('user'))?._id || 'mockId'; // Replace with actual user ID logic
+  const userId = getAuthUser()?._id || 'mockId'; // Replace with actual user ID logic
 
   return (
     <div className="min-h-screen bg-[#151210] font-sans text-[#F5F1EA]">

@@ -20,6 +20,7 @@ import {
 import { createComplaint, getMyComplaints } from '../services/complaintService';
 import { useTheme } from '../context/ThemeContext';
 import { Moon, Sun } from 'lucide-react';
+import { getAuthToken } from '../utils/authStorage';
 
 
 const categoryMeta = {
@@ -66,7 +67,7 @@ const ComplaintPage = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
     if (!token) {
       navigate('/login');
       return;

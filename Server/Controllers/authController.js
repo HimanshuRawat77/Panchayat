@@ -1,6 +1,25 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 
+const buildAuthToken = (user) =>
+  jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET || 'secretkey',
+    { expiresIn: '1d' }
+  );
+
+const buildUserResponse = (user) => ({
+  id: user._id,
+  fullName: user.fullName,
+  email: user.email,
+  role: user.role,
+  block: user.block,
+  houseNumber: user.houseNumber,
+  avatar: user.avatar,
+  subscriptionMode: user.subscriptionMode,
+  hasSeenTour: Boolean(user.hasSeenTour),
+});
+
 // ✅ SIGNUP
 export const signup = async (req, res) => {
   console.log("Signup Request Received:", req.body);
@@ -29,15 +48,12 @@ export const signup = async (req, res) => {
       religion
     });
 
+    const token = buildAuthToken(user);
+
     res.status(201).json({
       message: 'User registered successfully',
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        subscriptionMode: user.subscriptionMode
-      }
+      token,
+      user: buildUserResponse(user),
     });
 
   } catch (error) {
@@ -62,25 +78,10 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid password' });
     }
 
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET || "secretkey",
-      { expiresIn: '1d' }
-    );
-
     res.status(200).json({
       message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        block: user.block,
-        houseNumber: user.houseNumber,
-        avatar: user.avatar,
-        subscriptionMode: user.subscriptionMode
-      }
+      token: buildAuthToken(user),
+      user: buildUserResponse(user),
     });
 
   } catch (error) {
@@ -96,7 +97,7 @@ export const getMe = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.status(200).json(user);
+    res.status(200).json(buildUserResponse(user));
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -112,16 +113,28 @@ export const updateProfile = async (req, res) => {
     
     res.status(200).json({
       message: 'Profile updated successfully',
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        block: user.block,
-        houseNumber: user.houseNumber,
-        avatar: user.avatar,
-        subscriptionMode: user.subscriptionMode
-      }
+      user: buildUserResponse(user),
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const markTourSeen = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { hasSeenTour: true },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'Tour preference saved',
+      user: buildUserResponse(user),
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

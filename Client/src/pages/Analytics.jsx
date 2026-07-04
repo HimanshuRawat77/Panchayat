@@ -36,6 +36,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { getMyComplaints } from '../services/complaintService';
 import { useTourGuide } from '../components/TourGuide';
+import { clearAuth, getAuthUser } from '../utils/authStorage';
 import {
   LineChart,
   Line,
@@ -50,20 +51,15 @@ import {
 } from 'recharts';
 
 function readUserFromStorage() {
-  try {
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) return null;
-    const parsedUser = JSON.parse(storedUser);
-    return {
-      fullName: parsedUser.fullName || 'User',
-      block: parsedUser.block || 'N/A',
-      avatar: parsedUser.avatar || '👤',
-      unreadNotifications: parsedUser.unreadNotifications || 0,
-      houseNumber: parsedUser.houseNumber || '1402',
-    };
-  } catch {
-    return null;
-  }
+  const storedUser = getAuthUser();
+  if (!storedUser) return null;
+  return {
+    fullName: storedUser.fullName || 'User',
+    block: storedUser.block || 'N/A',
+    avatar: storedUser.avatar || '👤',
+    unreadNotifications: storedUser.unreadNotifications || 0,
+    houseNumber: storedUser.houseNumber || '1402',
+  };
 }
 
 const Analytics = () => {
@@ -94,8 +90,7 @@ const Analytics = () => {
   }, [user, navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuth();
     navigate('/login');
   };
 

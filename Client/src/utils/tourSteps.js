@@ -1,5 +1,10 @@
 export const TOUR_STORAGE_KEY = 'hasSeenTour';
 
+export function getTourStorageKey(user) {
+  const userId = user?.id || user?._id;
+  return userId ? `${TOUR_STORAGE_KEY}:${userId}` : TOUR_STORAGE_KEY;
+}
+
 function createTourStep({
   content,
   id,

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useCallback,
@@ -10,8 +11,14 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion as Motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Sparkles, X } from "lucide-react";
-import { EVENTS, STATUS, useJoyride } from "react-joyride";
-import { buildTourSteps, TOUR_STORAGE_KEY } from "../utils/tourSteps";
+import { STATUS, useJoyride } from "react-joyride";
+import { buildTourSteps, getTourStorageKey } from "../utils/tourSteps";
+import {
+  getAuthToken,
+  getAuthUser,
+  updateStoredUser,
+} from "../utils/authStorage";
+import { markTourSeen } from "../services/aiService";
 
 const TourContext = createContext(null);
 
@@ -225,9 +232,14 @@ export function useTourGuide() {
 export function TourProvider({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const authUser = getAuthUser();
+  const authUserId = authUser?.id || authUser?._id || "";
+  const userHasSeenTour = Boolean(authUser?.hasSeenTour);
+  const tourStorageKey = getTourStorageKey(authUser);
   const [isTourOpen, setIsTourOpen] = useState(false);
   const startIndexRef = useRef(0);
   const hasAutoStartedRef = useRef(false);
+  const syncTourPreferenceRef = useRef(false);
 
   const steps = useMemo(
     () =>
@@ -242,9 +254,26 @@ export function TourProvider({ children }) {
 
   const handleTourEvent = useCallback((data) => {
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(data.status)) {
-      localStorage.setItem(TOUR_STORAGE_KEY, "true");
+      const authUser = getAuthUser();
+      localStorage.setItem(getTourStorageKey(authUser), "true");
       setIsTourOpen(false);
       startIndexRef.current = 0;
+
+      if (!syncTourPreferenceRef.current && authUser) {
+        syncTourPreferenceRef.current = true;
+        updateStoredUser({ ...authUser, hasSeenTour: true });
+
+        markTourSeen()
+          .then((response) => {
+            if (response?.user) {
+              updateStoredUser(response.user);
+            }
+          })
+          .catch((error) => {
+            console.error("Failed to sync tour preference:", error);
+            syncTourPreferenceRef.current = false;
+          });
+      }
     }
   }, []);
 
@@ -328,12 +357,13 @@ export function TourProvider({ children }) {
   }, [controls]);
 
   useEffect(() => {
-    const hasSeenTour = localStorage.getItem(TOUR_STORAGE_KEY) === "true";
+    const hasSeenTour = localStorage.getItem(tourStorageKey) === "true";
     const isResidentRoute = location.pathname === "/dashboard";
-    const hasToken = Boolean(localStorage.getItem("token"));
+    const hasToken = Boolean(getAuthToken());
 
     if (
       !hasSeenTour &&
+      !userHasSeenTour &&
       isResidentRoute &&
       hasToken &&
       !hasAutoStartedRef.current
@@ -341,7 +371,12 @@ export function TourProvider({ children }) {
       hasAutoStartedRef.current = true;
       startTour(0);
     }
-  }, [location.pathname, startTour]);
+  }, [authUserId, location.pathname, startTour, tourStorageKey, userHasSeenTour]);
+
+  useEffect(() => {
+    hasAutoStartedRef.current = false;
+    syncTourPreferenceRef.current = false;
+  }, [authUserId]);
 
   const value = useMemo(
     () => ({

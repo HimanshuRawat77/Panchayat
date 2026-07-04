@@ -67,6 +67,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "free trial",
     },
+    hasSeenTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

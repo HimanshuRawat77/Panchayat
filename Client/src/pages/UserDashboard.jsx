@@ -34,23 +34,25 @@ import { useTheme } from "../context/ThemeContext";
 import RecentRulesWidget from "../components/RecentRulesWidget";
 import API_BASE_URL from "../config";
 import { useTourGuide } from "../components/TourGuide";
+import { clearAuth, getAuthToken, getAuthUser } from "../utils/authStorage";
+import {
+  loadAssistantMessages,
+  saveAssistantMessages,
+} from "../utils/assistantStorage";
 
 function readUserFromStorage() {
-  try {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return null;
-    const parsedUser = JSON.parse(storedUser);
-    return {
-      _id: parsedUser.id || parsedUser._id,
-      fullName: parsedUser.fullName || "User",
-      block: parsedUser.block || "N/A",
-      avatar: parsedUser.avatar || "👤",
-      unreadNotifications: parsedUser.unreadNotifications || 0,
-      subscriptionMode: parsedUser.subscriptionMode || "free trial",
-    };
-  } catch {
-    return null;
-  }
+  const storedUser = getAuthUser();
+
+  if (!storedUser) return null;
+
+  return {
+    _id: storedUser.id || storedUser._id,
+    fullName: storedUser.fullName || "User",
+    block: storedUser.block || "N/A",
+    avatar: storedUser.avatar || "👤",
+    unreadNotifications: storedUser.unreadNotifications || 0,
+    subscriptionMode: storedUser.subscriptionMode || "free trial",
+  };
 }
 
 const UserDashboard = () => {
@@ -59,7 +61,6 @@ const UserDashboard = () => {
   const { startTour } = useTourGuide();
   const [user] = useState(readUserFromStorage);
   const [complaints, setComplaints] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [unreadCount, setUnreadCount] = useState(0);
@@ -79,22 +80,17 @@ const UserDashboard = () => {
     },
   ];
 
-  const [messages, setMessages] = useState(() => {
-    try {
-      const saved = localStorage.getItem("panchayatAiChat");
-      return saved ? JSON.parse(saved) : defaultMessages;
-    } catch {
-      return defaultMessages;
-    }
-  });
+  const [messages, setMessages] = useState(() =>
+    loadAssistantMessages(defaultMessages, user)
+  );
 
   const [aiLoading, setAiLoading] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    localStorage.setItem("panchayatAiChat", JSON.stringify(messages));
+    saveAssistantMessages(messages, user);
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, user]);
 
   useEffect(() => {
     if (
@@ -167,14 +163,12 @@ const UserDashboard = () => {
         if (data) setComplaints(data);
       } catch (error) {
         console.error("Error fetching complaints:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
     const fetchNotifications = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = getAuthToken();
         const response = await fetch(`${API_BASE_URL}/notifications`, {
           headers: { ...(token && { Authorization: `Bearer ${token}` }) },
         });
@@ -202,7 +196,7 @@ const UserDashboard = () => {
 
   const markAsRead = async (id) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = getAuthToken();
       await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
         method: "PUT",
         headers: { ...(token && { Authorization: `Bearer ${token}` }) },
@@ -215,8 +209,7 @@ const UserDashboard = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuth();
     navigate("/login");
   };
 

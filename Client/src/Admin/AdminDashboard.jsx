@@ -27,6 +27,7 @@ import {
   updateWorkerAdmin,
 } from '../services/adminService';
 import { getRules, addRule, updateRule, deleteRule } from '../services/ruleService';
+import { clearAuth, getAuthUser } from '../utils/authStorage';
 
 const STATUS_OPTIONS = ['Pending', 'In progress', 'Resolved'];
 const PRIORITY_OPTIONS = ['Low', 'Medium', 'High'];
@@ -35,9 +36,8 @@ const TRADE_OPTIONS = ['plumber', 'electrician', 'carpenter'];
 
 function readStoredUser() {
   try {
-    const raw = localStorage.getItem('user');
-    if (!raw) return null;
-    const u = JSON.parse(raw);
+    const u = getAuthUser();
+    if (!u) return null;
     return {
       id: u.id,
       fullName: u.fullName || 'Admin',
@@ -138,8 +138,7 @@ const AdminDashboard = () => {
   }, [complaints, fStatus, fPriority, fCategory]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuth();
     navigate('/login');
   };
 
