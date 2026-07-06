@@ -26,7 +26,7 @@ import {
   ShieldCheck,
   Building2,
 } from "lucide-react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { getMyComplaints } from "../services/complaintService";
 import { askAssistant } from "../services/aiService";
@@ -34,7 +34,13 @@ import { useTheme } from "../context/ThemeContext";
 import RecentRulesWidget from "../components/RecentRulesWidget";
 import API_BASE_URL from "../config";
 import { useTourGuide } from "../components/TourGuide";
-import { clearAuth, getAuthToken, getAuthUser } from "../utils/authStorage";
+import { getSubscription } from "../services/paymentService";
+import {
+  clearAuth,
+  getAuthToken,
+  getAuthUser,
+  updateStoredUser,
+} from "../utils/authStorage";
 import {
   loadAssistantMessages,
   saveAssistantMessages,
@@ -52,14 +58,17 @@ function readUserFromStorage() {
     avatar: storedUser.avatar || "👤",
     unreadNotifications: storedUser.unreadNotifications || 0,
     subscriptionMode: storedUser.subscriptionMode || "free trial",
+    subscription: storedUser.subscription || null,
   };
 }
 
 const UserDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { theme, toggleTheme } = useTheme();
   const { startTour } = useTourGuide();
   const [user] = useState(readUserFromStorage);
+  const [, setSubscription] = useState(user?.subscription || null);
   const [complaints, setComplaints] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -93,14 +102,63 @@ const UserDashboard = () => {
   }, [messages, user]);
 
   useEffect(() => {
-    if (
-      user &&
-      user.subscriptionMode === "free trial" &&
-      !localStorage.getItem("trialActivatedToastShown")
-    ) {
-      toast.success("Your free trial activated!");
-      localStorage.setItem("trialActivatedToastShown", "true");
+    const params = new URLSearchParams(location.search);
+
+    if (params.get("plan") === "activated") {
+      toast.success("Your plan has been activated successfully!");
+      navigate("/dashboard", { replace: true });
     }
+  }, [location.search, navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchSubscription = async () => {
+      try {
+        const data = await getSubscription();
+        const nextSubscription = data.subscription;
+        setSubscription(nextSubscription);
+
+        const storedUser = getAuthUser();
+        if (storedUser) {
+          updateStoredUser({
+            ...storedUser,
+            subscriptionMode: nextSubscription.currentPlan,
+            planStatus: nextSubscription.planStatus,
+            planActivatedAt: nextSubscription.activationDate,
+            planExpiresAt: nextSubscription.expiryDate,
+            subscription: nextSubscription,
+          });
+        }
+
+        const noticeKey = `subscriptionNotice:${user._id}:${nextSubscription.currentPlan}:${nextSubscription.expiryDate}`;
+
+        if (
+          nextSubscription.planStatus === "active" &&
+          nextSubscription.currentPlan === "Free" &&
+          nextSubscription.daysRemaining <= 2 &&
+          nextSubscription.daysRemaining > 0 &&
+          !localStorage.getItem(noticeKey)
+        ) {
+          toast(
+            `Your free trial expires in ${nextSubscription.daysRemaining} days. Please upgrade to continue using the service.`
+          );
+          localStorage.setItem(noticeKey, "true");
+        }
+
+        if (
+          nextSubscription.planStatus === "expired" &&
+          !localStorage.getItem(noticeKey)
+        ) {
+          toast.error("Your plan has expired. Please renew your subscription.");
+          localStorage.setItem(noticeKey, "true");
+        }
+      } catch (error) {
+        console.error("Failed to fetch subscription", error);
+      }
+    };
+
+    fetchSubscription();
   }, [user]);
 
   useEffect(() => {

@@ -10,6 +10,7 @@ import workerRoutes from "./routes/workerRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 
 
@@ -37,6 +38,7 @@ app.use("/api/workers", workerRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/community", communityRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Running 🚀");

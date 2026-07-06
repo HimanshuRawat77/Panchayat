@@ -110,6 +110,23 @@ const Profile = () => {
     navigate('/login');
   };
 
+  const subscription = user.subscription || {
+    currentPlan: user.subscriptionMode || 'Free',
+    planStatus: user.planStatus || 'inactive',
+    activationDate: user.planActivatedAt,
+    expiryDate: user.planExpiresAt,
+    daysRemaining: 0,
+  };
+
+  const formatDate = (date) => {
+    if (!date) return 'Not active';
+    return new Date(date).toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
+
   const fields = [
     { label: 'Full name', name: 'fullName' },
     { label: 'Phone', name: 'phoneNumber' },
@@ -118,7 +135,14 @@ const Profile = () => {
     { label: 'Block', name: 'block' },
     { label: 'Nationality', name: 'nationality' },
     { label: 'Religion', name: 'religion' },
-    { label: 'Mode', name: 'subscriptionMode', disabled: true },
+  ];
+
+  const planFields = [
+    { label: 'Current Plan', value: subscription.currentPlan || 'Free' },
+    { label: 'Plan Status', value: subscription.planStatus || 'Inactive' },
+    { label: 'Activation Date', value: formatDate(subscription.activationDate) },
+    { label: 'Expiry Date', value: formatDate(subscription.expiryDate) },
+    { label: 'Days Remaining', value: `${subscription.daysRemaining || 0} days` },
   ];
 
   return (
@@ -227,6 +251,43 @@ const Profile = () => {
                 />
               </div>
             ))}
+          </div>
+
+          <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50/80 p-5 dark:border-[#6B4F3A]/70 dark:bg-[#151210]/50">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-[#C8A45D]">
+                  Subscription
+                </p>
+                <h2 className="mt-1 text-lg font-bold text-slate-900 dark:text-[#F5F1EA]">
+                  Current plan details
+                </h2>
+              </div>
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${
+                  subscription.planStatus === 'active'
+                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'
+                    : 'bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300'
+                }`}
+              >
+                {subscription.planStatus || 'inactive'}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {planFields.map((field) => (
+                <div
+                  key={field.label}
+                  className="rounded-xl border border-white/80 bg-white px-4 py-3 dark:border-[#221C18] dark:bg-[#221C18]/80"
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
+                    {field.label}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold capitalize text-slate-900 dark:text-[#F5F1EA]">
+                    {field.value}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">

@@ -1,5 +1,9 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import {
+  buildSubscriptionResponse,
+  refreshUserPlanStatus,
+} from '../services/planService.js';
 
 const buildAuthToken = (user) =>
   jwt.sign(
@@ -14,9 +18,16 @@ const buildUserResponse = (user) => ({
   email: user.email,
   role: user.role,
   block: user.block,
+  phoneNumber: user.phoneNumber,
+  nationality: user.nationality,
+  religion: user.religion,
   houseNumber: user.houseNumber,
   avatar: user.avatar,
   subscriptionMode: user.subscriptionMode,
+  planStatus: user.planStatus,
+  planActivatedAt: user.planActivatedAt,
+  planExpiresAt: user.planExpiresAt,
+  subscription: buildSubscriptionResponse(user),
   hasSeenTour: Boolean(user.hasSeenTour),
 });
 
@@ -78,6 +89,8 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid password' });
     }
 
+    await refreshUserPlanStatus(user);
+
     res.status(200).json({
       message: 'Login successful',
       token: buildAuthToken(user),
@@ -97,6 +110,7 @@ export const getMe = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+    await refreshUserPlanStatus(user);
     res.status(200).json(buildUserResponse(user));
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -107,7 +121,17 @@ export const getMe = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     // Prevent updating password through this route for security
-    const { password, ...updateData } = req.body;
+    const {
+      password,
+      subscriptionMode,
+      planStatus,
+      planActivatedAt,
+      planExpiresAt,
+      razorpayOrderId,
+      razorpayPaymentId,
+      subscription,
+      ...updateData
+    } = req.body;
     
     const user = await User.findByIdAndUpdate(req.user.id, updateData, { new: true });
     

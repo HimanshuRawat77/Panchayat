@@ -1,7 +1,16 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion as Motion } from 'framer-motion'
-import { Check } from 'lucide-react'
+import toast, { Toaster } from 'react-hot-toast'
+import { Check, Loader2 } from 'lucide-react'
+import {
+  activateFreeTrial,
+  createPaymentOrder,
+  getSubscription,
+  loadRazorpayCheckout,
+  verifyPayment,
+} from '../../services/paymentService'
+import { getAuthToken, getAuthUser, updateStoredUser } from '../../utils/authStorage'
 
 const plans = [
   {
@@ -83,8 +92,157 @@ const item = {
 }
 
 export default function PricingSection() {
+  const navigate = useNavigate()
+  const [selectedPlanId, setSelectedPlanId] = useState('')
+  const [subscription, setSubscription] = useState(getAuthUser()?.subscription || null)
+
+  React.useEffect(() => {
+    if (!getAuthToken()) return
+
+    getSubscription()
+      .then((data) => setSubscription(data.subscription))
+      .catch(() => {})
+  }, [])
+
+  const mergeSubscriptionIntoUser = (subscription) => {
+    const user = getAuthUser()
+    if (!user) return
+
+    updateStoredUser({
+      ...user,
+      subscriptionMode: subscription.currentPlan,
+      planStatus: subscription.planStatus,
+      planActivatedAt: subscription.activationDate,
+      planExpiresAt: subscription.expiryDate,
+      subscription,
+    })
+  }
+
+  const requireLogin = () => {
+    if (getAuthToken()) return true
+
+    toast.error('Please sign in to select a plan.')
+    setTimeout(() => navigate('/login'), 900)
+    return false
+  }
+
+  const hasActivePaidPlan = () =>
+    subscription?.planStatus === 'active' &&
+    subscription?.currentPlan &&
+    subscription.currentPlan !== 'Free' &&
+    subscription.daysRemaining > 0
+
+  const blockExistingPlan = () => {
+    if (!hasActivePaidPlan()) return false
+
+    toast.error('You already have a plan.')
+    return true
+  }
+
+  const handleFreePlan = async () => {
+    if (!requireLogin()) return
+    if (blockExistingPlan()) return
+
+    setSelectedPlanId('trial')
+    try {
+      const data = await activateFreeTrial()
+      mergeSubscriptionIntoUser(data.subscription)
+      setSubscription(data.subscription)
+      toast.success('Your free trial activated!')
+      setTimeout(() => navigate('/dashboard'), 900)
+    } catch (error) {
+      toast.error(error.message)
+    } finally {
+      setSelectedPlanId('')
+    }
+  }
+
+  const handlePaidPlan = async (plan) => {
+    if (!requireLogin()) return
+    if (blockExistingPlan()) return
+
+    setSelectedPlanId(plan.id)
+    try {
+      await loadRazorpayCheckout()
+      const order = await createPaymentOrder(plan.id)
+      const user = getAuthUser()
+
+      const razorpay = new window.Razorpay({
+        key: order.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Panchayat',
+        description: `${order.plan.name} Plan`,
+        order_id: order.orderId,
+        prefill: {
+          name: order.prefill?.name || user?.fullName || '',
+          email: order.prefill?.email || user?.email || '',
+          contact: order.prefill?.contact || user?.phoneNumber || '',
+        },
+        theme: {
+          color: '#C8A45D',
+        },
+        config: {
+          display: {
+            blocks: {
+              upi: {
+                name: 'UPI / Scan & Pay',
+                instruments: [
+                  {
+                    method: 'upi',
+                  },
+                ],
+              },
+            },
+            sequence: ['block.upi'],
+            preferences: {
+              show_default_blocks: true,
+            },
+          },
+        },
+        handler: async (response) => {
+          try {
+            const data = await verifyPayment({
+              planId: plan.id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            })
+
+            mergeSubscriptionIntoUser(data.subscription)
+            setSubscription(data.subscription)
+            navigate('/dashboard?plan=activated')
+          } catch (error) {
+            toast.error(error.message)
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            toast('Payment cancelled.')
+            setSelectedPlanId('')
+          },
+        },
+      })
+
+      razorpay.open()
+    } catch (error) {
+      toast.error(error.message)
+      setSelectedPlanId('')
+    }
+  }
+
+  const handlePlanClick = (plan) => {
+    if (plan.id === 'trial') {
+      handleFreePlan()
+      return
+    }
+
+    handlePaidPlan(plan)
+  }
+
   return (
     <section id="pricing" className="relative px-4 py-24 md:py-32">
+      <Toaster position="top-center" />
       <div className="mx-auto max-w-[1440px] px-0 md:px-12">
         {/* Header */}
         <Motion.div
@@ -149,16 +307,25 @@ export default function PricingSection() {
                 </ul>
 
                 {/* CTA */}
-                <Link
-                  to="/signup"
+                <button
+                  type="button"
+                  onClick={() => handlePlanClick(plan)}
+                  disabled={Boolean(selectedPlanId)}
                   className={`mt-8 block w-full rounded-lg py-3 text-center text-sm font-semibold transition-all duration-300 ${
                     plan.highlighted
                       ? 'bg-[#C8A45D] text-[#151210] shadow-md shadow-[#C8A45D]/25 hover:bg-[#E0C27A] hover:shadow-lg hover:shadow-[#C8A45D]/35'
                       : 'border border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-[#6B4F3A]/30 dark:text-[#F5F1EA] dark:hover:border-[#8B6B4A]/50 dark:hover:bg-[#6B4F3A]/10'
-                  }`}
+                  } ${selectedPlanId ? 'cursor-not-allowed opacity-70' : ''}`}
                 >
-                  {plan.cta}
-                </Link>
+                  {selectedPlanId === plan.id || (selectedPlanId === 'trial' && plan.id === 'trial') ? (
+                    <span className="inline-flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Processing
+                    </span>
+                  ) : (
+                    plan.cta
+                  )}
+                </button>
               </div>
             </Motion.div>
           ))}

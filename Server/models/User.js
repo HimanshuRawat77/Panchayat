@@ -65,7 +65,28 @@ const userSchema = new mongoose.Schema(
     },
     subscriptionMode: {
       type: String,
-      default: "free trial",
+      default: "Free",
+    },
+    planStatus: {
+      type: String,
+      enum: ["inactive", "active", "expired"],
+      default: "inactive",
+    },
+    planActivatedAt: {
+      type: Date,
+      default: null,
+    },
+    planExpiresAt: {
+      type: Date,
+      default: null,
+    },
+    razorpayOrderId: {
+      type: String,
+      default: "",
+    },
+    razorpayPaymentId: {
+      type: String,
+      default: "",
     },
     hasSeenTour: {
       type: Boolean,
