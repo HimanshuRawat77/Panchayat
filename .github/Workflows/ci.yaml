@@ -1,4 +1,5 @@
 name: Panchayat CI
+
 on:
   push:
     branches:
