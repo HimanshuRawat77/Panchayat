@@ -8,27 +8,28 @@ const RecentRulesWidget = () => {
   const [recentUpdates, setRecentUpdates] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  async function fetchRecentUpdates() {
-    try {
-      const token = getAuthToken();
-      const response = await fetch(`${API_BASE_URL}/notifications`, {
-        headers: { ...(token && { Authorization: `Bearer ${token}` }) }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        // Show only the latest 5 rules related notifications
-        const ruleUpdates = data.filter(n => n.type && n.type.startsWith('Rule')).slice(0, 5);
-        setRecentUpdates(ruleUpdates);
-      }
-    } catch (error) {
-      console.error('Failed to fetch recent rules', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    fetchRecentUpdates();
+    let cancelled = false;
+    const loadUpdates = async () => {
+      try {
+        const token = getAuthToken();
+        const response = await fetch(`${API_BASE_URL}/notifications`, {
+          headers: { ...(token && { Authorization: `Bearer ${token}` }) }
+        });
+        if (response.ok && !cancelled) {
+          const data = await response.json();
+          // Show only the latest 5 rules related notifications
+          const ruleUpdates = data.filter(n => n.type && n.type.startsWith('Rule')).slice(0, 5);
+          setRecentUpdates(ruleUpdates);
+        }
+      } catch (error) {
+        console.error('Failed to fetch recent rules', error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    loadUpdates();
+    return () => { cancelled = true; };
   }, []);
 
   if (loading) {

@@ -274,11 +274,22 @@ export default function PricingSection() {
               variants={item}
               className="group relative"
             >
-              <div
-                className={`flex h-full flex-col rounded-2xl p-8 transition-all duration-300 ${
+              <Motion.div
+                aria-hidden="true"
+                className={`absolute inset-0 rounded-2xl ${
                   plan.highlighted
-                    ? 'border border-[#C8A45D] bg-amber-50/80 shadow-lg shadow-amber-600/10 dark:border-[#C8A45D]/60 dark:bg-[#221C18] dark:shadow-[#C8A45D]/10'
-                    : 'border border-slate-200 bg-white hover:border-slate-300 hover:shadow-lg dark:border-[#6B4F3A]/25 dark:bg-[#221C18] dark:hover:border-[#8B6B4A]/40'
+                    ? 'bg-[linear-gradient(115deg,rgba(200,164,93,0.35)_0%,rgba(224,194,122,1)_18%,rgba(255,245,214,1)_32%,rgba(200,164,93,0.6)_46%,rgba(200,164,93,0.18)_62%,rgba(200,164,93,0.8)_78%,rgba(255,238,182,1)_88%,rgba(200,164,93,0.4)_100%)]'
+                    : 'bg-[linear-gradient(115deg,rgba(148,163,184,0.22)_0%,rgba(200,164,93,0.14)_24%,rgba(255,235,178,0.92)_42%,rgba(200,164,93,0.34)_58%,rgba(148,163,184,0.16)_74%,rgba(200,164,93,0.45)_88%,rgba(148,163,184,0.22)_100%)]'
+                } bg-[length:220%_220%] opacity-0 blur-[0.5px] transition-opacity duration-300 group-hover:opacity-100`}
+                animate={{ backgroundPosition: ['200% 50%', '-20% 50%'] }}
+                transition={{ duration: 2.8, ease: 'linear', repeat: Infinity }}
+              />
+
+              <div
+                className={`relative flex h-full flex-col rounded-2xl p-8 transition-all duration-300 ${
+                  plan.highlighted
+                    ? 'm-px bg-amber-50/80 shadow-lg shadow-amber-600/10 dark:bg-[#221C18] dark:shadow-[#C8A45D]/10'
+                    : 'm-px bg-white shadow-sm group-hover:shadow-lg dark:bg-[#221C18]'
                 }`}
               >
                 {/* Label */}
@@ -314,7 +325,7 @@ export default function PricingSection() {
                   className={`mt-8 block w-full rounded-lg py-3 text-center text-sm font-semibold transition-all duration-300 ${
                     plan.highlighted
                       ? 'bg-[#C8A45D] text-[#151210] shadow-md shadow-[#C8A45D]/25 hover:bg-[#E0C27A] hover:shadow-lg hover:shadow-[#C8A45D]/35'
-                      : 'border border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-[#6B4F3A]/30 dark:text-[#F5F1EA] dark:hover:border-[#8B6B4A]/50 dark:hover:bg-[#6B4F3A]/10'
+                      : 'border border-slate-200 text-slate-700 hover:border-[#C8A45D] hover:bg-[#C8A45D] hover:text-[#151210] hover:shadow-lg hover:shadow-[#C8A45D]/25 dark:border-[#6B4F3A]/30 dark:text-[#F5F1EA] dark:hover:border-[#C8A45D] dark:hover:bg-[#C8A45D] dark:hover:text-[#151210] dark:hover:shadow-[#C8A45D]/30'
                   } ${selectedPlanId ? 'cursor-not-allowed opacity-70' : ''}`}
                 >
                   {selectedPlanId === plan.id || (selectedPlanId === 'trial' && plan.id === 'trial') ? (

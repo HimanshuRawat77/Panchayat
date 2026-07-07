@@ -12,9 +12,7 @@ import {
   Zap,
   Hammer,
   MoreHorizontal,
-  Camera,
   Upload,
-  AlertTriangle,
   Trash2,
 } from 'lucide-react';
 import { createComplaint, getMyComplaints } from '../services/complaintService';
@@ -73,7 +71,19 @@ const ComplaintPage = () => {
       return;
     }
 
-    fetchComplaints();
+    let cancelled = false;
+    const loadComplaints = async () => {
+      try {
+        const data = await getMyComplaints();
+        if (!cancelled) setComplaints(data);
+      } catch (error) {
+        if (!cancelled) toast.error(error.message || 'Unable to fetch complaints');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    loadComplaints();
+    return () => { cancelled = true; };
   }, [navigate]);
 
   const handleImageChange = (e) => {

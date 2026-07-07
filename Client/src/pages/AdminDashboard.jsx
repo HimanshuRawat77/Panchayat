@@ -39,7 +39,7 @@ const AdminDashboard = () => {
       try {
         const data = await getAllComplaints();
         setComplaints(data);
-      } catch (error) {
+      } catch {
         toast.error('Failed to fetch complaints');
       } finally {
         setLoading(false);
@@ -61,7 +61,7 @@ const AdminDashboard = () => {
       setComplaints(prev => prev.map(c => 
         c._id === complaintId ? { ...c, status: newStatus } : c
       ));
-    } catch (error) {
+    } catch {
       toast.error('Failed to update status');
     }
   };
@@ -95,7 +95,7 @@ const AdminDashboard = () => {
     }
     
     complaints.forEach(c => {
-      const date = new Date(c.createdAt || Date.now());
+      const date = new Date(c.createdAt || 0);
       const target = months.find(x => x.monthNum === date.getMonth() && x.yearNum === date.getFullYear());
       if (target) target.volume += 1;
     });

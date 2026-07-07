@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Bell,
-  Search,
   LayoutDashboard,
   BarChart3,
   Users,
   MessageSquareWarning,
-  Wrench,
   Settings,
   HelpCircle,
   LogOut,
@@ -14,7 +12,6 @@ import {
   Sun,
   Moon,
   TrendingUp,
-  TrendingDown,
   CheckCircle2,
   Clock,
   Activity,
@@ -23,7 +20,6 @@ import {
   Shield,
   Droplets,
   Hammer,
-  ChevronRight,
   BrainCircuit,
   Calendar,
   MessageCircle,
@@ -135,7 +131,7 @@ const Analytics = () => {
     }
     
     complaints.forEach(c => {
-      const date = new Date(c.createdAt || Date.now());
+      const date = new Date(c.createdAt || 0);
       const m = date.getMonth();
       const y = date.getFullYear();
       const target = months.find(x => x.monthNum === m && x.yearNum === y);
@@ -239,7 +235,7 @@ const Analytics = () => {
       type: 'complaint',
       title: c.status === 'Resolved' ? 'Complaint resolved' : 'Complaint submitted',
       desc: c.description || 'Reported an issue.',
-      time: new Date(c.createdAt || Date.now()).toLocaleDateString(),
+      time: new Date(c.createdAt || 0).toLocaleDateString(),
       icon: c.status === 'Resolved' ? CheckCircle2 : MessageSquareWarning,
       color: c.status === 'Resolved' ? 'text-emerald-500' : 'text-rose-500'
     })).sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 5);
@@ -693,7 +689,7 @@ const Analytics = () => {
                 </div>
               ) : (
                 <div className="relative border-l border-slate-200 dark:border-[#221C18] ml-4 space-y-8 pb-4">
-                  {activityTimeline.map((item, index) => {
+                  {activityTimeline.map((item) => {
                     const Icon = item.icon;
                     return (
                       <div key={item.id} className="relative pl-8 group">

@@ -13,27 +13,28 @@ const RuleBook = () => {
 
   const categories = ['All', 'Gym', 'Parking', 'Security', 'Maintenance', 'Visitors', 'Pets', 'Swimming Pool', 'Community Hall', 'General'];
 
-  async function fetchRules() {
-    try {
-      // Assuming a token might be needed if it's protected, but rules are usually public or available to all residents.
-      // If verifyUser is strict, we should pass token.
-      const token = getAuthToken();
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-      const response = await fetch(`${API_BASE_URL}/rules`, { headers });
-      if (response.ok) {
-        const data = await response.json();
-        setRules(data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch rules', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    fetchRules();
+    let cancelled = false;
+    const loadRules = async () => {
+      try {
+        // Assuming a token might be needed if it's protected, but rules are usually public or available to all residents.
+        // If verifyUser is strict, we should pass token.
+        const token = getAuthToken();
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+        const response = await fetch(`${API_BASE_URL}/rules`, { headers });
+        if (response.ok && !cancelled) {
+          const data = await response.json();
+          setRules(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch rules', error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    loadRules();
+    return () => { cancelled = true; };
   }, []);
 
   const handleDownloadPDF = async () => {

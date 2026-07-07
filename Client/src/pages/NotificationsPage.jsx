@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Check, CheckCircle, Info, Trash2 } from 'lucide-react';
+import { Bell, Check, CheckCircle, Info } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import API_BASE_URL from '../config';
 import { getAuthToken, getAuthUser } from '../utils/authStorage';

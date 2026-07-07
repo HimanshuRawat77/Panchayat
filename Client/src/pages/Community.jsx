@@ -6,7 +6,6 @@ import {
   BarChart3,
   Users,
   MessageSquareWarning,
-  Wrench,
   Settings,
   HelpCircle,
   LogOut,
@@ -16,8 +15,6 @@ import {
   MessageCircle,
   Image as ImageIcon,
   Heart,
-  Calendar,
-  Lightbulb
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
@@ -83,10 +80,12 @@ const Community = () => {
     loadPosts();
   }, [user]);
 
+  const [nowMs] = useState(() => Date.now());
+
   const formatTimestamp = (value) => {
     if (!value) return 'Just now';
     const date = new Date(value);
-    const diffMs = Date.now() - date.getTime();
+    const diffMs = nowMs - date.getTime();
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffHours / 24);
 

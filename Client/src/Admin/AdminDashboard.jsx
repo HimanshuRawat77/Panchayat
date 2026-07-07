@@ -80,7 +80,7 @@ const NavButton = ({ active, onClick, icon: Icon, label }) => (
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [me, setMe] = useState(() => readStoredUser());
+  const [me] = useState(() => readStoredUser());
   const [tab, setTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [analytics, setAnalytics] = useState(null);

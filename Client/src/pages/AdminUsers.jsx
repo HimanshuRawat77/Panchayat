@@ -35,7 +35,7 @@ const AdminUsers = () => {
       try {
         const data = await getUsersAdmin();
         setUsersList(data);
-      } catch (error) {
+      } catch {
         toast.error('Failed to fetch users');
       } finally {
         setLoading(false);
