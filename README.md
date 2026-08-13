@@ -47,6 +47,7 @@ A full-stack web application built with modern technologies for efficient manage
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **React** 19.2.4 - UI library
 - **Vite** 8.0.4 - Next-generation build tool
 - **Tailwind CSS** 4.2.2 - Utility-first CSS framework
@@ -59,6 +60,7 @@ A full-stack web application built with modern technologies for efficient manage
 - **ESLint** - Code linting
 
 ### Backend
+
 - **Node.js** - Runtime environment
 - **Express** 5.2.1 - Web framework
 - **MongoDB** - Database
@@ -141,16 +143,19 @@ npm install
 ### Backend Environment Setup
 
 1. Navigate to the Server directory:
+
    ```bash
    cd Server
    ```
 
 2. Create a `.env` file in the Server directory:
+
    ```bash
    touch .env
    ```
 
 3. Add the following environment variables to `.env`:
+
    ```env
    # Database
    MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database_name
@@ -173,6 +178,7 @@ npm install
 ### MongoDB Setup
 
 **Option 1: Local MongoDB**
+
 ```bash
 # Start MongoDB service
 # On Windows:
@@ -183,6 +189,7 @@ brew services start mongodb-community
 ```
 
 **Option 2: MongoDB Atlas (Cloud)**
+
 1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 2. Create a free account
 3. Create a cluster
@@ -269,6 +276,7 @@ The backend provides various API endpoints for:
 - **AI Features**: Integration with OpenAI for intelligent operations
 
 All API requests should include:
+
 - **Content-Type**: `application/json`
 - **Authorization**: `Bearer <JWT_TOKEN>` (for protected routes)
 
@@ -315,6 +323,46 @@ If you encounter any issues or have questions, please:
 - ✅ Toast notifications for user feedback
 - ✅ Responsive design for all devices
 
+## ⚡ Redis Integration (Caching & Rate Limiting)
+
+Panchayat utilizes Redis to enhance the performance and security of its AI Assistant capabilities. The integration employs a graceful fallback mechanism, ensuring the application remains fully functional even if Redis is temporarily unavailable.
+
+### What is Cached?
+
+The RAG (Retrieval-Augmented Generation) knowledge base is cached in Redis to minimize repetitive MongoDB queries.
+
+- **Rules (`society:default:rules`)**: Society rules and policies.
+- **Notices (`society:default:notices`)**: Active notices.
+- **Society Info (`society:default:info`)**: General society information (timings, addresses).
+- **Community Posts (`society:default:posts`)**: Recent community posts.
+
+_Note: User-specific conversations and private AI queries are NEVER cached to ensure privacy._
+
+### Cache Invalidation
+
+When rules or community posts are created, updated, or deleted through their respective endpoints, the associated Redis cache keys are instantly invalidated. This guarantees the AI Assistant always has the most up-to-date context.
+
+### Rate Limiting
+
+To prevent abuse of the OpenAI API, the `/ask` endpoint is protected by a Redis-backed rate limiter.
+
+- **Default Limit**: 10 requests per user per 60 seconds.
+- **Fallback**: If Redis is offline, a lightweight, single-node in-memory rate limiter takes over automatically.
+
+### Running with Redis Locally
+
+You can run a local Redis instance easily with Docker:
+
+```bash
+docker run --name redis-panchayat -p 6379:6379 -d redis
+```
+
+Ensure your `Server/.env` file contains the Redis URL:
+
+```env
+REDIS_URL=redis://localhost:6379
+```
+
 ---
 
 ## Razorpay Integration (Easy Guide)
@@ -322,14 +370,17 @@ If you encounter any issues or have questions, please:
 Here is a short, plain-language guide to adding Razorpay payments to Panchayat. It explains what to change, where to store secrets, and how the flow works — written for someone who wants to implement this next.
 
 What kind of integration
+
 - We'll use a server-verified flow (recommended). The steps are: backend creates an order -> frontend opens Razorpay Checkout -> backend verifies the payment signature -> then we activate the user's plan.
 - Sources: Razorpay Node.js Integration and Standard Checkout docs.
 
 Important security notes (do NOT commit secrets)
+
 - The test key ID is safe to include in frontend config: example test key id: `rzp_test_T9IUijB4dqodq3`.
 - The key secret MUST never be put in frontend code or committed. Keep it only in the Server/.env as `RAZORPAY_KEY_SECRET`.
 
 Environment variables
+
 - Server (.env):
   - RAZORPAY_KEY_ID (your Razorpay key id)
   - RAZORPAY_KEY_SECRET (your Razorpay key secret — keep private)
@@ -338,6 +389,7 @@ Environment variables
   - VITE_RAZORPAY_KEY_ID=rzp_test_T9IUijB4dqodq3 (test key id is ok to expose)
 
 Backend changes (high level)
+
 1. Install SDK:
    - `npm install razorpay` in Server/
 2. Update User model (Server/models/User.js) to store subscription fields:
@@ -359,6 +411,7 @@ Backend changes (high level)
    - GET /api/payments/subscription — return user's current plan details; also check for expiry and auto-mark expired plans
 
 Frontend changes (high level)
+
 1. Pricing UI (Client/src/components/ui/pricing-section.jsx):
    - Free plan button calls POST /api/payments/free-trial
    - Paid plan button calls POST /api/payments/create-order, then opens Razorpay Checkout with the returned order id
@@ -370,10 +423,12 @@ Frontend changes (high level)
 6. In Client/src/pages/Profile.jsx replace `subscriptionMode` field with clear plan details: current plan, status, activation date, expiry date, days remaining
 
 Expiry logic (simple and safe)
+
 - On each login, and on calls to `/auth/me` and `/payments/subscription`, backend checks `planExpiresAt`. If now > planExpiresAt, backend sets `planStatus = 'expired'`.
 - This keeps things correct without requiring a cron job immediately. You can add a daily cron later to clean up if you want.
 
 Notes and next steps
+
 - I did NOT add any secret values to the README. The README shows the test key id as an example and instructs to keep the secret in Server/.env.
 - If you want, I can now implement the backend routes and model updates, or create a PR with the code changes for review.
 
