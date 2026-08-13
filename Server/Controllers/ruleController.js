@@ -1,6 +1,7 @@
 import Rule from "../models/Rule.js";
 import Notification from "../models/Notification.js";
 import PDFDocument from "pdfkit";
+import { invalidateCache } from "../services/cacheService.js";
 
 // get rules
 export const getRules = async (req, res) => {
@@ -51,6 +52,8 @@ export const addRule = async (req, res) => {
       type: 'RuleAdded'
     });
 
+    await invalidateCache('society:default:rules');
+
     res.status(201).json(rule);
   } catch (error) {
     res.status(500).json({ message: "Failed to add rule", error: error.message });
@@ -84,6 +87,8 @@ export const updateRule = async (req, res) => {
       type: 'RuleUpdated'
     });
 
+    await invalidateCache('society:default:rules');
+
     res.json(rule);
   } catch (error) {
     res.status(500).json({ message: "Failed to update rule", error: error.message });
@@ -103,6 +108,8 @@ export const deleteRule = async (req, res) => {
       message: `${rule.title} has been removed.`,
       type: 'RuleRemoved'
     });
+
+    await invalidateCache('society:default:rules');
 
     res.json({ message: "Rule deleted" });
   } catch (error) {

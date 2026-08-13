@@ -1,5 +1,6 @@
 import CommunityPost from "../models/CommunityPost.js";
 import User from "../models/User.js";
+import { invalidateCache } from "../services/cacheService.js";
 
 export const getCommunityPosts = async (req, res) => {
   try {
@@ -34,6 +35,8 @@ export const createCommunityPost = async (req, res) => {
       category: category || "Suggestion",
       content: content.trim(),
     });
+
+    await invalidateCache('society:default:posts');
 
     res.status(201).json(post);
   } catch (error) {

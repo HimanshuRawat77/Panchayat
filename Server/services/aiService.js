@@ -4,6 +4,7 @@ import Notice from '../models/Notice.js';
 import SocietyInfo from '../models/SocietyInfo.js';
 import CommunityPost from '../models/CommunityPost.js';
 import { searchKnowledgeBase } from './searchKnowledge.js';
+import { getCache, setCache } from './cacheService.js';
 
 const openai = process.env.OPENAI_API_KEY ? new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -203,21 +204,34 @@ const embedDocument = async (document) => {
 };
 
 const fetchKnowledgeSources = async () => {
+  const societyId = 'default'; // Assuming single society for now, structure supports scaling
+
+  // Helper to fetch and cache if missed
+  const getOrSet = async (key, fetchFn, ttlEnvVar, defaultTtl) => {
+    const cached = await getCache(key);
+    if (cached) return cached;
+
+    const data = await fetchFn();
+    const ttl = parseInt(process.env[ttlEnvVar] || defaultTtl, 10);
+    await setCache(key, data, ttl);
+    return data;
+  };
+
   const [societyInfos, rules, notices, communityPosts] = await Promise.all([
-    SocietyInfo.find().lean(),
-    Rule.find({
+    getOrSet(`society:${societyId}:info`, () => SocietyInfo.find().lean(), 'CACHE_INFO_TTL', 3600),
+    getOrSet(`society:${societyId}:rules`, () => Rule.find({
       $or: [
         { expiryDate: { $exists: false } },
         { expiryDate: { $gt: new Date() } },
       ],
-    }).sort({ isPinned: -1, createdAt: -1 }).lean(),
-    Notice.find({
+    }).sort({ isPinned: -1, createdAt: -1 }).lean(), 'CACHE_RULES_TTL', 3600),
+    getOrSet(`society:${societyId}:notices`, () => Notice.find({
       $or: [
         { expiryDate: { $exists: false } },
         { expiryDate: { $gt: new Date() } },
       ],
-    }).sort({ createdAt: -1 }).lean(),
-    CommunityPost.find().sort({ createdAt: -1 }).limit(50).lean(),
+    }).sort({ createdAt: -1 }).lean(), 'CACHE_NOTICES_TTL', 900),
+    getOrSet(`society:${societyId}:posts`, () => CommunityPost.find().sort({ createdAt: -1 }).limit(50).lean(), 'CACHE_POSTS_TTL', 600),
   ]);
 
   return { societyInfos, rules, notices, communityPosts };
