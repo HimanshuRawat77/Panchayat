@@ -77,12 +77,13 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6 relative">
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Email Address</label>
+              <label htmlFor="email" className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Email Address</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3] group-focus-within:text-blue-600 dark:group-focus-within:text-[#C8A45D] transition-colors">
                   <Mail className="w-5 h-5" />
                 </div>
                 <input 
+                  id="email"
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -95,14 +96,15 @@ const Login = () => {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
-                <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA]">Password</label>
-                <a href="#" className="text-xs font-bold text-blue-600 dark:text-[#C8A45D] hover:text-blue-700 dark:hover:text-[#F5F1EA] transition-colors">Forgot Password?</a>
+                <label htmlFor="password" className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA]">Password</label>
+                <button type="button" className="text-xs font-bold text-blue-600 dark:text-[#C8A45D] hover:text-blue-700 dark:hover:text-[#F5F1EA] transition-colors">Forgot Password?</button>
               </div>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3] group-focus-within:text-blue-600 dark:group-focus-within:text-[#C8A45D] transition-colors">
                   <Lock className="w-5 h-5" />
                 </div>
                 <input 
+                  id="password"
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

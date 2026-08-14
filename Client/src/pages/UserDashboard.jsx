@@ -421,8 +421,10 @@ const UserDashboard = () => {
 
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/30 dark:bg-black/60 lg:hidden backdrop-blur-sm"
+        <button
+          type="button"
+          aria-label="Close sidebar"
+          className="fixed inset-0 z-40 bg-black/30 dark:bg-black/60 lg:hidden backdrop-blur-sm cursor-default"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -1008,30 +1010,30 @@ const UserDashboard = () => {
           <div className="pt-8 pb-4 mt-8 border-t border-slate-200 dark:border-[#221C18] flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-medium text-[#8B6B4A]">
             <p>© 2026 Panchayat AI. Reserved for Elite Residences.</p>
             <div className="flex gap-4">
-              <a
-                href="#"
+              <button
+                type="button"
                 className="hover:text-slate-900 dark:hover:text-[#dae2fd] transition"
               >
                 Privacy Policy
-              </a>
-              <a
-                href="#"
+              </button>
+              <button
+                type="button"
                 className="hover:text-slate-900 dark:hover:text-[#dae2fd] transition"
               >
                 Terms of Service
-              </a>
-              <a
-                href="#"
+              </button>
+              <button
+                type="button"
                 className="hover:text-slate-900 dark:hover:text-[#dae2fd] transition"
               >
                 Security
-              </a>
-              <a
-                href="#"
+              </button>
+              <button
+                type="button"
                 className="hover:text-slate-900 dark:hover:text-[#dae2fd] transition"
               >
-                Contact
-              </a>
+                Support
+              </button>
             </div>
           </div>
         </div>

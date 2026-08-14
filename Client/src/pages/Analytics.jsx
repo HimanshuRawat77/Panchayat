@@ -257,8 +257,10 @@ const Analytics = () => {
       
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-black/40 dark:bg-black/80 lg:hidden backdrop-blur-sm"
+        <button 
+          type="button"
+          aria-label="Close sidebar"
+          className="fixed inset-0 z-40 bg-black/40 dark:bg-black/80 lg:hidden backdrop-blur-sm cursor-default"
           onClick={() => setSidebarOpen(false)}
         />
       )}

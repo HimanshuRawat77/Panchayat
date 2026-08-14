@@ -85,12 +85,13 @@ const Signup = () => {
 
               {/* Full Name */}
               <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Full Name</label>
+                <label htmlFor="fullName" className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Full Name</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3] group-focus-within:text-blue-600 dark:group-focus-within:text-[#C8A45D] transition-colors">
                     <User className="w-5 h-5" />
                   </div>
                   <input 
+                    id="fullName"
                     name="fullName"
                     type="text" 
                     value={formData.fullName}
@@ -104,12 +105,13 @@ const Signup = () => {
 
               {/* Invite Code */}
               <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Society Invite Code</label>
+                <label htmlFor="inviteCode" className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Society Invite Code</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3] group-focus-within:text-blue-600 dark:group-focus-within:text-[#C8A45D] transition-colors">
                     <span className="text-lg font-bold">#</span>
                   </div>
                   <input 
+                    id="inviteCode"
                     name="inviteCode"
                     type="text" 
                     value={formData.inviteCode}
@@ -123,12 +125,13 @@ const Signup = () => {
 
               {/* Phone */}
               <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Phone Number</label>
+                <label htmlFor="phoneNumber" className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Phone Number</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3] group-focus-within:text-blue-600 dark:group-focus-within:text-[#C8A45D] transition-colors">
                     <Phone className="w-5 h-5" />
                   </div>
                   <input 
+                    id="phoneNumber"
                     name="phoneNumber"
                     type="tel" 
                     value={formData.phoneNumber}
@@ -142,12 +145,13 @@ const Signup = () => {
 
               {/* Email */}
               <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Email Address</label>
+                <label htmlFor="email" className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Email Address</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3] group-focus-within:text-blue-600 dark:group-focus-within:text-[#C8A45D] transition-colors">
                     <Mail className="w-5 h-5" />
                   </div>
                   <input 
+                    id="email"
                     name="email"
                     type="email" 
                     value={formData.email}
@@ -161,12 +165,13 @@ const Signup = () => {
 
               {/* Password */}
               <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Password</label>
+                <label htmlFor="password" className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Password</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3] group-focus-within:text-blue-600 dark:group-focus-within:text-[#C8A45D] transition-colors">
                     <Lock className="w-5 h-5" />
                   </div>
                   <input 
+                    id="password"
                     name="password"
                     type="password" 
                     value={formData.password}
@@ -180,12 +185,13 @@ const Signup = () => {
 
               {/* House */}
               <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">House Number</label>
+                <label htmlFor="houseNumber" className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">House Number</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3] group-focus-within:text-blue-600 dark:group-focus-within:text-[#C8A45D] transition-colors">
                     <Home className="w-5 h-5" />
                   </div>
                   <input 
+                    id="houseNumber"
                     name="houseNumber"
                     type="text" 
                     value={formData.houseNumber}
@@ -199,12 +205,13 @@ const Signup = () => {
 
               {/* Block */}
               <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Block / Wing</label>
+                <label htmlFor="block" className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Block / Wing</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3] group-focus-within:text-blue-600 dark:group-focus-within:text-[#C8A45D] transition-colors">
                     <Grid className="w-5 h-5" />
                   </div>
                   <input 
+                    id="block"
                     name="block"
                     type="text" 
                     value={formData.block}
@@ -218,12 +225,13 @@ const Signup = () => {
 
               {/* Nationality */}
               <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Nationality</label>
+                <label htmlFor="nationality" className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Nationality</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3] group-focus-within:text-blue-600 dark:group-focus-within:text-[#C8A45D] transition-colors">
                     <Flag className="w-5 h-5" />
                   </div>
                   <select 
+                    id="nationality"
                     name="nationality"
                     value={formData.nationality}
                     onChange={handleChange}

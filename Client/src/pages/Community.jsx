@@ -138,8 +138,10 @@ const Community = () => {
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#151210] text-slate-900 dark:text-[#F5F1EA] font-sans selection:bg-[#C8A45D]/20">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/30 dark:bg-black/60 lg:hidden backdrop-blur-sm"
+        <button
+          type="button"
+          aria-label="Close sidebar"
+          className="fixed inset-0 z-40 bg-black/30 dark:bg-black/60 lg:hidden backdrop-blur-sm cursor-default"
           onClick={() => setSidebarOpen(false)}
         />
       )}

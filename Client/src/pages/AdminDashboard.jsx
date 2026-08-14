@@ -394,6 +394,7 @@ const AdminDashboard = () => {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <select 
+                            aria-label="Change complaint status" 
                             value={complaint.status}
                             onChange={(e) => handleStatusChange(complaint._id, e.target.value)}
                             className="bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block px-3 py-2 outline-none shadow-sm cursor-pointer ml-auto hover:bg-slate-50 transition-colors"

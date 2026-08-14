@@ -399,8 +399,9 @@ const AdminDashboard = () => {
                   <div className="space-y-6">
                     <div className="flex flex-wrap items-end gap-3 rounded-lg border border-zinc-300 bg-white p-4 shadow-sm">
                       <div>
-                        <label className="mb-1 block text-xs font-semibold text-zinc-500">Status</label>
+                        <label htmlFor="filterStatus" className="mb-1 block text-xs font-semibold text-zinc-500">Status</label>
                         <select
+                          id="filterStatus"
                           value={fStatus}
                           onChange={(e) => setFStatus(e.target.value)}
                           className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium outline-none ring-teal-500/0 focus:ring-2 focus:ring-teal-500/30"
@@ -414,8 +415,9 @@ const AdminDashboard = () => {
                         </select>
                       </div>
                       <div>
-                        <label className="mb-1 block text-xs font-semibold text-zinc-500">Priority</label>
+                        <label htmlFor="filterPriority" className="mb-1 block text-xs font-semibold text-zinc-500">Priority</label>
                         <select
+                          id="filterPriority"
                           value={fPriority}
                           onChange={(e) => setFPriority(e.target.value)}
                           className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium outline-none focus:ring-2 focus:ring-teal-500/30"
@@ -429,8 +431,9 @@ const AdminDashboard = () => {
                         </select>
                       </div>
                       <div>
-                        <label className="mb-1 block text-xs font-semibold text-zinc-500">Category</label>
+                        <label htmlFor="filterCategory" className="mb-1 block text-xs font-semibold text-zinc-500">Category</label>
                         <select
+                          id="filterCategory"
                           value={fCategory}
                           onChange={(e) => setFCategory(e.target.value)}
                           className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium outline-none focus:ring-2 focus:ring-teal-500/30"
@@ -585,6 +588,7 @@ const AdminDashboard = () => {
                             <td className="px-4 py-3 text-zinc-600">{u.block}</td>
                             <td className="px-4 py-3">
                               <select
+                                aria-label="Update user role"
                                 value={u.role}
                                 disabled={String(u._id) === String(me.id)}
                                 onChange={(e) => handleRoleChange(u._id, e.target.value)}
@@ -618,8 +622,9 @@ const AdminDashboard = () => {
                       </h2>
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="md:col-span-2">
-                          <label className="mb-1 block text-xs font-semibold text-zinc-500">Title</label>
+                          <label htmlFor="ruleTitle" className="mb-1 block text-xs font-semibold text-zinc-500">Title</label>
                           <input
+                            id="ruleTitle"
                             value={newRule.title}
                             onChange={(e) => setNewRule((r) => ({ ...r, title: e.target.value }))}
                             className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500/30"
@@ -627,16 +632,18 @@ const AdminDashboard = () => {
                           />
                         </div>
                         <div>
-                          <label className="mb-1 block text-xs font-semibold text-zinc-500">Category</label>
+                          <label htmlFor="ruleCategory" className="mb-1 block text-xs font-semibold text-zinc-500">Category</label>
                           <input
+                            id="ruleCategory"
                             value={newRule.category}
                             onChange={(e) => setNewRule((r) => ({ ...r, category: e.target.value }))}
                             className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500/30"
                           />
                         </div>
                         <div className="md:col-span-2">
-                          <label className="mb-1 block text-xs font-semibold text-zinc-500">Description</label>
+                          <label htmlFor="ruleDescription" className="mb-1 block text-xs font-semibold text-zinc-500">Description</label>
                           <textarea
+                            id="ruleDescription"
                             value={newRule.description}
                             onChange={(e) => setNewRule((r) => ({ ...r, description: e.target.value }))}
                             rows={4}
@@ -738,24 +745,27 @@ const AdminDashboard = () => {
                       <h2 className="mb-4 text-sm font-bold text-zinc-800">Register worker</h2>
                       <div className="space-y-3">
                         <div>
-                          <label className="mb-1 block text-xs font-semibold text-zinc-500">Name</label>
+                          <label htmlFor="workerName" className="mb-1 block text-xs font-semibold text-zinc-500">Name</label>
                           <input
+                            id="workerName"
                             value={newWorker.name}
                             onChange={(e) => setNewWorker((w) => ({ ...w, name: e.target.value }))}
                             className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
                           />
                         </div>
                         <div>
-                          <label className="mb-1 block text-xs font-semibold text-zinc-500">Phone</label>
+                          <label htmlFor="workerPhone" className="mb-1 block text-xs font-semibold text-zinc-500">Phone</label>
                           <input
+                            id="workerPhone"
                             value={newWorker.phone}
                             onChange={(e) => setNewWorker((w) => ({ ...w, phone: e.target.value }))}
                             className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
                           />
                         </div>
                         <div>
-                          <label className="mb-1 block text-xs font-semibold text-zinc-500">Trade</label>
+                          <label htmlFor="workerTrade" className="mb-1 block text-xs font-semibold text-zinc-500">Trade</label>
                           <select
+                            id="workerTrade"
                             value={newWorker.trade}
                             onChange={(e) => setNewWorker((w) => ({ ...w, trade: e.target.value }))}
                             className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"

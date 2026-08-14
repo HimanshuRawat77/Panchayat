@@ -346,12 +346,12 @@ const Home = () => {
                     </a>
                   </li>
                   <li>
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       className="text-sm text-slate-600 transition-colors hover:text-slate-900 dark:text-[#B8AEA3] dark:hover:text-[#F5F1EA]"
                     >
                       Security
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </div>
@@ -371,12 +371,12 @@ const Home = () => {
                     </Link>
                   </li>
                   <li>
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       className="text-sm text-slate-600 transition-colors hover:text-slate-900 dark:text-[#B8AEA3] dark:hover:text-[#F5F1EA]"
                     >
                       Careers
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </div>
@@ -388,20 +388,20 @@ const Home = () => {
                 </h4>
                 <ul className="mt-4 space-y-3">
                   <li>
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       className="text-sm text-slate-600 transition-colors hover:text-slate-900 dark:text-[#B8AEA3] dark:hover:text-[#F5F1EA]"
                     >
                       Privacy Policy
-                    </a>
+                    </button>
                   </li>
                   <li>
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       className="text-sm text-slate-600 transition-colors hover:text-slate-900 dark:text-[#B8AEA3] dark:hover:text-[#F5F1EA]"
                     >
                       Terms of Service
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </div>

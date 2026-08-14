@@ -232,10 +232,11 @@ const ComplaintPage = () => {
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div data-tour="maintenance" className="space-y-2">
-                  <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
+                  <label htmlFor="category" className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
                     Category
                   </label>
                   <select
+                    id="category"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 dark:border-[#6B4F3A] dark:bg-[#151210] dark:text-[#F5F1EA]"
@@ -248,11 +249,12 @@ const ComplaintPage = () => {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
+                  <label htmlFor="description" className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
                     Description
                   </label>
                   <div className="relative">
                     <textarea
+                      id="description"
                       rows={4}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
@@ -263,9 +265,9 @@ const ComplaintPage = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
+                  <span className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
                     Priority Level
-                  </label>
+                  </span>
                   <div className="grid grid-cols-3 gap-2">
                     {Object.keys(priorityMeta).map((p) => (
                       <button
@@ -286,9 +288,9 @@ const ComplaintPage = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
+                  <span className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#B8AEA3]">
                     Upload Proof (Optional)
-                  </label>
+                  </span>
                   
                   {imagePreview ? (
                     <div className="group relative aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-[#6B4F3A]">

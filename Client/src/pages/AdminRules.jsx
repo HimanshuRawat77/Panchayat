@@ -306,10 +306,10 @@ const AdminRules = () => {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-2">
-                            <button onClick={() => openEditModal(rule)} className="p-2 text-slate-400 hover:text-indigo-600 transition-colors rounded-lg hover:bg-indigo-50">
+                            <button aria-label="Edit rule" onClick={() => openEditModal(rule)} className="p-2 text-slate-400 hover:text-indigo-600 transition-colors rounded-lg hover:bg-indigo-50">
                               <Edit2 size={16} />
                             </button>
-                            <button onClick={() => handleDeleteRule(rule._id)} className="p-2 text-slate-400 hover:text-rose-600 transition-colors rounded-lg hover:bg-rose-50">
+                            <button aria-label="Delete rule" onClick={() => handleDeleteRule(rule._id)} className="p-2 text-slate-400 hover:text-rose-600 transition-colors rounded-lg hover:bg-rose-50">
                               <Trash2 size={16} />
                             </button>
                           </div>
@@ -339,8 +339,9 @@ const AdminRules = () => {
             
             <form onSubmit={handleSaveRule} className="p-6 space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Rule Title *</label>
+                <label htmlFor="title" className="block text-sm font-semibold text-slate-700 mb-2">Rule Title *</label>
                 <input 
+                  id="title"
                   type="text" 
                   required
                   value={formData.title}
@@ -351,8 +352,9 @@ const AdminRules = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Category *</label>
+                <label htmlFor="category" className="block text-sm font-semibold text-slate-700 mb-2">Category *</label>
                 <select 
+                  id="category"
                   value={formData.category}
                   onChange={(e) => setFormData({...formData, category: e.target.value})}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
@@ -364,8 +366,9 @@ const AdminRules = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Description *</label>
+                <label htmlFor="description" className="block text-sm font-semibold text-slate-700 mb-2">Description *</label>
                 <textarea 
+                  id="description"
                   required
                   rows="4"
                   value={formData.description}
@@ -377,8 +380,9 @@ const AdminRules = () => {
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Effective Date</label>
+                  <label htmlFor="effectiveDate" className="block text-sm font-semibold text-slate-700 mb-2">Effective Date</label>
                   <input 
+                    id="effectiveDate"
                     type="date" 
                     value={formData.effectiveDate}
                     onChange={(e) => setFormData({...formData, effectiveDate: e.target.value})}
@@ -387,8 +391,9 @@ const AdminRules = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Expiry Date (Optional)</label>
+                  <label htmlFor="expiryDate" className="block text-sm font-semibold text-slate-700 mb-2">Expiry Date (Optional)</label>
                   <input 
+                    id="expiryDate"
                     type="date" 
                     value={formData.expiryDate}
                     onChange={(e) => setFormData({...formData, expiryDate: e.target.value})}

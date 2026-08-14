@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import API_BASE_URL from '../../config';
 import { toast, Toaster } from 'react-hot-toast';
-import { Building, Users, Shield, Plus, Key } from 'lucide-react';
+import { Building, Shield, Plus, Key } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const PlatformDashboard = () => {
@@ -35,7 +35,7 @@ const PlatformDashboard = () => {
         const data = await res.json();
         setSocieties(data);
       }
-    } catch (err) {
+    } catch {
       toast.error('Failed to fetch societies');
     } finally {
       setLoading(false);
@@ -62,7 +62,7 @@ const PlatformDashboard = () => {
       } else {
         toast.error(data.message || 'Error creating society');
       }
-    } catch (err) {
+    } catch {
       toast.error('Network error');
     }
   };
@@ -87,7 +87,7 @@ const PlatformDashboard = () => {
       } else {
         toast.error(data.message || 'Error creating admin');
       }
-    } catch (err) {
+    } catch {
       toast.error('Network error');
     }
   };
