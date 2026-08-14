@@ -34,8 +34,15 @@ const complaintSchema = new mongoose.Schema(
     image: {
       type: String, // URL of the uploaded image
     },
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Society',
+    },
   },
   { timestamps: true }
 );
+
+complaintSchema.index({ societyId: 1 });
+complaintSchema.index({ societyId: 1, createdAt: -1 });
 
 export default mongoose.model("Complaint", complaintSchema);

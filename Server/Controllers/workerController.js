@@ -2,7 +2,7 @@ import Worker from "../models/Worker.js";
 
 export const listWorkers = async (req, res) => {
   try {
-    const workers = await Worker.find().sort({ trade: 1, name: 1 });
+    const workers = await Worker.find({ societyId: req.user.societyId }).sort({ trade: 1, name: 1 });
     res.json(workers);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -20,6 +20,7 @@ export const createWorker = async (req, res) => {
       phone: phone.trim(),
       trade,
       isActive: isActive !== false,
+      societyId: req.user.societyId
     });
     res.status(201).json(worker);
   } catch (error) {
@@ -36,7 +37,7 @@ export const updateWorker = async (req, res) => {
     if (trade !== undefined) update.trade = trade;
     if (isActive !== undefined) update.isActive = Boolean(isActive);
 
-    const worker = await Worker.findByIdAndUpdate(req.params.id, update, {
+    const worker = await Worker.findOneAndUpdate({ _id: req.params.id, societyId: req.user.societyId }, update, {
       new: true,
     });
     if (!worker) {

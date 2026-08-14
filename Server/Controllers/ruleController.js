@@ -7,7 +7,7 @@ import { invalidateCache } from "../services/cacheService.js";
 export const getRules = async (req, res) => {
   try {
     // Pinned rules first, then by creation date
-    const rules = await Rule.find().sort({ isPinned: -1, createdAt: -1 });
+    const rules = await Rule.find({ societyId: req.user.societyId }).sort({ isPinned: -1, createdAt: -1 });
     res.json(rules);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch rules", error: error.message });
@@ -16,7 +16,7 @@ export const getRules = async (req, res) => {
 
 export const getRuleById = async (req, res) => {
   try {
-    const rule = await Rule.findById(req.params.id);
+    const rule = await Rule.findOne({ _id: req.params.id, societyId: req.user.societyId });
     if (!rule) {
       return res.status(404).json({ message: "Rule not found" });
     }
@@ -42,17 +42,19 @@ export const addRule = async (req, res) => {
       isPinned: isPinned || false,
       effectiveDate: effectiveDate || Date.now(),
       expiryDate,
-      createdBy: req.user?._id // assuming auth middleware attaches user
+      createdBy: req.user?._id, // assuming auth middleware attaches user
+      societyId: req.user.societyId
     });
 
     // Create Notification
     await Notification.create({
       title: '📘 New Rule Added',
       message: `${title} has been added.`,
-      type: 'RuleAdded'
+      type: 'RuleAdded',
+      societyId: req.user.societyId
     });
 
-    await invalidateCache('society:default:rules');
+    await invalidateCache(`society:${req.user.societyId}:rules`);
 
     res.status(201).json(rule);
   } catch (error) {
@@ -75,7 +77,7 @@ export const updateRule = async (req, res) => {
       return res.status(400).json({ message: "No fields to update" });
     }
 
-    const rule = await Rule.findByIdAndUpdate(req.params.id, update, { new: true });
+    const rule = await Rule.findOneAndUpdate({ _id: req.params.id, societyId: req.user.societyId }, update, { new: true });
     if (!rule) {
       return res.status(404).json({ message: "Rule not found" });
     }
@@ -84,10 +86,11 @@ export const updateRule = async (req, res) => {
     await Notification.create({
       title: '📘 Rule Updated',
       message: `${rule.title} policy has been modified.`,
-      type: 'RuleUpdated'
+      type: 'RuleUpdated',
+      societyId: req.user.societyId
     });
 
-    await invalidateCache('society:default:rules');
+    await invalidateCache(`society:${req.user.societyId}:rules`);
 
     res.json(rule);
   } catch (error) {
@@ -97,7 +100,7 @@ export const updateRule = async (req, res) => {
 
 export const deleteRule = async (req, res) => {
   try {
-    const rule = await Rule.findByIdAndDelete(req.params.id);
+    const rule = await Rule.findOneAndDelete({ _id: req.params.id, societyId: req.user.societyId });
     if (!rule) {
       return res.status(404).json({ message: "Rule not found" });
     }
@@ -106,10 +109,11 @@ export const deleteRule = async (req, res) => {
     await Notification.create({
       title: '📘 Rule Removed',
       message: `${rule.title} has been removed.`,
-      type: 'RuleRemoved'
+      type: 'RuleRemoved',
+      societyId: req.user.societyId
     });
 
-    await invalidateCache('society:default:rules');
+    await invalidateCache(`society:${req.user.societyId}:rules`);
 
     res.json({ message: "Rule deleted" });
   } catch (error) {
@@ -120,7 +124,7 @@ export const deleteRule = async (req, res) => {
 // Export Rule Book PDF
 export const exportRuleBookPdf = async (req, res) => {
   try {
-    const rules = await Rule.find().sort({ category: 1, createdAt: -1 });
+    const rules = await Rule.find({ societyId: req.user.societyId }).sort({ category: 1, createdAt: -1 });
 
     const doc = new PDFDocument({ margin: 50 });
     

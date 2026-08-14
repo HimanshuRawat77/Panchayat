@@ -21,7 +21,8 @@ const Signup = () => {
     role: 'resident',
     houseNumber: '',
     block: '',
-    nationality: 'Indian'
+    nationality: 'Indian',
+    inviteCode: ''
   });
 
   const handleChange = (e) => {
@@ -96,6 +97,25 @@ const Signup = () => {
                     onChange={handleChange}
                     className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-[#151210]/50 border border-slate-100 dark:border-[#6B4F3A] rounded-2xl text-slate-900 dark:text-[#F5F1EA] font-medium focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-[#C8A45D]/20 focus:border-blue-500 dark:focus:border-[#C8A45D] outline-none transition-all"
                     placeholder="John Doe"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Invite Code */}
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Society Invite Code</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3] group-focus-within:text-blue-600 dark:group-focus-within:text-[#C8A45D] transition-colors">
+                    <span className="text-lg font-bold">#</span>
+                  </div>
+                  <input 
+                    name="inviteCode"
+                    type="text" 
+                    value={formData.inviteCode}
+                    onChange={handleChange}
+                    className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-[#151210]/50 border border-slate-100 dark:border-[#6B4F3A] rounded-2xl text-slate-900 dark:text-[#F5F1EA] font-bold tracking-widest uppercase focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-[#C8A45D]/20 focus:border-blue-500 dark:focus:border-[#C8A45D] outline-none transition-all"
+                    placeholder="ENTER CODE"
                     required
                   />
                 </div>
@@ -214,29 +234,6 @@ const Signup = () => {
                     <option value="Non-Resident">Non-Resident Indian (NRI)</option>
                     <option value="Other">Other</option>
                   </select>
-                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3]">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Role */}
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-[#F5F1EA] ml-1">Role</label>
-                <div className="relative group">
-                  <select 
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    className="block w-full pl-4 pr-10 py-4 bg-slate-50 dark:bg-[#151210]/50 border border-slate-100 dark:border-[#6B4F3A] rounded-2xl text-slate-900 dark:text-[#F5F1EA] font-medium focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-[#C8A45D]/20 focus:border-blue-500 dark:focus:border-[#C8A45D] outline-none appearance-none transition-all"
-                    required
-                  >
-                    <option value="resident">Resident</option>
-                    <option value="admin">Admin</option>
-                  </select>
-
                   <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400 dark:text-[#B8AEA3]">
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />

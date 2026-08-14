@@ -10,8 +10,14 @@ const workerSchema = new mongoose.Schema(
       enum: ["plumber", "electrician", "carpenter"],
     },
     isActive: { type: Boolean, default: true },
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Society',
+    },
   },
   { timestamps: true }
 );
+
+workerSchema.index({ societyId: 1 });
 
 export default mongoose.model("Worker", workerSchema);

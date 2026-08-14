@@ -18,9 +18,15 @@ const notificationSchema = new mongoose.Schema(
     readBy: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
-    }]
+    }],
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Society',
+    },
   },
   { timestamps: true }
 );
+
+notificationSchema.index({ societyId: 1 });
 
 export default mongoose.model("Notification", notificationSchema);

@@ -51,8 +51,13 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["resident", "admin"],
+      enum: ["resident", "admin", "platform_admin"],
       default: "resident",
+    },
+
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Society",
     },
 
     isVerified: {
@@ -112,6 +117,8 @@ userSchema.pre("save", async function () {
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
+userSchema.index({ societyId: 1 });
 
 
 const User = mongoose.model("User", userSchema);

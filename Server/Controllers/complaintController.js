@@ -17,6 +17,7 @@ export const createComplaint = async (req, res) => {
       priority: priority || "Medium",
       image,
       aiSummary,
+      societyId: req.user.societyId,
     });
 
 
@@ -32,6 +33,7 @@ export const getMyComplaints = async (req, res) => {
   try {
     const complaints = await Complaint.find({
       userId: req.user.id,
+      societyId: req.user.societyId
     }).sort({ createdAt: -1 });
 
     res.json(complaints);
@@ -44,7 +46,7 @@ export const getMyComplaints = async (req, res) => {
 // 🏢 Get All Complaints (Admin)
 export const getAllComplaints = async (req, res) => {
   try {
-    const complaints = await Complaint.find({})
+    const complaints = await Complaint.find({ societyId: req.user.societyId })
       .populate("userId", "fullName block houseNumber avatar")
       .sort({ createdAt: -1 });
 
@@ -63,8 +65,8 @@ export const updateComplaintStatus = async (req, res) => {
       return res.status(400).json({ message: "Status is required" });
     }
 
-    const complaint = await Complaint.findByIdAndUpdate(
-      req.params.id,
+    const complaint = await Complaint.findOneAndUpdate(
+      { _id: req.params.id, societyId: req.user.societyId },
       { status },
       { new: true }
     );

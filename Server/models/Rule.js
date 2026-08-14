@@ -36,8 +36,15 @@ const ruleSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Society',
+    },
   },
   { timestamps: true }
 );
+
+ruleSchema.index({ societyId: 1 });
+ruleSchema.index({ societyId: 1, createdAt: -1 });
 
 export default mongoose.model("Rule", ruleSchema);

@@ -39,8 +39,15 @@ const communityPostSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Society',
+    },
   },
   { timestamps: true },
 );
+
+communityPostSchema.index({ societyId: 1 });
+communityPostSchema.index({ societyId: 1, createdAt: -1 });
 
 export default mongoose.model("CommunityPost", communityPostSchema);

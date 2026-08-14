@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import Rule from '../models/Rule.js';
 import Notice from '../models/Notice.js';
-import SocietyInfo from '../models/SocietyInfo.js';
+import Society from '../models/Society.js';
 import CommunityPost from '../models/CommunityPost.js';
 import { searchKnowledgeBase } from './searchKnowledge.js';
 import { getCache, setCache } from './cacheService.js';
@@ -114,7 +114,7 @@ const buildKnowledgeDocuments = ({ societyInfos, rules, notices, communityPosts 
       id: `society-${info._id}`,
       kind: 'society',
       source: '🏢 Society Information',
-      title: info.societyName || 'Society Information',
+      title: info.name || 'Society Information',
       content: detailLines.join('\n'),
       meta: [
         info.address ? `Address: ${info.address}` : null,
@@ -203,8 +203,8 @@ const embedDocument = async (document) => {
   return embedding;
 };
 
-const fetchKnowledgeSources = async () => {
-  const societyId = 'default'; // Assuming single society for now, structure supports scaling
+const fetchKnowledgeSources = async (societyId) => {
+  if (!societyId) throw new Error("societyId is required");
 
   // Helper to fetch and cache if missed
   const getOrSet = async (key, fetchFn, ttlEnvVar, defaultTtl) => {
@@ -218,27 +218,29 @@ const fetchKnowledgeSources = async () => {
   };
 
   const [societyInfos, rules, notices, communityPosts] = await Promise.all([
-    getOrSet(`society:${societyId}:info`, () => SocietyInfo.find().lean(), 'CACHE_INFO_TTL', 3600),
+    getOrSet(`society:${societyId}:info`, async () => { const s = await Society.findById(societyId).lean(); return s ? [s] : []; }, 'CACHE_INFO_TTL', 3600),
     getOrSet(`society:${societyId}:rules`, () => Rule.find({
+      societyId,
       $or: [
         { expiryDate: { $exists: false } },
         { expiryDate: { $gt: new Date() } },
       ],
     }).sort({ isPinned: -1, createdAt: -1 }).lean(), 'CACHE_RULES_TTL', 3600),
     getOrSet(`society:${societyId}:notices`, () => Notice.find({
+      societyId,
       $or: [
         { expiryDate: { $exists: false } },
         { expiryDate: { $gt: new Date() } },
       ],
     }).sort({ createdAt: -1 }).lean(), 'CACHE_NOTICES_TTL', 900),
-    getOrSet(`society:${societyId}:posts`, () => CommunityPost.find().sort({ createdAt: -1 }).limit(50).lean(), 'CACHE_POSTS_TTL', 600),
+    getOrSet(`society:${societyId}:posts`, () => CommunityPost.find({ societyId }).sort({ createdAt: -1 }).limit(50).lean(), 'CACHE_POSTS_TTL', 600),
   ]);
 
   return { societyInfos, rules, notices, communityPosts };
 };
 
-const retrieveRelevantContext = async (processedQuery) => {
-  const sources = await fetchKnowledgeSources();
+const retrieveRelevantContext = async (processedQuery, societyId) => {
+  const sources = await fetchKnowledgeSources(societyId);
   const knowledgeDocuments = buildKnowledgeDocuments(sources);
 
   if (!knowledgeDocuments.length) {
@@ -348,12 +350,12 @@ export const getAISummary = async (text) => {
   }
 };
 
-export const askAIAssistant = async (question) => {
+export const askAIAssistant = async (question, societyId) => {
   const processedQuery = preprocessQuery(question);
 
   let contextDocuments = [];
   try {
-    contextDocuments = await retrieveRelevantContext(processedQuery);
+    contextDocuments = await retrieveRelevantContext(processedQuery, societyId);
     
     if (contextDocuments.length) {
       const primarySource = contextDocuments[0];
@@ -385,7 +387,7 @@ export const askAIAssistant = async (question) => {
     console.error('OpenAI generation/retrieval failed:', error.message);
     
     // Fallback to keyword matching if OpenAI is out of quota or fails
-    const fallbackResult = await searchKnowledgeBase(processedQuery.normalized);
+    const fallbackResult = await searchKnowledgeBase(processedQuery.normalized, societyId);
     if (fallbackResult && scoreKeywordFallback(processedQuery.normalized, fallbackResult) >= MIN_KEYWORD_FALLBACK_SCORE) {
       return {
         ...fallbackResult,

@@ -1,12 +1,12 @@
 import Rule from '../models/Rule.js';
 import Notice from '../models/Notice.js';
-import SocietyInfo from '../models/SocietyInfo.js';
+import Society from '../models/Society.js';
 
-export const searchKnowledgeBase = async (question) => {
+export const searchKnowledgeBase = async (question, societyId) => {
   const query = question.toLowerCase();
 
-  // 1. Search SocietyInfo First
-  const societyInfos = await SocietyInfo.find();
+  // 1. Search Society First
+  const societyInfos = await Society.find({ _id: societyId });
   for (const info of societyInfos) {
     if (query.includes('gym')) {
       if (query.includes('timing') || query.includes('time') || query.includes('open')) {
@@ -75,6 +75,7 @@ export const searchKnowledgeBase = async (question) => {
 
   // 2. Search Rules
   const activeRules = await Rule.find({
+    societyId,
     $or: [
       { expiryDate: { $exists: false } },
       { expiryDate: { $gt: new Date() } }
@@ -107,6 +108,7 @@ export const searchKnowledgeBase = async (question) => {
 
   // 3. Search Notices
   const activeNotices = await Notice.find({
+    societyId,
     $or: [
       { expiryDate: { $exists: false } },
       { expiryDate: { $gt: new Date() } }

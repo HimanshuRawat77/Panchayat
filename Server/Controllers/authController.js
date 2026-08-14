@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import Society from '../models/Society.js';
 import jwt from 'jsonwebtoken';
 import {
   buildSubscriptionResponse,
@@ -7,7 +8,7 @@ import {
 
 const buildAuthToken = (user) =>
   jwt.sign(
-    { id: user._id, role: user.role },
+    { id: user._id, role: user.role, societyId: user.societyId },
     process.env.JWT_SECRET || 'secretkey',
     { expiresIn: '1d' }
   );
@@ -17,6 +18,7 @@ const buildUserResponse = (user) => ({
   fullName: user.fullName,
   email: user.email,
   role: user.role,
+  societyId: user.societyId,
   block: user.block,
   phoneNumber: user.phoneNumber,
   nationality: user.nationality,
@@ -35,7 +37,16 @@ const buildUserResponse = (user) => ({
 export const signup = async (req, res) => {
   console.log("Signup Request Received:", req.body);
   try {
-    const { fullName, phoneNumber, email, password, role, houseNumber, block, nationality, religion } = req.body;
+    const { fullName, phoneNumber, email, password, houseNumber, block, nationality, religion, inviteCode } = req.body;
+
+    if (!inviteCode) {
+      return res.status(400).json({ message: 'Society invite code is required.' });
+    }
+
+    const society = await Society.findOne({ inviteCode: inviteCode.trim().toUpperCase(), status: 'active' });
+    if (!society) {
+      return res.status(400).json({ message: 'Invalid or inactive society invite code.' });
+    }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -52,7 +63,8 @@ export const signup = async (req, res) => {
       phoneNumber,
       email,
       password,
-      role,
+      role: 'resident',
+      societyId: society._id,
       houseNumber,
       block,
       nationality,
@@ -168,7 +180,7 @@ export const markTourSeen = async (req, res) => {
 // ✅ GET ALL USERS (Admin)
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}).select('-password').sort({ createdAt: -1 });
+    const users = await User.find({ societyId: req.user.societyId }).select('-password').sort({ createdAt: -1 });
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

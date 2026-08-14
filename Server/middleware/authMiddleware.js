@@ -33,8 +33,27 @@ export const verifyUser = (req, res, next) => {
 
 // ✅ Admin only middleware
 export const isAdmin = (req, res, next) => {
-  if (req.user.role !== 'admin') {
+  if (req.user.role !== 'admin' && req.user.role !== 'platform_admin') {
     return res.status(403).json({ message: 'Access denied (Admin only)' });
+  }
+  next();
+};
+
+// ✅ Platform Admin only middleware
+export const isPlatformAdmin = (req, res, next) => {
+  if (req.user.role !== 'platform_admin') {
+    return res.status(403).json({ message: 'Access denied (Platform Admin only)' });
+  }
+  next();
+};
+
+// ✅ Ensure user has a society
+export const ensureSociety = (req, res, next) => {
+  if (req.user.role === 'platform_admin') {
+    return next();
+  }
+  if (!req.user || !req.user.societyId) {
+    return res.status(403).json({ message: 'Access denied. You do not belong to a society.' });
   }
   next();
 };

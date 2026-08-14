@@ -3,7 +3,9 @@ import Notification from "../models/Notification.js";
 // Get all notifications
 export const getNotifications = async (req, res) => {
   try {
-    const notifications = await Notification.find().sort({ createdAt: -1 });
+    const notifications = await Notification.find({ societyId: req.user.societyId })
+      .sort({ createdAt: -1 })
+      .limit(50);
     res.json(notifications);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch notifications", error: error.message });
@@ -18,7 +20,7 @@ export const markAsRead = async (req, res) => {
     
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-    const notification = await Notification.findById(id);
+    const notification = await Notification.findOne({ _id: id, societyId: req.user.societyId });
     if (!notification) return res.status(404).json({ message: "Notification not found" });
 
     if (!notification.readBy.includes(userId)) {
@@ -40,8 +42,8 @@ export const markAllAsRead = async (req, res) => {
 
     // Update all notifications where readBy does not include this user
     await Notification.updateMany(
-      { readBy: { $ne: userId } },
-      { $push: { readBy: userId } }
+      { readBy: { $ne: userId }, societyId: req.user.societyId },
+      { $addToSet: { readBy: userId } }
     );
 
     res.json({ message: "All notifications marked as read" });

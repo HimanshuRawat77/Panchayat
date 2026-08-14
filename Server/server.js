@@ -32,6 +32,8 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(morgan("dev"));
 
+import societyRoutes from "./routes/societyRoutes.js";
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/complaints", complaintRoutes);
@@ -41,6 +43,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/societies", societyRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Running 🚀");

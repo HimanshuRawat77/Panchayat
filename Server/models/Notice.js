@@ -27,8 +27,15 @@ const noticeSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    societyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Society',
+    },
   },
   { timestamps: true }
 );
+
+noticeSchema.index({ societyId: 1 });
+noticeSchema.index({ societyId: 1, createdAt: -1 });
 
 export default mongoose.model("Notice", noticeSchema);

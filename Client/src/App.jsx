@@ -1,24 +1,29 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import UserDashboard from './pages/UserDashboard';
-import Profile from './pages/Profile';
-import AboutPage from './pages/AboutPage';
-import ComplaintPage from './pages/complaintPage';
-import Community from './pages/Community';
-import Analytics from './pages/Analytics';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminUsers from './pages/AdminUsers';
-import RuleBook from './pages/RuleBook';
-import AdminRules from './pages/AdminRules';
-import NotificationsPage from './pages/NotificationsPage';
-import Assistant from './pages/Assistant';
-import TourProvider from './components/TourGuide';
-import { AuthProvider } from './context/AuthContext';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import UserDashboard from "./pages/UserDashboard";
+import Profile from "./pages/Profile";
+import AboutPage from "./pages/AboutPage";
+import ComplaintPage from "./pages/complaintPage";
+import Community from "./pages/Community";
+import Analytics from "./pages/Analytics";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsers from "./pages/AdminUsers";
+import RuleBook from "./pages/RuleBook";
+import AdminRules from "./pages/AdminRules";
+import NotificationsPage from "./pages/NotificationsPage";
+import Assistant from "./pages/Assistant";
+import TourProvider from "./components/TourGuide";
+import { AuthProvider } from "./context/AuthContext";
+import PlatformDashboard from "./pages/PlatformAdmin/PlatformDashboard";
 
-const Features = () => <div className="min-h-screen flex items-center justify-center bg-slate-50 text-3xl font-bold text-slate-400">Features Page Coming Soon...</div>;
+const Features = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-50 text-3xl font-bold text-slate-400">
+    Features Page Coming Soon...
+  </div>
+);
 
 function App() {
   return (
@@ -42,6 +47,7 @@ function App() {
             <Route path="/admin-rules" element={<AdminRules />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/assistant" element={<Assistant />} />
+            <Route path="/platform-admin" element={<PlatformDashboard />} />
           </Routes>
         </TourProvider>
       </AuthProvider>

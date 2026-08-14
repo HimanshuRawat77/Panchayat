@@ -23,7 +23,7 @@ export const askAssistant = async (req, res) => {
   }
 
   try {
-    const response = await askAIAssistant(question);
+    const response = await askAIAssistant(question, req.user.societyId);
     res.status(200).json(response);
   } catch (error) {
     console.error('Assistant route error:', error);

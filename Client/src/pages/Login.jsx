@@ -35,7 +35,9 @@ const Login = () => {
         loginPersistently({ token: data.token, user: data.user });
         
         setTimeout(() => {
-          if (data.user.role === 'admin') {
+          if (data.user.role === 'platform_admin') {
+            navigate('/platform-admin');
+          } else if (data.user.role === 'admin') {
             navigate('/admin-dashboard');
           } else {
             navigate('/dashboard');
