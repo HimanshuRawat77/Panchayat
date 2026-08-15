@@ -13,7 +13,15 @@ const seedPlatformAdmin = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('✅ Connected to MongoDB');
 
-    const email = 'platform@admin.com';
+    const email = process.env.PLATFORM_ADMIN_EMAIL;
+    const password = process.env.PLATFORM_ADMIN_PASSWORD;
+    const phone = process.env.PLATFORM_ADMIN_PHONE;
+
+    if (!email || !password || !phone) {
+      console.error('❌ Error: PLATFORM_ADMIN_EMAIL, PLATFORM_ADMIN_PASSWORD, and PLATFORM_ADMIN_PHONE must be set in environment variables.');
+      process.exit(1);
+    }
+
     const existingAdmin = await User.findOne({ email });
 
     if (existingAdmin) {
@@ -23,9 +31,9 @@ const seedPlatformAdmin = async () => {
 
     const platformAdmin = await User.create({
       fullName: 'Super Platform Admin',
-      phoneNumber: '9999999999',
+      phoneNumber: phone,
       email,
-      password: 'platformadmin',
+      password,
       role: 'platform_admin',
       houseNumber: 'HQ',
       block: 'HQ',
@@ -34,7 +42,6 @@ const seedPlatformAdmin = async () => {
 
     console.log('✅ Platform Admin created successfully:');
     console.log('Email:', platformAdmin.email);
-    console.log('Password: platformadmin');
     process.exit(0);
   } catch (error) {
     console.error('❌ Error seeding platform admin:', error);
