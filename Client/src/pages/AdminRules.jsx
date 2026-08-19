@@ -301,8 +301,7 @@ const AdminRules = () => {
                           )}
                         </td>
                         <td className="px-6 py-4 text-xs text-slate-500">
-                          <div><span className="font-medium">Add:</span> {new Date(rule.createdAt).toLocaleDateString()}</div>
-                          {rule.updatedAt !== rule.createdAt && <div><span className="font-medium">Upd:</span> {new Date(rule.updatedAt).toLocaleDateString()}</div>}
+                          <div><span className="font-medium">Published:</span> {new Date(rule.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-2">

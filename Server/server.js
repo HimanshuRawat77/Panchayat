@@ -20,7 +20,6 @@ connectRedis();
 const app = express();
 
 // Middleware
-// Middleware
 app.use(
   cors({
     origin: "*",

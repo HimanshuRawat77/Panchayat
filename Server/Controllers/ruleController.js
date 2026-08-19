@@ -1,13 +1,24 @@
 import Rule from "../models/Rule.js";
 import Notification from "../models/Notification.js";
 import PDFDocument from "pdfkit";
-import { invalidateCache } from "../services/cacheService.js";
+import { getCache, setCache, invalidateCache } from "../services/cacheService.js";
 
 // get rules
 export const getRules = async (req, res) => {
   try {
+    const cacheKey = `society:${req.user.societyId}:rules`;
+    const cachedRules = await getCache(cacheKey);
+    
+    if (cachedRules) {
+      return res.json(cachedRules);
+    }
+
     // Pinned rules first, then by creation date
     const rules = await Rule.find({ societyId: req.user.societyId }).sort({ isPinned: -1, createdAt: -1 });
+    
+    const ttl = process.env.CACHE_RULES_TTL || 3600;
+    await setCache(cacheKey, rules, ttl);
+    
     res.json(rules);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch rules", error: error.message });

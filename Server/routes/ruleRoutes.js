@@ -4,9 +4,9 @@ import { verifyUser, isAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getRules);
-router.get("/export", exportRuleBookPdf);
-router.get("/:id", getRuleById);
+router.get("/", verifyUser, getRules);
+router.get("/export", verifyUser, exportRuleBookPdf);
+router.get("/:id", verifyUser, getRuleById);
 router.post("/add", verifyUser, isAdmin, addRule);
 router.put("/:id", verifyUser, isAdmin, updateRule);
 router.delete("/:id", verifyUser, isAdmin, deleteRule);
