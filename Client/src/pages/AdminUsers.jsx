@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Search, Bell, Users, MessageSquareWarning, ShieldCheck, 
-  Settings, HelpCircle, LogOut, BarChart3, TrendingUp, MoreVertical
+  Search, Bell, Users, ShieldCheck, 
+  HelpCircle, LogOut, BarChart3, MoreVertical
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getUsersAdmin } from '../services/adminService';

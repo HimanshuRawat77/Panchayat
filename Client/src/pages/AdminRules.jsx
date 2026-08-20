@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Pin, Plus, Edit2, Trash2, X, AlertCircle, Users, MessageSquareWarning, ShieldCheck, Settings, HelpCircle, LogOut, BarChart3, TrendingUp } from 'lucide-react';
+import { Search, Filter, Pin, Plus, Edit2, Trash2, X, AlertCircle, Users, ShieldCheck, HelpCircle, LogOut, BarChart3 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import API_BASE_URL from '../config';
