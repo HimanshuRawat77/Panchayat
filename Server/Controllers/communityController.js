@@ -51,3 +51,22 @@ export const createCommunityPost = async (req, res) => {
     res.status(500).json({ message: "Failed to create community post", error: error.message });
   }
 };
+
+export const getCommunityStats = async (req, res) => {
+  try {
+    const societyId = req.user.societyId;
+    if (!societyId) {
+      return res.status(403).json({ message: "No society associated with user" });
+    }
+
+    // Count residents belonging to this society
+    const totalResidents = await User.countDocuments({ 
+      societyId, 
+      role: 'resident' 
+    });
+
+    res.status(200).json({ totalResidents });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch community stats", error: error.message });
+  }
+};

@@ -155,11 +155,8 @@ const AdminRules = () => {
 
   const navItems = [
     { icon: BarChart3, label: 'Dashboard', path: '/admin-dashboard', active: false },
-    { icon: MessageSquareWarning, label: 'Complaints', path: '#', active: false },
     { icon: Users, label: 'Users', path: '/admin-users', active: false },
     { icon: ShieldCheck, label: 'Rules', path: '/admin-rules', active: true },
-    { icon: TrendingUp, label: 'Analytics', path: '#', active: false },
-    { icon: Settings, label: 'Settings', path: '#', active: false },
   ];
 
   if (!user) return null;

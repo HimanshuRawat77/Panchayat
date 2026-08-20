@@ -36,3 +36,16 @@ export const createCommunityPost = async ({ category, content }) => {
 
   return data;
 };
+
+export const getCommunityStats = async () => {
+  const response = await fetch(`${API_BASE_URL}/community/stats`, {
+    headers: getAuthHeaders(),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to fetch community stats');
+  }
+
+  return data;
+};

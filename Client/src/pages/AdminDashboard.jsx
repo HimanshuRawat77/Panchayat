@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Search, Bell, Users, MessageSquareWarning, ShieldCheck, 
-  Settings, HelpCircle, LogOut, BarChart3, TrendingUp, CheckCircle2, AlertCircle
+  Search, Bell, Users, ShieldCheck, MessageSquareWarning,
+  HelpCircle, LogOut, BarChart3, CheckCircle2, AlertCircle
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getAllComplaints, updateComplaintStatus } from '../services/complaintService';
+import { getCommunityStats } from '../services/communityService';
 import toast, { Toaster } from 'react-hot-toast';
 import { clearAuth, getAuthUser } from '../utils/authStorage';
 import {
@@ -17,6 +18,9 @@ const AdminDashboard = () => {
   const [user] = useState(() => getAuthUser());
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [totalResidents, setTotalResidents] = useState(null);
+  const [residentsLoading, setResidentsLoading] = useState(true);
+  const [residentsError, setResidentsError] = useState(false);
 
   useEffect(() => {
     try {
@@ -35,17 +39,29 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (!user) return;
-    const fetchComplaints = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getAllComplaints();
-        setComplaints(data);
+        const complaintsData = await getAllComplaints();
+        setComplaints(complaintsData);
       } catch {
         toast.error('Failed to fetch complaints');
       } finally {
         setLoading(false);
       }
+      
+      try {
+        setResidentsLoading(true);
+        const stats = await getCommunityStats();
+        setTotalResidents(stats.totalResidents);
+        setResidentsError(false);
+      } catch {
+        setResidentsError(true);
+        toast.error('Failed to load resident count');
+      } finally {
+        setResidentsLoading(false);
+      }
     };
-    fetchComplaints();
+    fetchData();
   }, [user]);
 
   const handleLogout = () => {
@@ -68,11 +84,8 @@ const AdminDashboard = () => {
 
   const navItems = [
     { icon: BarChart3, label: 'Dashboard', path: '/admin-dashboard', active: true },
-    { icon: MessageSquareWarning, label: 'Complaints', path: '#' },
     { icon: Users, label: 'Users', path: '/admin-users' },
     { icon: ShieldCheck, label: 'Rules', path: '/admin-rules' },
-    { icon: TrendingUp, label: 'Analytics', path: '#' },
-    { icon: Settings, label: 'Settings', path: '#' },
   ];
 
   // Derived Metrics
@@ -214,7 +227,15 @@ const AdminDashboard = () => {
                 <span className="text-xs font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100">+12% ↗</span>
               </div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Residents</p>
-              <h3 className="text-3xl font-bold text-slate-900">1,284</h3>
+              <h3 className="text-3xl font-bold text-slate-900">
+                {residentsLoading ? (
+                  <span className="text-lg text-slate-500 font-medium">Loading residents...</span>
+                ) : residentsError ? (
+                  <span className="text-lg text-rose-500 font-medium">Unable to load resident count</span>
+                ) : (
+                  totalResidents || 0
+                )}
+              </h3>
             </div>
             
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
