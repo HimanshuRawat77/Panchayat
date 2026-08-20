@@ -16,4 +16,18 @@ const societyInfoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("SocietyInfo", societyInfoSchema);
+import { syncDocumentToVectorDB, deleteDocumentFromVectorDB } from '../services/vectorSyncService.js';
+
+societyInfoSchema.post('save', async function(doc) {
+  await syncDocumentToVectorDB(doc, 'society_info');
+});
+
+societyInfoSchema.post('findOneAndUpdate', async function(doc) {
+  if (doc) await syncDocumentToVectorDB(doc, 'society_info');
+});
+
+societyInfoSchema.post('findOneAndDelete', async function(doc) {
+  if (doc) await deleteDocumentFromVectorDB(doc._id, 'society_info');
+});
+
+export default mongoose.model('SocietyInfo', societyInfoSchema);

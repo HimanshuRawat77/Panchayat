@@ -21,29 +21,7 @@ const NOISE_WORDS = new Set([
   'of', 'in', 'on', 'at', 'with', 'please', 'tell', 'me', 'about', 'what', 'when',
   'where', 'which', 'who', 'can', 'could', 'would', 'should', 'my', 'our', 'any',
 ]);
-const documentEmbeddingCache = new Map();
-
-const cosineSimilarity = (left = [], right = []) => {
-  if (!left.length || !right.length || left.length !== right.length) {
-    return 0;
-  }
-
-  let dotProduct = 0;
-  let leftMagnitude = 0;
-  let rightMagnitude = 0;
-
-  for (let index = 0; index < left.length; index += 1) {
-    dotProduct += left[index] * right[index];
-    leftMagnitude += left[index] * left[index];
-    rightMagnitude += right[index] * right[index];
-  }
-
-  if (!leftMagnitude || !rightMagnitude) {
-    return 0;
-  }
-
-  return dotProduct / (Math.sqrt(leftMagnitude) * Math.sqrt(rightMagnitude));
-};
+import { queryVectors } from './pineconeService.js';
 
 const normalizeTokens = (value) => (
   value
@@ -52,12 +30,6 @@ const normalizeTokens = (value) => (
     .split(/\s+/)
     .filter((token) => token.length >= 3)
 );
-
-const safeDate = (value) => {
-  if (!value) return null;
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? null : parsed.toLocaleDateString();
-};
 
 const preprocessQuery = (question) => {
   const normalized = question.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -93,91 +65,6 @@ const scoreKeywordFallback = (question, fallbackResult) => {
   return tokenMatches + exactPhraseBonus;
 };
 
-const buildKnowledgeDocuments = ({ societyInfos, rules, notices, communityPosts }) => {
-  const documents = [];
-
-  for (const info of societyInfos) {
-    const detailLines = [
-      `Society name: ${info.societyName}`,
-      `Address: ${info.address}`,
-      `Office location: ${info.officeLocation}`,
-      `Office timing: ${info.officeTiming}`,
-      `Emergency number: ${info.emergencyNumber}`,
-      info.gymLocation ? `Gym location: ${info.gymLocation}` : null,
-      info.gymTiming ? `Gym timing: ${info.gymTiming}` : null,
-      info.clubhouseLocation ? `Clubhouse location: ${info.clubhouseLocation}` : null,
-      info.clubhouseTiming ? `Clubhouse timing: ${info.clubhouseTiming}` : null,
-      info.securityDesk ? `Security desk: ${info.securityDesk}` : null,
-    ].filter(Boolean);
-
-    documents.push({
-      id: `society-${info._id}`,
-      kind: 'society',
-      source: '🏢 Society Information',
-      title: info.name || 'Society Information',
-      content: detailLines.join('\n'),
-      meta: [
-        info.address ? `Address: ${info.address}` : null,
-        info.officeTiming ? `Office Timing: ${info.officeTiming}` : null,
-        info.gymTiming ? `Gym Timing: ${info.gymTiming}` : null,
-      ].filter(Boolean).join(' | '),
-    });
-  }
-
-  for (const rule of rules) {
-    documents.push({
-      id: `rule-${rule._id}`,
-      kind: 'rule',
-      source: '📘 Society Rule',
-      title: rule.title,
-      content: [
-        `Category: ${rule.category || 'General'}`,
-        rule.description,
-        rule.keywords?.length ? `Keywords: ${rule.keywords.join(', ')}` : null,
-        rule.effectiveDate ? `Effective Date: ${safeDate(rule.effectiveDate)}` : null,
-        rule.expiryDate ? `Expiry Date: ${safeDate(rule.expiryDate)}` : null,
-      ].filter(Boolean).join('\n'),
-      meta: rule.category || 'General',
-    });
-  }
-
-  for (const notice of notices) {
-    const publishedDate = safeDate(notice.date || notice.createdAt);
-    documents.push({
-      id: `notice-${notice._id}`,
-      kind: 'notice',
-      source: '📢 Notice',
-      title: notice.title,
-      content: [
-        notice.content,
-        notice.keywords?.length ? `Keywords: ${notice.keywords.join(', ')}` : null,
-        publishedDate ? `Published: ${publishedDate}` : null,
-        notice.expiryDate ? `Expiry Date: ${safeDate(notice.expiryDate)}` : null,
-      ].filter(Boolean).join('\n'),
-      meta: publishedDate ? `Published ${publishedDate}` : 'Recent notice',
-    });
-  }
-
-  for (const post of communityPosts) {
-    documents.push({
-      id: `community-${post._id}`,
-      kind: 'community',
-      source: '💬 Community Post',
-      title: `${post.category} by ${post.authorName}`,
-      content: [
-        `Author: ${post.authorName}`,
-        `Block: ${post.block}`,
-        `Category: ${post.category}`,
-        post.content,
-        post.createdAt ? `Posted: ${safeDate(post.createdAt)}` : null,
-      ].filter(Boolean).join('\n'),
-      meta: `${post.category} | ${post.block}`,
-    });
-  }
-
-  return documents;
-};
-
 const embedText = async (text, taskType) => {
   if (!openai) {
     throw new Error('OpenAI API key is missing');
@@ -191,77 +78,36 @@ const embedText = async (text, taskType) => {
   return response.data[0].embedding || [];
 };
 
-const embedDocument = async (document) => {
-  const cacheKey = `${document.id}:${document.title}:${document.content}`;
-
-  if (documentEmbeddingCache.has(cacheKey)) {
-    return documentEmbeddingCache.get(cacheKey);
-  }
-
-  const embedding = await embedText(`${document.title}\n${document.content}`, 'RETRIEVAL_DOCUMENT');
-  documentEmbeddingCache.set(cacheKey, embedding);
-  return embedding;
-};
-
-const fetchKnowledgeSources = async (societyId) => {
-  if (!societyId) throw new Error("societyId is required");
-
-  // Helper to fetch and cache if missed
-  const getOrSet = async (key, fetchFn, ttlEnvVar, defaultTtl) => {
-    const cached = await getCache(key);
-    if (cached) return cached;
-
-    const data = await fetchFn();
-    const ttl = parseInt(process.env[ttlEnvVar] || defaultTtl, 10);
-    await setCache(key, data, ttl);
-    return data;
-  };
-
-  const [societyInfos, rules, notices, communityPosts] = await Promise.all([
-    getOrSet(`society:${societyId}:info`, async () => { const s = await Society.findById(societyId).lean(); return s ? [s] : []; }, 'CACHE_INFO_TTL', 3600),
-    getOrSet(`society:${societyId}:rules`, () => Rule.find({
-      societyId,
-      $or: [
-        { expiryDate: { $exists: false } },
-        { expiryDate: { $gt: new Date() } },
-      ],
-    }).sort({ isPinned: -1, createdAt: -1 }).lean(), 'CACHE_RULES_TTL', 3600),
-    getOrSet(`society:${societyId}:notices`, () => Notice.find({
-      societyId,
-      $or: [
-        { expiryDate: { $exists: false } },
-        { expiryDate: { $gt: new Date() } },
-      ],
-    }).sort({ createdAt: -1 }).lean(), 'CACHE_NOTICES_TTL', 900),
-    getOrSet(`society:${societyId}:posts`, () => CommunityPost.find({ societyId }).sort({ createdAt: -1 }).limit(50).lean(), 'CACHE_POSTS_TTL', 600),
-  ]);
-
-  return { societyInfos, rules, notices, communityPosts };
-};
-
 const retrieveRelevantContext = async (processedQuery, societyId) => {
-  const sources = await fetchKnowledgeSources(societyId);
-  const knowledgeDocuments = buildKnowledgeDocuments(sources);
+  const queryText = processedQuery.retrievalText || processedQuery.normalized;
+  const queryEmbedding = await embedText(queryText, 'RETRIEVAL_QUERY');
 
-  if (!knowledgeDocuments.length) {
+  // RAG settings
+  const topK = parseInt(process.env.RAG_TOP_K || String(MAX_CONTEXT_DOCUMENTS), 10);
+  const minScore = parseFloat(process.env.RAG_SIMILARITY_THRESHOLD || String(MIN_VECTOR_SCORE));
+
+  const matches = await queryVectors({
+    queryEmbedding,
+    societyId,
+    topK,
+    minScore
+  });
+
+  if (!matches || !matches.length) {
     return [];
   }
 
-  const queryEmbedding = await embedText(processedQuery.retrievalText || processedQuery.normalized, 'RETRIEVAL_QUERY');
-  const scoredDocuments = await Promise.all(
-    knowledgeDocuments.map(async (document) => {
-      const embedding = await embedDocument(document);
-      return {
-        ...document,
-        score: cosineSimilarity(queryEmbedding, embedding),
-      };
-    }),
-  );
-
-  return scoredDocuments
-    .sort((left, right) => right.score - left.score)
-    .slice(0, MAX_CONTEXT_DOCUMENTS)
-    .filter((document) => document.score >= MIN_VECTOR_SCORE);
+  return matches.map((match) => ({
+    id: match.id,
+    source: match.metadata.type === 'rule' ? '📘 Society Rule' :
+            match.metadata.type === 'notice' ? '📢 Notice' :
+            match.metadata.type === 'community_post' ? '💬 Community Post' :
+            '🏢 Society Information',
+    title: match.metadata.title || 'Document',
+    content: match.metadata.content || '',
+    meta: match.metadata.type,
+    score: match.score,
+  }));
 };
 
 const buildContextPrompt = (question, contextDocuments) => {

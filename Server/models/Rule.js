@@ -44,7 +44,21 @@ const ruleSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+import { syncDocumentToVectorDB, deleteDocumentFromVectorDB } from '../services/vectorSyncService.js';
+
 ruleSchema.index({ societyId: 1 });
 ruleSchema.index({ societyId: 1, createdAt: -1 });
+
+ruleSchema.post('save', async function(doc) {
+  await syncDocumentToVectorDB(doc, 'rule');
+});
+
+ruleSchema.post('findOneAndUpdate', async function(doc) {
+  if (doc) await syncDocumentToVectorDB(doc, 'rule');
+});
+
+ruleSchema.post('findOneAndDelete', async function(doc) {
+  if (doc) await deleteDocumentFromVectorDB(doc._id, 'rule');
+});
 
 export default mongoose.model("Rule", ruleSchema);

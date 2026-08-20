@@ -63,8 +63,30 @@ const societySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+import { syncDocumentToVectorDB, deleteDocumentFromVectorDB } from '../services/vectorSyncService.js';
+
 societySchema.index({ inviteCode: 1 });
 societySchema.index({ status: 1 });
+
+societySchema.post('save', async function(doc) {
+  if (doc) {
+    const docObj = doc.toObject();
+    docObj.societyId = docObj._id; // Ensure societyId exists for the vector DB
+    await syncDocumentToVectorDB(docObj, 'society_info');
+  }
+});
+
+societySchema.post('findOneAndUpdate', async function(doc) {
+  if (doc) {
+    const docObj = doc.toObject ? doc.toObject() : { ...doc };
+    docObj.societyId = docObj._id || docObj.id || this.getQuery()._id;
+    await syncDocumentToVectorDB(docObj, 'society_info');
+  }
+});
+
+societySchema.post('findOneAndDelete', async function(doc) {
+  if (doc) await deleteDocumentFromVectorDB(doc._id || doc.id || this.getQuery()._id, 'society_info');
+});
 
 const Society = mongoose.model("Society", societySchema);
 
