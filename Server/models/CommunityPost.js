@@ -49,10 +49,7 @@ const communityPostSchema = new mongoose.Schema(
 
 import { syncDocumentToVectorDB, deleteDocumentFromVectorDB } from '../services/vectorSyncService.js';
 
-communityPostSchema.index({ societyId: 1 });
 communityPostSchema.index({ societyId: 1, createdAt: -1 });
-communityPostSchema.index({ category: 1 });
-communityPostSchema.index({ societyId: 1, category: 1 });
 
 communityPostSchema.post('save', async function(doc) {
   await syncDocumentToVectorDB(doc, 'community_post');

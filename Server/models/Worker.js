@@ -18,6 +18,6 @@ const workerSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-workerSchema.index({ societyId: 1 });
+workerSchema.index({ societyId: 1, trade: 1, name: 1 });
 
 export default mongoose.model("Worker", workerSchema);

@@ -46,8 +46,8 @@ const ruleSchema = new mongoose.Schema(
 
 import { syncDocumentToVectorDB, deleteDocumentFromVectorDB } from '../services/vectorSyncService.js';
 
-ruleSchema.index({ societyId: 1 });
-ruleSchema.index({ societyId: 1, createdAt: -1 });
+ruleSchema.index({ societyId: 1, isPinned: -1, createdAt: -1 });
+ruleSchema.index({ societyId: 1, category: 1, createdAt: -1 });
 
 ruleSchema.post('save', async function(doc) {
   await syncDocumentToVectorDB(doc, 'rule');

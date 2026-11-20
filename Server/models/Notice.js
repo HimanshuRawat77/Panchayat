@@ -37,7 +37,6 @@ const noticeSchema = new mongoose.Schema(
 
 import { syncDocumentToVectorDB, deleteDocumentFromVectorDB } from '../services/vectorSyncService.js';
 
-noticeSchema.index({ societyId: 1 });
 noticeSchema.index({ societyId: 1, createdAt: -1 });
 
 noticeSchema.post('save', async function(doc) {

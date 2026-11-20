@@ -42,7 +42,7 @@ const complaintSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-complaintSchema.index({ societyId: 1 });
 complaintSchema.index({ societyId: 1, createdAt: -1 });
+complaintSchema.index({ societyId: 1, userId: 1, createdAt: -1 });
 
 export default mongoose.model("Complaint", complaintSchema);

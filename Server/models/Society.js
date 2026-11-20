@@ -65,8 +65,6 @@ const societySchema = new mongoose.Schema(
 
 import { syncDocumentToVectorDB, deleteDocumentFromVectorDB } from '../services/vectorSyncService.js';
 
-societySchema.index({ inviteCode: 1 });
-societySchema.index({ status: 1 });
 
 societySchema.post('save', async function(doc) {
   if (doc) {
